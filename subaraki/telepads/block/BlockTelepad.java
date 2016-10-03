@@ -99,7 +99,50 @@ public class BlockTelepad extends Block{
 		return super.onBlockActivated(world, pos, state, player, hand, heldItem, side, hitX, hitY, hitZ);
 	}
 
+	@Override
+	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block) {
+		TileEntity te = world.getTileEntity(pos);
+		TileEntityTelepad tet = null;
+		if(te == null || !(te instanceof TileEntityTelepad))
+			return;
 
+		tet = (TileEntityTelepad)te;
+
+		if(!tet.hasRedstoneUpgrade())
+			return;
+
+		EnumFacing facesThatCanPower[] = new EnumFacing[]{
+				EnumFacing.NORTH,
+				EnumFacing.SOUTH,
+				EnumFacing.EAST,
+				EnumFacing.WEST,
+				EnumFacing.DOWN
+		};
+
+		boolean isPowered = false;
+		for(EnumFacing face : facesThatCanPower){
+			if(!world.getBlockState(pos.offset(face)).canProvidePower())
+				continue;
+			int power = world.getBlockState(pos.offset(face)).getStrongPower(world, pos, face);
+			int weakPower = world.getBlockState(pos.offset(face)).getWeakPower(world, pos, face);
+			if(power > 0 || weakPower > 0){
+				isPowered = true;
+				break;
+			}
+		}
+
+		tet.setPowered(isPowered);
+		tet.markDirty();
+		world.notifyBlockUpdate(pos, getDefaultState(), getDefaultState(), 3);
+
+		//TODO set player locations data for this pad to false
+	}
+
+
+	@Override
+	public void onNeighborChange(IBlockAccess world, BlockPos pos, BlockPos neighbor) {
+
+	}
 
 
 
