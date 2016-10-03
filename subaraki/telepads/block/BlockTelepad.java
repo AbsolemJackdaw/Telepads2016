@@ -73,13 +73,15 @@ public class BlockTelepad extends Block{
 				TileEntityTelepad tet = (TileEntityTelepad)te;
 				if(item != null){
 					if(item.equals(TelepadItems.transmitter)){
-						if(!tet.hasDimensionUpgrade()){
+						//check for server only. syncs automatically with client. if doing both sides, client setter will make it look jumpy
+						if(!tet.hasDimensionUpgrade() && !world.isRemote){ 
 							tet.addDimensionUpgrade(true);
 							tet.markDirty();
 							world.notifyBlockUpdate(pos, getDefaultState(), getDefaultState(), 3);
 						}
 					}
-					if(item.equals(TelepadItems.toggler)){
+					//check for server only. syncs automatically with client. if doing both sides, client setter will make it look jumpy
+					if(item.equals(TelepadItems.toggler)&& !world.isRemote){
 						if(!tet.hasRedstoneUpgrade()){
 							tet.addRedstoneUpgrade();
 							tet.markDirty();
@@ -127,11 +129,11 @@ public class BlockTelepad extends Block{
 	}
 	@Override
 	public boolean isVisuallyOpaque() {
-		return true;
+		return false;
 	}
 	@Override
 	public boolean isOpaqueCube(IBlockState state) {
-		return true;
+		return false;
 	}
 	@Override
 	public float getExplosionResistance(Entity exploder) {
