@@ -3,11 +3,14 @@ package subaraki.telepads.tileentity;
 import java.awt.Color;
 import java.util.Random;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class TileEntityTelepad extends TileEntity implements ITickable{
 
@@ -29,22 +32,31 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 	private static final int MAX_TIME = 3 * 20;
 	public int counter = MAX_TIME;
 
+	public TileEntityTelepad() {
+
+	}
+	
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket() {
+		super.getUpdatePacket();
 		NBTTagCompound nbt = new NBTTagCompound();
 		this.writeToNBT(nbt);
 
 		return new SPacketUpdateTileEntity(getPos(), 0, nbt);
+		
 	}
 
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
 		this.readFromNBT(pkt.getNbtCompound());
+		super.onDataPacket(net, pkt);
 	}
 
+
+	
 	@Override
 	public void readFromNBT (NBTTagCompound compound) {
-
+		super.readFromNBT(compound);
 		telepadname = (compound.getString("name"));
 		dimension = compound.getInteger("dimension");
 		hasDimensionUpgrade = compound.getBoolean("upgrade_dimension");
@@ -54,10 +66,21 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 		this.colorFrame = compound.getInteger("colorFrame");
 		this.upgradeRotation = compound.getInteger("upgradeRotation");
 
-		super.readFromNBT(compound);
 	}
+	
+	@Override
+	public NBTTagCompound serializeNBT() {
+		return super.serializeNBT();
+	}
+	
+	@Override
+	public void deserializeNBT(NBTTagCompound nbt) {
+		super.deserializeNBT(nbt);
+	}
+	
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+		super.writeToNBT(compound);
 		compound.setString("name", telepadname);
 		compound.setInteger("dimension", dimension);
 		compound.setBoolean("upgrade_dimension", hasDimensionUpgrade);
@@ -66,22 +89,27 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 		compound.setInteger("colorBase", this.colorBase);
 		compound.setInteger("colorFrame", this.colorFrame);
 		compound.setInteger("upgradeRotation", upgradeRotation);
-		return super.writeToNBT(compound);
+		return compound;
 	}
 
+	
 	@Override
 	public void update() {
 		if(isPowered)
 			return;
 	}
 
-	
-	
-	
-	
-	
-	
-	
+	@Override
+	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate)
+	{
+		return oldState.getBlock() != newSate.getBlock();
+	}
+
+
+
+
+
+
 	/////////////////Setters and Getters/////////////////////////
 	public String getTelePadName () {
 		return telepadname;

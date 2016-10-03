@@ -73,12 +73,18 @@ public class BlockTelepad extends Block{
 				TileEntityTelepad tet = (TileEntityTelepad)te;
 				if(item != null){
 					if(item.equals(TelepadItems.transmitter)){
-						if(!tet.hasDimensionUpgrade())
+						if(!tet.hasDimensionUpgrade()){
 							tet.addDimensionUpgrade(true);
+							tet.markDirty();
+							world.notifyBlockUpdate(pos, getDefaultState(), getDefaultState(), 3);
+						}
 					}
 					if(item.equals(TelepadItems.toggler)){
-						if(!tet.hasRedstoneUpgrade())
+						if(!tet.hasRedstoneUpgrade()){
 							tet.addRedstoneUpgrade();
+							tet.markDirty();
+							world.notifyBlockUpdate(pos, getDefaultState(), getDefaultState(), 3);
+						}
 					}
 				}
 			}
@@ -121,6 +127,10 @@ public class BlockTelepad extends Block{
 	}
 	@Override
 	public boolean isVisuallyOpaque() {
+		return true;
+	}
+	@Override
+	public boolean isOpaqueCube(IBlockState state) {
 		return true;
 	}
 	@Override
