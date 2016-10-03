@@ -103,10 +103,10 @@ public class RenderEndPortalFrame {
 			float f11 = (teleporterRandom.nextFloat() * 0.5F + 0.1F) * f6;
 			float f12 = (teleporterRandom.nextFloat() * 0.5F + 0.4F) * f6;
 			float f13 = (teleporterRandom.nextFloat() * 0.5F + 0.5F) * f6;
-			vertexbuffer.pos(x, y + 0.75D, z).color(f11, f12, f13, 1.0F).endVertex();
-			vertexbuffer.pos(x, y + 0.75D, z + 1.0D).color(f11, f12, f13, 1.0F).endVertex();
-			vertexbuffer.pos(x + 1.0D, y + 0.75D, z + 1.0D).color(f11, f12, f13, 1.0F).endVertex();
-			vertexbuffer.pos(x + 1.0D, y + 0.75D, z).color(f11, f12, f13, 1.0F).endVertex();
+			vertexbuffer.pos(x + 0.05D, y + 0.75D, z + 0.05D).color(f11, f12, f13, 1.0F).endVertex();
+			vertexbuffer.pos(x + 0.05D, y + 0.75D, z + 0.95D).color(f11, f12, f13, 1.0F).endVertex();
+			vertexbuffer.pos(x + 0.95D, y + 0.75D, z + 0.95D).color(f11, f12, f13, 1.0F).endVertex();
+			vertexbuffer.pos(x + 0.95D, y + 0.75D, z + 0.05D).color(f11, f12, f13, 1.0F).endVertex();
 			tessellator.draw();
 			GlStateManager.popMatrix();
 			GlStateManager.matrixMode(5888);

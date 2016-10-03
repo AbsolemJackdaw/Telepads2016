@@ -9,13 +9,18 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import subaraki.telepads.item.TelepadItems;
 import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.tileentity.TileEntityTelepad;
 
@@ -41,27 +46,56 @@ public class BlockTelepad extends Block{
 	}
 	@Override
 	public EnumBlockRenderType getRenderType(IBlockState state) {
-		return EnumBlockRenderType.MODEL;
+		return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
 	}
-	
+
 	///////////////TE Stuff//////////////////////
 	@Override
 	public boolean hasTileEntity(IBlockState state) {
 		return true;
 	}
-	
+
 	@Override
 	public TileEntity createTileEntity(World world, IBlockState state) {
 		return new TileEntityTelepad();
 	}
-	
-	
-	
-	
-	
-	
-	
-	
+
+	//////////Interaction///////
+
+	@Override
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player,
+			EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+
+		if(heldItem != null){
+			Item item = heldItem.getItem();
+			TileEntity te = world.getTileEntity(pos);
+			if(te instanceof TileEntityTelepad){
+				TileEntityTelepad tet = (TileEntityTelepad)te;
+				if(item != null){
+					if(item.equals(TelepadItems.transmitter)){
+						if(!tet.hasDimensionUpgrade())
+							tet.addDimensionUpgrade(true);
+					}
+					if(item.equals(TelepadItems.toggler)){
+						if(!tet.hasRedstoneUpgrade())
+							tet.addRedstoneUpgrade();
+					}
+				}
+			}
+		}else{
+			if(player.isSneaking()){
+				//TODO add pad to player data list
+			}
+		}
+
+		return super.onBlockActivated(world, pos, state, player, hand, heldItem, side, hitX, hitY, hitZ);
+	}
+
+
+
+
+
+
 	///////////////inherited methods////////////////////
 	@Override
 	public boolean canEntityDestroy(IBlockState state, IBlockAccess world, BlockPos pos, Entity entity) {
@@ -87,7 +121,7 @@ public class BlockTelepad extends Block{
 	}
 	@Override
 	public boolean isVisuallyOpaque() {
-		return false;
+		return true;
 	}
 	@Override
 	public float getExplosionResistance(Entity exploder) {

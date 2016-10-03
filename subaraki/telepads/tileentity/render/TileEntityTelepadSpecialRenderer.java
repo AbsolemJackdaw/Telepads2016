@@ -2,13 +2,21 @@ package subaraki.telepads.tileentity.render;
 
 import java.awt.Color;
 
-import net.minecraft.client.renderer.BlockModelRenderer;
+import net.minecraft.block.BlockPistonBase;
+import net.minecraft.block.BlockPistonExtension;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import subaraki.telepads.tileentity.TileEntityTelepad;
 
 public class TileEntityTelepadSpecialRenderer extends TileEntitySpecialRenderer {
@@ -48,7 +56,7 @@ public class TileEntityTelepadSpecialRenderer extends TileEntitySpecialRenderer 
 
 		if (!tet.hasRedstoneUpgrade() || tet.hasRedstoneUpgrade() && !tet.isPowered()) {
 			GlStateManager.pushMatrix();
-			endPortalFrame.renderEndPortalSurface(x, y, z, this.rendererDispatcher);
+			endPortalFrame.renderEndPortalSurface(x, y-0.56f, z, this.rendererDispatcher);
 			GlStateManager.popMatrix();
 		}
 
@@ -120,6 +128,27 @@ public class TileEntityTelepadSpecialRenderer extends TileEntitySpecialRenderer 
 	}
 
 	private void renderTorch (TileEntityTelepad te, double offsetX, double offsetY, double offsetZ, double x, double y, double z) {
+		Tessellator tessellator = Tessellator.getInstance();
+		VertexBuffer vertexbuffer = tessellator.getBuffer();
+
+		BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
+		this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+
+		vertexbuffer.begin(7, DefaultVertexFormats.BLOCK);
+		vertexbuffer.setTranslation(x - te.getPos().getX()- offsetX, y - te.getPos().getY() - offsetY, z - te.getPos().getZ() - offsetZ);
+		World world = this.getWorld();
+
+		IBlockState state = null;
+
+		if(te.isPowered())
+			state = Blocks.REDSTONE_TORCH.getDefaultState();
+		else
+			state = Blocks.UNLIT_REDSTONE_TORCH.getDefaultState();
+
+		blockrendererdispatcher.getBlockModelRenderer().renderModel(world, blockrendererdispatcher.getModelForState(state), state, te.getPos(), vertexbuffer, false);
+
+		vertexbuffer.setTranslation(0.0D, 0.0D, 0.0D);
+		tessellator.draw();
 
 	}
 

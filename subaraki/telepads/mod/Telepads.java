@@ -7,9 +7,11 @@ import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import subaraki.telepads.block.TelepadBlocks;
 import subaraki.telepads.handler.proxy.ServerProxy;
 import subaraki.telepads.item.TelepadItems;
+import subaraki.telepads.tileentity.TileEntityTelepad;
 
 @Mod(modid = Telepads.MODID, name = Telepads.NAME, version = Telepads.VERSION,  dependencies = Telepads.DEPENDENCY)
 public class Telepads {
