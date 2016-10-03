@@ -11,6 +11,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import subaraki.telepads.block.TelepadBlocks;
+import subaraki.telepads.mod.Telepads;
 
 public class TileEntityTelepad extends TileEntity implements ITickable{
 
@@ -33,31 +35,41 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 	public int counter = MAX_TIME;
 
 	public TileEntityTelepad() {
-
 	}
-	
+
+	/////////////////3 METHODS ABSOLUTELY NEEDED FOR CLIENT/SERVER SYNCING/////////////////////
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket() {
-		super.getUpdatePacket();
 		NBTTagCompound nbt = new NBTTagCompound();
 		this.writeToNBT(nbt);
 
 		return new SPacketUpdateTileEntity(getPos(), 0, nbt);
-		
+
 	}
 
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
 		this.readFromNBT(pkt.getNbtCompound());
-		super.onDataPacket(net, pkt);
 	}
 
-
+	@Override
+	public NBTTagCompound getUpdateTag() {
+		NBTTagCompound nbt =  super.getUpdateTag();
+		writeToNBT(nbt);
+		return nbt;
+	}
+	
+	//calls readFromNbt by default. no need to add anything in here
+	@Override
+	public void handleUpdateTag(NBTTagCompound tag) {
+		super.handleUpdateTag(tag);
+	}
+	////////////////////////////////////////////////////////////////////
 	
 	@Override
 	public void readFromNBT (NBTTagCompound compound) {
 		super.readFromNBT(compound);
-		telepadname = (compound.getString("name"));
+		setTelePadName(compound.getString("name"));
 		dimension = compound.getInteger("dimension");
 		hasDimensionUpgrade = compound.getBoolean("upgrade_dimension");
 		hasRedstoneUpgrade = compound.getBoolean("upgrade_redstone");
@@ -67,17 +79,7 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 		this.upgradeRotation = compound.getInteger("upgradeRotation");
 
 	}
-	
-	@Override
-	public NBTTagCompound serializeNBT() {
-		return super.serializeNBT();
-	}
-	
-	@Override
-	public void deserializeNBT(NBTTagCompound nbt) {
-		super.deserializeNBT(nbt);
-	}
-	
+
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		super.writeToNBT(compound);
@@ -92,7 +94,7 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 		return compound;
 	}
 
-	
+
 	@Override
 	public void update() {
 		if(isPowered)
