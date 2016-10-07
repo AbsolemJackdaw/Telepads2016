@@ -7,7 +7,7 @@ import net.minecraft.block.BlockPistonExtension;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
-import net.minecraft.client.renderer.GlStateManager;
+import static net.minecraft.client.renderer.GlStateManager.*;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -55,69 +55,67 @@ public class TileEntityTelepadSpecialRenderer extends TileEntitySpecialRenderer 
 		if(tet == null)return;
 
 		if (!tet.hasRedstoneUpgrade() || tet.hasRedstoneUpgrade() && !tet.isPowered()) {
-			GlStateManager.pushMatrix();
+			pushMatrix();
 			endPortalFrame.renderEndPortalSurface(x, y-0.56f, z, this.rendererDispatcher);
-			GlStateManager.popMatrix();
+			popMatrix();
 		}
 
-		GlStateManager.pushMatrix();
+		pushMatrix();
 		// set normal
-		GlStateManager.translate((float) x + 0.5F, (float) y + 2.25F, (float) z + 0.5F);
-		GlStateManager.scale(1.0F, -1F, -1F);
+		translate((float) x + 0.5F, (float) y + 2.25F, (float) z + 0.5F);
+		scale(1.0F, -1F, -1F);
 
-		Color colorBase = new Color(tet.getColorBase());
-		Color colorFrame = new Color(tet.getColorFrame());
+		Color colorBase = new Color(tet.getColorArrow());
+		Color colorFrame = new Color(tet.getColorFeet());
 
 		renderPad(te, colorFrame, colorBase, x, y, z, partialTicks);
 
 		if (tet.hasDimensionUpgrade()) {
-			GlStateManager.pushMatrix();
+			pushMatrix();
 
-			if (animation_counter < 100)
+			if (animation_counter < 25)
 				bindTexture(frame_upgrade);
-			else if (animation_counter < 200)
+			else if (animation_counter < 50)
 				bindTexture(frame_upgrade_2);
-			else if (animation_counter < 300)
+			else if (animation_counter < 75)
 				bindTexture(frame_upgrade_3);
-			else if (animation_counter < 400)
+			else if (animation_counter < 99){//next tick is >=99, so resets and stays tex.4
 				bindTexture(frame_upgrade_4);
-			else
-				bindTexture(frame_upgrade_4);
-
-			if (animation_counter == 900)
+			}else{
 				animation_counter = 0;
-
-			GlStateManager.color(1, 1, 1);
-			GlStateManager.scale(0.75f, 0.75f, 0.75f);
-			GlStateManager.translate(-0.1f, 0.45f, 0.1f);
+				bindTexture(frame_upgrade_4);
+			}
+			color(1, 1, 1);
+			scale(0.75f, 0.75f, 0.75f);
+			translate(-0.1f, 0.45f, 0.1f);
 
 			switch (tet.getUpgradeRotation()) {
 			case 0:
-				GlStateManager.rotate(0f, 0, 1, 0);
-				GlStateManager.translate(0f, 0, 0f);
+				rotate(0f, 0, 1, 0);
+				translate(0f, 0, 0f);
 				break;
 			case 1:
-				GlStateManager.rotate(-90f, 0, 1, 0);
-				GlStateManager.translate(-0.1f, 0, 0f);
+				rotate(-90f, 0, 1, 0);
+				translate(-0.1f, 0, 0f);
 				break;
 			case 2:
-				GlStateManager.rotate(180f, 0, 1, 0);
-				GlStateManager.translate(-0.2f, 0, 0.2f);
+				rotate(180f, 0, 1, 0);
+				translate(-0.2f, 0, 0.2f);
 				break;
 			case 3:
-				GlStateManager.rotate(90f, 0, 1, 0);
-				GlStateManager.translate(0f, 0, 0.2f);
+				rotate(90f, 0, 1, 0);
+				translate(0f, 0, 0.2f);
 				break;
 			default:
-				GlStateManager.rotate(90f, 0, 1, 0);
-				GlStateManager.translate(0f, 0, 0.2f);
+				rotate(90f, 0, 1, 0);
+				translate(0f, 0, 0.2f);
 				break;
 			}
 
 			modeltelepad.renderUpgrade(0.0625f);
-			GlStateManager.popMatrix();
+			popMatrix();
 		}
-		GlStateManager.popMatrix();
+		popMatrix();
 
 		if (tet.hasRedstoneUpgrade()) {
 			renderTorch(tet, -0.5, 0.4, -0.5, x, y, z);
@@ -164,25 +162,30 @@ public class TileEntityTelepadSpecialRenderer extends TileEntitySpecialRenderer 
 			te = (TileEntityTelepad) tileentity;
 
 		float f2 = 1.5f;
-		GlStateManager.scale(f2, f2, f2);
+		scale(f2, f2, f2);
 
-		GlStateManager.pushMatrix();
+		pushMatrix();
 		bindTexture(base);
-		GlStateManager.color((float) (colorBase.getRed() / 255.0f), (float) (colorBase.getGreen() / 255.0f), (float) (colorBase.getBlue() / 255.0f));
+		color((float) (colorBase.getRed() / 255.0f), (float) (colorBase.getGreen() / 255.0f), (float) (colorBase.getBlue() / 255.0f));
 		modeltelepad.renderArrows(0.0625f);
-		GlStateManager.popMatrix();
-
-		GlStateManager.pushMatrix();
+		popMatrix();
+		
+		pushMatrix();
 		bindTexture(pads);
-		GlStateManager.color((float) (colorFrame.getRed() / 255.0f), (float) (colorFrame.getGreen() / 255.0f), (float) (colorFrame.getBlue() / 255.0f));
+		color((float) (colorFrame.getRed() / 255.0f), (float) (colorFrame.getGreen() / 255.0f), (float) (colorFrame.getBlue() / 255.0f));
 		modeltelepad.renderLegs(0.0625f);
-		GlStateManager.popMatrix();
-
-		GlStateManager.pushMatrix();
+		//current fix : south and north legs are acting funky when rotated, so duplicate west and est and turn them around.
+		rotate(90, 0, 1, 0);
+		modeltelepad.renderLegs(0.0625f);
+		//Reset normal
+		rotate(-90, 0, 1, 0);
+		popMatrix();
+		
+		pushMatrix();
 		bindTexture(frame);
-		GlStateManager.color(1f, 1f, 1f);
+		color(1f, 1f, 1f);
 		modeltelepad.renderFrame(0.0625f);
-		GlStateManager.popMatrix();
+		popMatrix();
 
 	}
 }

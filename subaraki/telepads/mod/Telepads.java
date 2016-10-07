@@ -3,27 +3,35 @@ package subaraki.telepads.mod;
 import java.util.Arrays;
 
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import subaraki.telepads.block.TelepadBlocks;
+import subaraki.telepads.capability.TelePadDataCapability;
+import subaraki.telepads.gui.GuiHandler;
+import subaraki.telepads.handler.WorldDataHandler;
 import subaraki.telepads.handler.proxy.ServerProxy;
+import subaraki.telepads.hooks.AttachCapability;
+import subaraki.telepads.hooks.PlayerTracker;
 import subaraki.telepads.item.TelepadItems;
-import subaraki.telepads.tileentity.TileEntityTelepad;
+import subaraki.telepads.network.NetworkHandler;
 
 @Mod(modid = Telepads.MODID, name = Telepads.NAME, version = Telepads.VERSION,  dependencies = Telepads.DEPENDENCY)
 public class Telepads {
 
 	public static final String MODID = "telepads";
 	public static final String NAME = "Telepads";
-	public static final String VERSION = "1.0";
+	public static final String VERSION = "1.10.2 v1.0";
 	public static final String DEPENDENCY = "required-after:subcommonlib";
-	
+
 	@SidedProxy(clientSide = "subaraki.telepads.handler.proxy.ClientProxy", serverSide = "subaraki.telepads.handler.proxy.ServerProxy")
 	public static ServerProxy proxy;
-	
+
+	@Instance(MODID)
+	public static Telepads instance;
+
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent event){
 		ModMetadata modMeta = event.getModMetadata();
@@ -33,10 +41,22 @@ public class Telepads {
 		modMeta.description = "Telepads : blocks to teleport you to and fro, fro an to.";
 		modMeta.url = "https://github.com/ArtixAllMighty/Telepads2016/wiki";
 
-		TelepadItems.loadItems();
-		TelepadBlocks.loadBlocks();
-		
+		instance = this;
+
+		new TelePadDataCapability().register();
+		new AttachCapability();
+
+		TelepadBlocks.loadBlocks(); // blocks before items.
+		TelepadItems.loadItems(); //items need to register itemBlocks
+
 		proxy.registerRenders();
 		proxy.registerTileEntityAndRender();
+
+		new PlayerTracker();
+
+		new NetworkHandler();
+		new GuiHandler();
+
+		new WorldDataHandler.WorldDataHandlerSaveEvent();
 	}
 }

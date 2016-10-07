@@ -5,6 +5,7 @@ import static lib.block.BlockRegistry.*;
 import lib.item.ItemRegistry;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import subaraki.telepads.mod.Telepads;
 
 public class TelepadBlocks {
 
@@ -20,6 +21,5 @@ public class TelepadBlocks {
 	}
 	
 	public static void registerRenders(){
-
 	}
 }

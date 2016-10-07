@@ -1,0 +1,12 @@
+cannot.find.remove=This Telepad block was removed.
+button.forget=Forget
+button.teleport=Teleport Anyway
+enter.to.confirm=Press Enter To Confirm
+name.your.telepad=Name Your Telepad 
+dragon.obstructs=The power of the Ender Dragon is jamming your Telepad !
+feet.color=Turquoise
+arrow.color=Fuchsia Pink
+
+item.telepads.toggler.name=Toggler
+item.telepads.transmitter.name=Transmitter
+tile.telepads.telepad.name=Telepad
