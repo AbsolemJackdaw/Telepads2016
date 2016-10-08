@@ -304,8 +304,8 @@ public class BlockTelepad extends Block{
 		stack.setTagCompound(nbt);
 
 		ei.setEntityItemStack(stack);
-
-		world.spawnEntityInWorld(ei);
+		if(!world.isRemote)
+			world.spawnEntityInWorld(ei);
 	}
 
 	///////////////inherited methods////////////////////

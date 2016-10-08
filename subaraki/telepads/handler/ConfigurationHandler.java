@@ -47,7 +47,7 @@ public class ConfigurationHandler {
 		toggler_recipe_block = ItemUtil.getItemStack(configFile.getString("redstone block", "Toggler Recipe", "minecraft:redstone_block@0x1", "Bottom"));
 		
 		transmitter_recipe_iron = ItemUtil.getItemStack(configFile.getString("iron", "Transmitter Recipe", "minecraft:iron_ingot@0x1", "Top and Bottom"));
-		transmitter_recipe_dust = ItemUtil.getItemStack(configFile.getString("glowstone", "Transmitter Recipe", "minecraft:glowstone@0x1", "Midddle Sides"));
+		transmitter_recipe_dust = ItemUtil.getItemStack(configFile.getString("glowstone", "Transmitter Recipe", "minecraft:glowstone_dust@0x1", "Midddle Sides"));
 		transmitter_recipe_diamond = ItemUtil.getItemStack(configFile.getString("diamond", "Transmitter Recipe", "minecraft:diamond@0x1", "Middle"));
 
 		allowDragonBlocking = configFile.getBoolean("allowJamming", "Various", true, "EnderDragon blocks passage");
