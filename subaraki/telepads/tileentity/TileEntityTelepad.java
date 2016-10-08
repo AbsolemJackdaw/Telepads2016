@@ -23,6 +23,7 @@ import subaraki.telepads.capability.TelePadDataCapability;
 import subaraki.telepads.capability.TelepadData;
 import subaraki.telepads.gui.GuiHandler;
 import subaraki.telepads.gui.server.ContainerTelepad;
+import subaraki.telepads.handler.ConfigurationHandler;
 import subaraki.telepads.handler.WorldDataHandler;
 import subaraki.telepads.mod.Telepads;
 
@@ -132,7 +133,7 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 				td.counter--;
 			}else{
 
-				if(worldObj.provider.getDimension() == 1){
+				if(worldObj.provider.getDimension() == 1 && ConfigurationHandler.instance.allowDragonBlocking){
 					for (Object o : worldObj.loadedEntityList)
 						if (o instanceof EntityDragon){
 							td.setCounter(td.getMaxTime());
