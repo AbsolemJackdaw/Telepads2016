@@ -97,7 +97,7 @@ public class BlockTelepad extends Block{
 						if(!tet.hasDimensionUpgrade() && !world.isRemote){ 
 							tet.addDimensionUpgrade(true);
 							tet.markDirty();
-							world.notifyBlockUpdate(pos, getDefaultState(), getDefaultState(), 3);
+							world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 3);
 							TelepadEntry entry = WorldDataHandler.get(world).getEntryForLocation(pos, world.provider.getDimension());
 							entry.hasTransmitter = true;
 							WorldDataHandler.get(world).updateEntry(entry);
@@ -108,7 +108,7 @@ public class BlockTelepad extends Block{
 						if(!tet.hasRedstoneUpgrade()){
 							tet.addRedstoneUpgrade();
 							tet.markDirty();
-							world.notifyBlockUpdate(pos, getDefaultState(), getDefaultState(), 3);
+							world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 3);
 							this.neighborChanged(state, world, pos, state.getBlock());
 						}
 					}
@@ -120,7 +120,7 @@ public class BlockTelepad extends Block{
 						else if(tet.getColorArrow() == tet.COLOR_ARROW_BASE)
 							tet.setArrowColor(color);
 						tet.markDirty();
-						world.notifyBlockUpdate(pos, getDefaultState(), getDefaultState(), 3);
+						world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 3);
 						if(!player.isCreative())
 							heldItem.stackSize--;
 					}
@@ -223,7 +223,7 @@ public class BlockTelepad extends Block{
 
 		tet.setPowered(isPowered);
 		tet.markDirty();
-		world.notifyBlockUpdate(pos, getDefaultState(), getDefaultState(), 3);
+		world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 3);
 
 		WorldDataHandler wdh = WorldDataHandler.get(world);
 		TelepadEntry entry = wdh.getEntryForLocation(pos, world.provider.getDimension());
@@ -240,8 +240,8 @@ public class BlockTelepad extends Block{
 	////////////////Block Placed///////////////////////////////////
 
 	@Override
-	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
-		TileEntity te = worldIn.getTileEntity(pos);
+	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+		TileEntity te = world.getTileEntity(pos);
 		TileEntityTelepad tet = null;
 		if(te == null || !(te instanceof TileEntityTelepad))
 			return;
@@ -250,7 +250,7 @@ public class BlockTelepad extends Block{
 
 		if(placer instanceof EntityPlayer){
 			EntityPlayer player = (EntityPlayer)placer;
-			tet.setDimension(worldIn.provider.getDimension());
+			tet.setDimension(world.provider.getDimension());
 			if (stack.hasTagCompound()) {
 				if (stack.getTagCompound().hasKey("colorFrame"))
 					tet.setFeetColor(stack.getTagCompound().getInteger("colorFrame"));
@@ -258,10 +258,10 @@ public class BlockTelepad extends Block{
 					tet.setArrowColor(stack.getTagCompound().getInteger("colorBase"));
 			}
 			te.markDirty();
-			worldIn.notifyBlockUpdate(pos, getDefaultState(), getDefaultState(), 3);
-			worldIn.setTileEntity(pos, te);
+			world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 3);
+			world.setTileEntity(pos, te);
 
-			FMLNetworkHandler.openGui(player, Telepads.instance, GuiHandler.NAME_TELEPAD, worldIn, pos.getX(), pos.getY(), pos.getZ());
+			FMLNetworkHandler.openGui(player, Telepads.instance, GuiHandler.NAME_TELEPAD, world, pos.getX(), pos.getY(), pos.getZ());
 		}
 	}
 
