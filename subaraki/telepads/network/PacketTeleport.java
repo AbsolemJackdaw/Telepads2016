@@ -81,16 +81,19 @@ public class PacketTeleport implements IMessage {
 				TelepadData td = player.getCapability(TelePadDataCapability.CAPABILITY, null);
 				td.setInTeleportGui(false);
 
+				BlockPos goTo = packet.goTo.position.up();
+				int goToDimensionid = packet.goTo.dimensionID;
+				
 				if (packet.goTo.dimensionID == player.dimension) {
 					if (packet.force) {
-						TeleportUtility.teleportEntity(player, packet.goTo.position, packet.goTo.dimensionID);
+						TeleportUtility.teleportEntity(player, goTo, goToDimensionid);
 						return;
 					}
 
 					if(wdh.contains(packet.goTo)){
 						if (!packet.goTo.isPowered) {
-							if (packet.goTo.dimensionID == player.dimension)
-								TeleportUtility.teleportEntity(player, packet.goTo.position, packet.goTo.dimensionID);
+							if (goToDimensionid == player.dimension)
+								TeleportUtility.teleportEntity(player, goTo, goToDimensionid);
 						}
 						else
 							player.addChatMessage(new TextComponentString(TextFormatting.ITALIC+""+TextFormatting.DARK_RED+"This pad was powered off"));
@@ -102,12 +105,12 @@ public class PacketTeleport implements IMessage {
 				}
 				else {
 					if (packet.force) {
-						TeleportUtility.transferPlayerToDimension((EntityPlayerMP) player, packet.goTo.dimensionID, packet.goTo.position);
+						TeleportUtility.transferPlayerToDimension((EntityPlayerMP) player, goToDimensionid, goTo);
 						return;
 					}
 					if(wdh.contains(packet.goTo))
 						if (!packet.goTo.isPowered) 
-							TeleportUtility.transferPlayerToDimension((EntityPlayerMP) player, packet.goTo.dimensionID, packet.goTo.position);
+							TeleportUtility.transferPlayerToDimension((EntityPlayerMP) player, goToDimensionid, goTo);
 						else
 							player.addChatMessage(new TextComponentString(TextFormatting.ITALIC+""+TextFormatting.DARK_RED+"This pad was powered off"));
 					else
