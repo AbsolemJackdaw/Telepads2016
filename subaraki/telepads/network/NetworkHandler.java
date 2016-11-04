@@ -5,6 +5,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 import subaraki.telepads.network.PacketAddTelepadEntry.PacketAddTelepadEntryHandler;
 import subaraki.telepads.network.PacketRemoveTelepadEntry.PacketRemoveTelepadEntryHandler;
+import subaraki.telepads.network.PacketSyncPlayerAfterTeleport.PacketSyncPlayerAfterTeleportHandler;
 import subaraki.telepads.network.PacketSyncTelepadEntries.PacketSyncTelepadEntriesHandler;
 import subaraki.telepads.network.PacketSyncWorldData.PacketSyncWorldDataHandler;
 import subaraki.telepads.network.PacketTeleport.PacketTeleportHandler;
@@ -22,6 +23,8 @@ public class NetworkHandler {
 
 		NETWORK.registerMessage(PacketSyncTelepadEntriesHandler.class, PacketSyncTelepadEntries.class, 3, Side.CLIENT);
 		NETWORK.registerMessage(PacketSyncWorldDataHandler.class, PacketSyncWorldData.class, 4, Side.CLIENT);
+		
+		NETWORK.registerMessage(PacketSyncPlayerAfterTeleportHandler.class, PacketSyncPlayerAfterTeleport.class, 5, Side.CLIENT);
 
 	}
 }

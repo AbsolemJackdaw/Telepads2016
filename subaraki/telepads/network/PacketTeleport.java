@@ -3,6 +3,7 @@ package subaraki.telepads.network;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
@@ -116,8 +117,18 @@ public class PacketTeleport implements IMessage {
 					else
 						removePad(player, packet.goTo);
 				}
+				
+				syncUpClientWithServerHotFix((EntityPlayerMP) player);
 			});
 			return null;
+		}
+
+		private void syncUpClientWithServerHotFix(EntityPlayerMP player) {
+			NBTTagCompound tag_basic = new NBTTagCompound();
+			player.writeToNBT(tag_basic);
+			NBTTagCompound tag_entity = new NBTTagCompound();
+			player.writeToNBT(tag_entity);
+			NetworkHandler.NETWORK.sendTo(new PacketSyncPlayerAfterTeleport(tag_basic, tag_entity), player);			
 		}
 
 		private static void removePad (EntityPlayer player,  TelepadEntry entry) {
