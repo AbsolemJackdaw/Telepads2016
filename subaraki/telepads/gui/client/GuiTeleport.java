@@ -20,6 +20,7 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.DimensionType;
+import net.minecraftforge.common.DimensionManager;
 import subaraki.telepads.capability.TelePadDataCapability;
 import subaraki.telepads.capability.TelepadData;
 import subaraki.telepads.handler.WorldDataHandler;
@@ -165,7 +166,7 @@ public class GuiTeleport extends GuiScreen {
 		drawRect(x - 1 + offset, y - 1, x + 135 + offset + 1, y + 12 + 1, -6250336);
 		drawRect(x + offset, y, x + 135 + offset, y + 12, -16777216);
 
-		String dimension_name = DimensionType.getById(dimension_ID).getName();
+		String dimension_name = DimensionManager.getProviderType(dimension_ID).getName();//DimensionType.getById(dimension_ID).getName();
 		int stringX = xPosition - fontRendererObj.getStringWidth(dimension_name)/2;
 
 		if (!te.hasDimensionUpgrade())
