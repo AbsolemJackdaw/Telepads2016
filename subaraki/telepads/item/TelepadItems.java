@@ -1,6 +1,7 @@
 package subaraki.telepads.item;
 
-import static lib.item.ItemRegistry.*;
+import static lib.item.ItemRegistry.registerItem;
+import static lib.item.ItemRegistry.registerRender;
 
 import java.util.List;
 
@@ -11,7 +12,6 @@ import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import subaraki.telepads.block.TelepadBlocks;
 import subaraki.telepads.mod.Telepads;
 

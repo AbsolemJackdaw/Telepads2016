@@ -46,12 +46,12 @@ public class GuiRemoveTelepad extends GuiScreen {
 
 		if (button.id == 0 && entryToRemove != null) {
 			NetworkHandler.NETWORK.sendToServer(new PacketRemoveTelepadEntry(player.getPersistentID(), entryToRemove));
-			this.mc.thePlayer.closeScreen();
+			this.mc.player.closeScreen();
 		}
 
 		if (button.id == 1 && entryToRemove != null) {
 			NetworkHandler.NETWORK.sendToServer(new PacketTeleport(player.getPosition(), entryToRemove, true));
-			this.mc.thePlayer.closeScreen();
+			this.mc.player.closeScreen();
 		}
 	}
 

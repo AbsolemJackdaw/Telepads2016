@@ -3,8 +3,6 @@ package subaraki.telepads.handler;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.eventbus.AllowConcurrentEvents;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.BlockPos;

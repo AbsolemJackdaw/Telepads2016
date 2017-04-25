@@ -8,6 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -74,10 +75,10 @@ public class PacketTeleport implements IMessage {
 
 		@Override
 		public IMessage onMessage (PacketTeleport packet, MessageContext ctx) {
-			((WorldServer)ctx.getServerHandler().playerEntity.worldObj).addScheduledTask(() -> {
+			((WorldServer)ctx.getServerHandler().playerEntity.world).addScheduledTask(() -> {
 
 				EntityPlayer player = ctx.getServerHandler().playerEntity;
-				WorldDataHandler wdh = WorldDataHandler.get(player.worldObj);
+				WorldDataHandler wdh = WorldDataHandler.get(player.world);
 
 				TelepadData td = player.getCapability(TelePadDataCapability.CAPABILITY, null);
 				td.setInTeleportGui(false);
@@ -87,17 +88,17 @@ public class PacketTeleport implements IMessage {
 				
 				if (packet.goTo.dimensionID == player.dimension) {
 					if (packet.force) {
-						TeleportUtility.teleportEntity(player, goTo, goToDimensionid);
+						TeleportUtility.teleportEntityTo(player, goTo, player.rotationYaw, player.rotationPitch);
 						return;
 					}
 
 					if(wdh.contains(packet.goTo)){
 						if (!packet.goTo.isPowered) {
 							if (goToDimensionid == player.dimension)
-								TeleportUtility.teleportEntity(player, goTo, goToDimensionid);
+								TeleportUtility.teleportEntityTo(player, goTo, player.rotationYaw, player.rotationPitch);
 						}
 						else
-							player.addChatMessage(new TextComponentString(TextFormatting.ITALIC+""+TextFormatting.DARK_RED+"This pad was powered off"));
+							player.sendMessage(new TextComponentString(TextFormatting.ITALIC+""+TextFormatting.DARK_RED+"This pad was powered off"));
 					}
 					else{
 						td.setInTeleportGui(true); //set to true so when changing gui, it doesnt try to open the teleport gui.
@@ -106,14 +107,14 @@ public class PacketTeleport implements IMessage {
 				}
 				else {
 					if (packet.force) {
-						TeleportUtility.transferPlayerToDimension((EntityPlayerMP) player, goToDimensionid, goTo);
+						TeleportUtility.changeToDimension(player, goTo, goToDimensionid, FMLCommonHandler.instance().getMinecraftServerInstance());
 						return;
 					}
 					if(wdh.contains(packet.goTo))
 						if (!packet.goTo.isPowered) 
-							TeleportUtility.transferPlayerToDimension((EntityPlayerMP) player, goToDimensionid, goTo);
+							TeleportUtility.changeToDimension(player, goTo, goToDimensionid, FMLCommonHandler.instance().getMinecraftServerInstance());
 						else
-							player.addChatMessage(new TextComponentString(TextFormatting.ITALIC+""+TextFormatting.DARK_RED+"This pad was powered off"));
+							player.sendMessage(new TextComponentString(TextFormatting.ITALIC+""+TextFormatting.DARK_RED+"This pad was powered off"));
 					else
 						removePad(player, packet.goTo);
 				}

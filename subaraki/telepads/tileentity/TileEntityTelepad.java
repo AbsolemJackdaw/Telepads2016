@@ -119,7 +119,7 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 		//if(aabb == null)
 		aabb = new AxisAlignedBB(getPos()).expand(0,-0.5,0);
 
-		List<EntityPlayer> playersInRange = worldObj.getEntitiesWithinAABB(EntityPlayer.class, aabb);
+		List<EntityPlayer> playersInRange = world.getEntitiesWithinAABB(EntityPlayer.class, aabb);
 
 		if(playersInRange.isEmpty() && isStandingOnPlatform){
 			resetTE();
@@ -133,12 +133,12 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 				td.counter--;
 			}else{
 
-				if(worldObj.provider.getDimension() == 1 && ConfigurationHandler.instance.allowDragonBlocking){
-					for (Object o : worldObj.loadedEntityList)
+				if(world.provider.getDimension() == 1 && ConfigurationHandler.instance.allowDragonBlocking){
+					for (Object o : world.loadedEntityList)
 						if (o instanceof EntityDragon){
 							td.setCounter(td.getMaxTime());
-							if(!worldObj.isRemote)
-								playerInAabb.addChatComponentMessage(new TextComponentString(TextFormatting.DARK_PURPLE+""+TextFormatting.ITALIC+ I18n.format("dragon.obstructs")));
+							if(!world.isRemote)
+								playerInAabb.sendMessage(new TextComponentString(TextFormatting.DARK_PURPLE+""+TextFormatting.ITALIC+ I18n.format("dragon.obstructs")));
 							break;
 						}
 					if(td.getCounter() <= 0){ //timer gets reset when the dragon is found
@@ -163,18 +163,18 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 
 		isStandingOnPlatform = false;
 		markDirty();
-		worldObj.notifyBlockUpdate(pos, worldObj.getBlockState(getPos()), worldObj.getBlockState(getPos()), 3);
+		world.notifyBlockUpdate(pos, world.getBlockState(getPos()), world.getBlockState(getPos()), 3);
 
 	}
 
 	private void activateTelepadGui (TelepadData td){
 		if (!td.isInTeleportGui() && !(td.getPlayer().openContainer instanceof ContainerTelepad)) {
-			if(!worldObj.isRemote){
-				WorldDataHandler.get(worldObj).syncClient();
+			if(!world.isRemote){
+				WorldDataHandler.get(world).syncClient();
 				td.removeEventualQueuedForRemovalEntries();
-				td.syncPoweredWithWorldData(WorldDataHandler.get(worldObj));
+				td.syncPoweredWithWorldData(WorldDataHandler.get(world));
 				td.sync();
-				FMLNetworkHandler.openGui(td.getPlayer(), Telepads.instance, GuiHandler.TELEPORT, worldObj, getPos().getX(), getPos().getY(), getPos().getZ());
+				FMLNetworkHandler.openGui(td.getPlayer(), Telepads.instance, GuiHandler.TELEPORT, world, getPos().getX(), getPos().getY(), getPos().getZ());
 			}
 			markDirty();
 		}

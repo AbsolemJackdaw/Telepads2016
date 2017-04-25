@@ -8,22 +8,18 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import subaraki.telepads.block.TelepadBlocks;
-import subaraki.telepads.gui.GuiHandler;
 import subaraki.telepads.gui.client.GuiRemoveTelepad;
 import subaraki.telepads.item.TelepadItems;
-import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.tileentity.TileEntityTelepad;
 import subaraki.telepads.tileentity.render.TileEntityTelepadSpecialRenderer;
-import subaraki.telepads.utility.TelepadEntry;
 
 public class ClientProxy extends ServerProxy {
 
 	@Override
 	public EntityPlayer getClientPlayer(){
-		return Minecraft.getMinecraft().thePlayer;
+		return Minecraft.getMinecraft().player;
 	}
 
 	@Override
@@ -47,7 +43,7 @@ public class ClientProxy extends ServerProxy {
 
 	@Override
 	public void createTelepadParticleEffect(BlockPos pos, boolean isStandingOnPlatform) {
-		World world = Minecraft.getMinecraft().theWorld;
+		World world = Minecraft.getMinecraft().world;
 
 		if (world == null )
 			return;

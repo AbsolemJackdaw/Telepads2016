@@ -4,14 +4,12 @@ import java.nio.FloatBuffer;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 
 public class RenderEndPortalFrame {
@@ -19,94 +17,77 @@ public class RenderEndPortalFrame {
 	private static final ResourceLocation enderPortalEndSkyTextures = new ResourceLocation("textures/environment/end_sky.png");
 	private static final ResourceLocation endPortalTextures = new ResourceLocation("textures/entity/end_portal.png");
 	private static final Random teleporterRandom = new Random(31100L);
+	private static final FloatBuffer MODELVIEW = GLAllocation.createDirectFloatBuffer(16);
+	private static final FloatBuffer PROJECTION = GLAllocation.createDirectFloatBuffer(16);
 
 	private FloatBuffer floatBuffer = GLAllocation.createDirectFloatBuffer(16);
 
-
-	private FloatBuffer getBuffer (float par1, float par2, float par3, float par4) {
-		this.floatBuffer.clear();
-		this.floatBuffer.put(par1).put(par2).put(par3).put(par4);
-		this.floatBuffer.flip();
-		return this.floatBuffer;
-	}
-
 	public void renderEndPortalSurface (double x, double y, double z, TileEntityRendererDispatcher rendererDispatcher) {
-		float f = (float)rendererDispatcher.entityX;
-		float f1 = (float)rendererDispatcher.entityY;
-		float f2 = (float)rendererDispatcher.entityZ;
 		GlStateManager.disableLighting();
 		teleporterRandom.setSeed(31100L);
-		float f3 = 0.75F;
+		GlStateManager.getFloat(2982, MODELVIEW);
+		GlStateManager.getFloat(2983, PROJECTION);
+		double d0 = x * x + y * y + z * z;
+		int i = this.getPasses(d0);
+		float f = this.getOffset();
 
-		for (int i = 0; i < 16; ++i)
+		for (int j = 0; j < i; ++j)
 		{
 			GlStateManager.pushMatrix();
-			float f4 = (float)(16 - i);
-			float f5 = 0.0625F;
-			float f6 = 1.0F / (f4 + 1.0F);
+			float f1 = 2.0F / (float)(18 - j);
 
-			if (i == 0)
+			if (j == 0)
 			{
 				rendererDispatcher.renderEngine.bindTexture(enderPortalEndSkyTextures);
-				f6 = 0.1F;
-				f4 = 65.0F;
-				f5 = 0.125F;
+				f1 = 0.15F;
 				GlStateManager.enableBlend();
 				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			}
 
-			if (i >= 1)
+			if (j >= 1)
 			{
 				rendererDispatcher.renderEngine.bindTexture(endPortalTextures);
 			}
 
-			if (i == 1)
+			if (j == 1)
 			{
 				GlStateManager.enableBlend();
 				GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
-				f5 = 0.5F;
 			}
 
-			float f7 = (float)(-(y + 0.75D));
-			float f8 = f7 + (float)ActiveRenderInfo.getPosition().yCoord;
-			float f9 = f7 + f4 + (float)ActiveRenderInfo.getPosition().yCoord;
-			float f10 = f8 / f9;
-			f10 = (float)(y + 0.75D) + f10;
-			GlStateManager.translate(f, f10, f2);
-			GlStateManager.texGen(GlStateManager.TexGen.S, 9217);
-			GlStateManager.texGen(GlStateManager.TexGen.T, 9217);
-			GlStateManager.texGen(GlStateManager.TexGen.R, 9217);
-			GlStateManager.texGen(GlStateManager.TexGen.Q, 9216);
-			GlStateManager.texGen(GlStateManager.TexGen.S, 9473, this.getBuffer(1.0F, 0.0F, 0.0F, 0.0F));
-			GlStateManager.texGen(GlStateManager.TexGen.T, 9473, this.getBuffer(0.0F, 0.0F, 1.0F, 0.0F));
-			GlStateManager.texGen(GlStateManager.TexGen.R, 9473, this.getBuffer(0.0F, 0.0F, 0.0F, 1.0F));
-			GlStateManager.texGen(GlStateManager.TexGen.Q, 9474, this.getBuffer(0.0F, 1.0F, 0.0F, 0.0F));
+			GlStateManager.texGen(GlStateManager.TexGen.S, 9216);
+			GlStateManager.texGen(GlStateManager.TexGen.T, 9216);
+			GlStateManager.texGen(GlStateManager.TexGen.R, 9216);
+			GlStateManager.texGen(GlStateManager.TexGen.S, 9474, this.getBuffer(1.0F, 0.0F, 0.0F, 0.0F));
+			GlStateManager.texGen(GlStateManager.TexGen.T, 9474, this.getBuffer(0.0F, 1.0F, 0.0F, 0.0F));
+			GlStateManager.texGen(GlStateManager.TexGen.R, 9474, this.getBuffer(0.0F, 0.0F, 1.0F, 0.0F));
 			GlStateManager.enableTexGenCoord(GlStateManager.TexGen.S);
 			GlStateManager.enableTexGenCoord(GlStateManager.TexGen.T);
 			GlStateManager.enableTexGenCoord(GlStateManager.TexGen.R);
-			GlStateManager.enableTexGenCoord(GlStateManager.TexGen.Q);
 			GlStateManager.popMatrix();
 			GlStateManager.matrixMode(5890);
 			GlStateManager.pushMatrix();
 			GlStateManager.loadIdentity();
-			GlStateManager.translate(0.0F, (float)(Minecraft.getSystemTime() % 700000L) / 700000.0F, 0.0F);
-			GlStateManager.scale(f5, f5, f5);
 			GlStateManager.translate(0.5F, 0.5F, 0.0F);
-			GlStateManager.rotate((float)(i * i * 4321 + i * 9) * 2.0F, 0.0F, 0.0F, 1.0F);
-			GlStateManager.translate(-0.5F, -0.5F, 0.0F);
-			GlStateManager.translate(-f, -f2, -f1);
-			f8 = f7 + (float)ActiveRenderInfo.getPosition().yCoord;
-			GlStateManager.translate((float)ActiveRenderInfo.getPosition().xCoord * f4 / f8, (float)ActiveRenderInfo.getPosition().zCoord * f4 / f8, -f1);
+			GlStateManager.scale(0.5F, 0.5F, 1.0F);
+			float f2 = (float)(j + 1);
+			GlStateManager.translate(17.0F / f2, (2.0F + f2 / 1.5F) * ((float)Minecraft.getSystemTime() % 800000.0F / 800000.0F), 0.0F);
+			GlStateManager.rotate((f2 * f2 * 4321.0F + f2 * 9.0F) * 2.0F, 0.0F, 0.0F, 1.0F);
+			GlStateManager.scale(4.5F - f2 / 4.0F, 4.5F - f2 / 4.0F, 1.0F);
+			GlStateManager.multMatrix(PROJECTION);
+			GlStateManager.multMatrix(MODELVIEW);
 			Tessellator tessellator = Tessellator.getInstance();
 			VertexBuffer vertexbuffer = tessellator.getBuffer();
 			vertexbuffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
-			float f11 = (teleporterRandom.nextFloat() * 0.5F + 0.1F) * f6;
-			float f12 = (teleporterRandom.nextFloat() * 0.5F + 0.4F) * f6;
-			float f13 = (teleporterRandom.nextFloat() * 0.5F + 0.5F) * f6;
-			vertexbuffer.pos(x + 0.05D, y + 0.75D, z + 0.05D).color(f11, f12, f13, 1.0F).endVertex();
-			vertexbuffer.pos(x + 0.05D, y + 0.75D, z + 0.95D).color(f11, f12, f13, 1.0F).endVertex();
-			vertexbuffer.pos(x + 0.95D, y + 0.75D, z + 0.95D).color(f11, f12, f13, 1.0F).endVertex();
-			vertexbuffer.pos(x + 0.95D, y + 0.75D, z + 0.05D).color(f11, f12, f13, 1.0F).endVertex();
+			float f3 = (teleporterRandom.nextFloat() * 0.5F + 0.1F) * f1;
+			float f4 = (teleporterRandom.nextFloat() * 0.5F + 0.4F) * f1;
+			float f5 = (teleporterRandom.nextFloat() * 0.5F + 0.5F) * f1;
+
+			vertexbuffer.pos(x, y + (double)f, z + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
+			vertexbuffer.pos(x + 1.0D, y + (double)f, z + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
+			vertexbuffer.pos(x + 1.0D, y + (double)f, z).color(f3, f4, f5, 1.0F).endVertex();
+			vertexbuffer.pos(x, y + (double)f, z).color(f3, f4, f5, 1.0F).endVertex();
+
 			tessellator.draw();
 			GlStateManager.popMatrix();
 			GlStateManager.matrixMode(5888);
@@ -117,7 +98,63 @@ public class RenderEndPortalFrame {
 		GlStateManager.disableTexGenCoord(GlStateManager.TexGen.S);
 		GlStateManager.disableTexGenCoord(GlStateManager.TexGen.T);
 		GlStateManager.disableTexGenCoord(GlStateManager.TexGen.R);
-		GlStateManager.disableTexGenCoord(GlStateManager.TexGen.Q);
 		GlStateManager.enableLighting();
 	}
+	
+	  protected int getPasses(double p_191286_1_)
+	    {
+	        int i;
+
+	        if (p_191286_1_ > 36864.0D)
+	        {
+	            i = 1;
+	        }
+	        else if (p_191286_1_ > 25600.0D)
+	        {
+	            i = 3;
+	        }
+	        else if (p_191286_1_ > 16384.0D)
+	        {
+	            i = 5;
+	        }
+	        else if (p_191286_1_ > 9216.0D)
+	        {
+	            i = 7;
+	        }
+	        else if (p_191286_1_ > 4096.0D)
+	        {
+	            i = 9;
+	        }
+	        else if (p_191286_1_ > 1024.0D)
+	        {
+	            i = 11;
+	        }
+	        else if (p_191286_1_ > 576.0D)
+	        {
+	            i = 13;
+	        }
+	        else if (p_191286_1_ > 256.0D)
+	        {
+	            i = 14;
+	        }
+	        else
+	        {
+	            i = 15;
+	        }
+
+	        return i;
+	    }
+
+	    protected float getOffset()
+	    {
+	        return 0.75F;
+	    }
+
+	    private FloatBuffer getBuffer(float u, float v, float x, float y)
+	    {
+	        this.floatBuffer.clear();
+	        this.floatBuffer.put(u).put(v).put(x).put(y);
+	        this.floatBuffer.flip();
+	        return this.floatBuffer;
+	    }
 }

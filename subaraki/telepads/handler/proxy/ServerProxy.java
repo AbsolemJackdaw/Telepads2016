@@ -2,10 +2,7 @@ package subaraki.telepads.handler.proxy;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import subaraki.telepads.gui.GuiHandler;
-import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.tileentity.TileEntityTelepad;
 
 public class ServerProxy {

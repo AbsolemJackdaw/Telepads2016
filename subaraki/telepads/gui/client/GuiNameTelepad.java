@@ -9,8 +9,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.text.TextFormatting;
-import subaraki.telepads.handler.WorldDataHandler;
 import subaraki.telepads.network.NetworkHandler;
 import subaraki.telepads.network.PacketAddTelepadEntry;
 import subaraki.telepads.tileentity.TileEntityTelepad;
@@ -63,7 +61,7 @@ public class GuiNameTelepad extends GuiScreen {
 		padNameField = new GuiTextField(0, fontRendererObj, posX - (150 / 2), posY - 50, 150, 20);
 		padNameField.setFocused(true);
 
-		String padName = te.getWorld().getBiomeGenForCoords(te.getPos()).getBiomeName();
+		String padName = te.getWorld().getBiome(te.getPos()).getBiomeName();
 
 		if (padNameField != null) {
 			padNameField.setText(padName);
@@ -90,7 +88,7 @@ public class GuiNameTelepad extends GuiScreen {
 	}
 
 	public void sendPacket (String padName) {
-		NetworkHandler.NETWORK.sendToServer(new PacketAddTelepadEntry(mc.thePlayer.getUniqueID(), new TelepadEntry(padNameField.getText(), mc.thePlayer.worldObj.provider.getDimension(), te.getPos(), false, false)));
-		this.mc.thePlayer.closeScreen();
+		NetworkHandler.NETWORK.sendToServer(new PacketAddTelepadEntry(mc.player.getUniqueID(), new TelepadEntry(padNameField.getText(), mc.world.provider.getDimension(), te.getPos(), false, false)));
+		this.mc.player.closeScreen();
 	}
 }

@@ -2,7 +2,6 @@ package subaraki.telepads.mod;
 
 import java.util.Arrays;
 
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -26,7 +25,7 @@ public class Telepads {
 
 	public static final String MODID = "telepads";
 	public static final String NAME = "Telepads";
-	public static final String VERSION = "1.10.2 v1.0.0.2";
+	public static final String VERSION = "1.11 v1.0.0.3";
 	public static final String DEPENDENCY = "required-after:subcommonlib";
 
 	@SidedProxy(clientSide = "subaraki.telepads.handler.proxy.ClientProxy", serverSide = "subaraki.telepads.handler.proxy.ServerProxy")

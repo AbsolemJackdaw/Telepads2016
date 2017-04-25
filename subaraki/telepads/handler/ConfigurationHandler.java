@@ -3,10 +3,6 @@ package subaraki.telepads.handler;
 import java.io.File;
 
 import lib.item.ItemUtil;
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.Configuration;
 

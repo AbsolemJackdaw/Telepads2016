@@ -1,11 +1,8 @@
 package subaraki.telepads.block;
 
-import static lib.block.BlockRegistry.*;
+import static lib.block.BlockRegistry.registerBlock;
 
-import lib.item.ItemRegistry;
 import net.minecraft.block.Block;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import subaraki.telepads.mod.Telepads;
 
 public class TelepadBlocks {
 

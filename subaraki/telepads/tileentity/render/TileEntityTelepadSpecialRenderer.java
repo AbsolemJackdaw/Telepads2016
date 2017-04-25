@@ -1,13 +1,18 @@
 package subaraki.telepads.tileentity.render;
 
+import static net.minecraft.client.renderer.GlStateManager.color;
+import static net.minecraft.client.renderer.GlStateManager.popMatrix;
+import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
+import static net.minecraft.client.renderer.GlStateManager.rotate;
+import static net.minecraft.client.renderer.GlStateManager.scale;
+import static net.minecraft.client.renderer.GlStateManager.translate;
+
 import java.awt.Color;
 
-import net.minecraft.block.BlockPistonBase;
-import net.minecraft.block.BlockPistonExtension;
+import lib.modelloader.ModelHandle;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
-import static net.minecraft.client.renderer.GlStateManager.*;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -17,6 +22,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.tileentity.TileEntityTelepad;
 
 public class TileEntityTelepadSpecialRenderer extends TileEntitySpecialRenderer {
@@ -169,7 +175,7 @@ public class TileEntityTelepadSpecialRenderer extends TileEntitySpecialRenderer 
 		color((float) (colorBase.getRed() / 255.0f), (float) (colorBase.getGreen() / 255.0f), (float) (colorBase.getBlue() / 255.0f));
 		modeltelepad.renderArrows(0.0625f);
 		popMatrix();
-		
+
 		pushMatrix();
 		bindTexture(pads);
 		color((float) (colorFrame.getRed() / 255.0f), (float) (colorFrame.getGreen() / 255.0f), (float) (colorFrame.getBlue() / 255.0f));
@@ -180,12 +186,17 @@ public class TileEntityTelepadSpecialRenderer extends TileEntitySpecialRenderer 
 		//Reset normal
 		rotate(-90, 0, 1, 0);
 		popMatrix();
-		
+
 		pushMatrix();
 		bindTexture(frame);
 		color(1f, 1f, 1f);
 		modeltelepad.renderFrame(0.0625f);
 		popMatrix();
 
+//		pushMatrix();
+//		bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+//		ModelHandle.of(new ResourceLocation(Telepads.MODID,"blocks/telepad")).render(0xffffff);
+//		popMatrix();
+		
 	}
 }

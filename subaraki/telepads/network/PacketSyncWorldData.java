@@ -46,7 +46,7 @@ public class PacketSyncWorldData implements IMessage{
 		public IMessage onMessage(PacketSyncWorldData message, MessageContext ctx) {
 
 			Minecraft.getMinecraft().addScheduledTask(() -> {
-				WorldDataHandler wdh = WorldDataHandler.get(Telepads.proxy.getClientPlayer().worldObj);
+				WorldDataHandler wdh = WorldDataHandler.get(Telepads.proxy.getClientPlayer().world);
 				wdh.copyOverEntries(message.listOfEntries);
 				wdh.markDirty();
 			});

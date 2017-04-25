@@ -1,24 +1,24 @@
 package subaraki.telepads.gui.client;
 
+import static net.minecraft.client.renderer.GlStateManager.color;
+import static net.minecraft.client.renderer.GlStateManager.popMatrix;
+import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import static net.minecraft.client.renderer.GlStateManager.*;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.DimensionType;
 import subaraki.telepads.capability.TelePadDataCapability;
 import subaraki.telepads.capability.TelepadData;
@@ -60,7 +60,7 @@ public class GuiTeleport extends GuiScreen {
 		super();
 		this.te = te;
 		this.player = player;
-		dimension_ID = player.worldObj.provider.getDimension();
+		dimension_ID = player.world.provider.getDimension();
 
 		TelepadData td = player.getCapability(TelePadDataCapability.CAPABILITY, null);
 
@@ -92,7 +92,7 @@ public class GuiTeleport extends GuiScreen {
 			}
 
 			else if (id == EXIT_BUTTON)
-				this.mc.thePlayer.closeScreen(); // closes the screen
+				this.mc.player.closeScreen(); // closes the screen
 
 			else if (id == AREA_LEFT) {
 				if(dimensionsVisited.size() > 1){
@@ -110,10 +110,10 @@ public class GuiTeleport extends GuiScreen {
 
 			else {
 				sendPacket(id);
-				this.mc.thePlayer.closeScreen();
+				te.resetTE();
+				this.mc.player.closeScreen();
 			}
 		}
-		te.resetTE();
 	}
 
 	@Override
@@ -225,7 +225,7 @@ public class GuiTeleport extends GuiScreen {
 
 		if (i == Keyboard.KEY_ESCAPE) {
 			te.resetTE();
-			mc.thePlayer.closeScreen();
+			mc.player.closeScreen();
 		}
 	}
 

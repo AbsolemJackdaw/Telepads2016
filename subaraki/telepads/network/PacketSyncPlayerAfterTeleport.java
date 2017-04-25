@@ -37,8 +37,8 @@ public class PacketSyncPlayerAfterTeleport implements IMessage {
 		@Override
 		public IMessage onMessage(PacketSyncPlayerAfterTeleport message, MessageContext ctx){
 			Minecraft.getMinecraft().addScheduledTask(()->{
-				Minecraft.getMinecraft().thePlayer.readFromNBT(message.tag_basic);
-				Minecraft.getMinecraft().thePlayer.readEntityFromNBT(message.tag_entity);
+				Minecraft.getMinecraft().player.readFromNBT(message.tag_basic);
+				Minecraft.getMinecraft().player.readEntityFromNBT(message.tag_entity);
 			});
 			return null;
 		}

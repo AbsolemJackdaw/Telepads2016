@@ -4,9 +4,6 @@ import java.util.UUID;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -15,8 +12,6 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import subaraki.telepads.capability.TelePadDataCapability;
 import subaraki.telepads.capability.TelepadData;
 import subaraki.telepads.handler.WorldDataHandler;
-import subaraki.telepads.mod.Telepads;
-import subaraki.telepads.tileentity.TileEntityTelepad;
 import subaraki.telepads.utility.TelepadEntry;
 
 public class PacketAddTelepadEntry implements IMessage {
@@ -69,11 +64,11 @@ public class PacketAddTelepadEntry implements IMessage {
 		@Override
 		public IMessage onMessage (PacketAddTelepadEntry packet, MessageContext ctx) {
 
-			((WorldServer)ctx.getServerHandler().playerEntity.worldObj).addScheduledTask(() -> {
-				EntityPlayer player = ctx.getServerHandler().playerEntity.worldObj.getPlayerEntityByUUID(packet.playerUUID);
+			((WorldServer)ctx.getServerHandler().playerEntity.world).addScheduledTask(() -> {
+				EntityPlayer player = ctx.getServerHandler().playerEntity.world.getPlayerEntityByUUID(packet.playerUUID);
 
 				TelepadData td = player.getCapability(TelePadDataCapability.CAPABILITY, null);
-				WorldDataHandler wdh = WorldDataHandler.get(player.worldObj);
+				WorldDataHandler wdh = WorldDataHandler.get(player.world);
 
 				if (td.getEntries().isEmpty()){
 					td.addEntry(packet.entry);

@@ -4,7 +4,6 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
-import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
@@ -16,10 +15,8 @@ import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.stats.IStatStringFormat;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
@@ -32,9 +29,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
 import subaraki.telepads.capability.TelePadDataCapability;
 import subaraki.telepads.capability.TelepadData;
@@ -84,65 +78,66 @@ public class BlockTelepad extends Block{
 	//////////Interaction///////
 
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player,
+			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 
-		if(heldItem != null){
+		ItemStack heldItem = player.getHeldItem(hand);
+
+		if(!heldItem.isEmpty()){
 			Item item = heldItem.getItem();
 			TileEntity te = world.getTileEntity(pos);
 			if(te instanceof TileEntityTelepad){
 				TileEntityTelepad tet = (TileEntityTelepad)te;
-				if(item != null){
-					if(item.equals(TelepadItems.transmitter)){
-						//check for server only. syncs automatically with client. if doing both sides, client setter will make it look jumpy
-						if(!tet.hasDimensionUpgrade() && !world.isRemote){ 
-							tet.addDimensionUpgrade(true);
-							tet.markDirty();
-							world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 3);
-							TelepadEntry entry = WorldDataHandler.get(world).getEntryForLocation(pos, world.provider.getDimension());
-							entry.hasTransmitter = true;
-							WorldDataHandler.get(world).updateEntry(entry);
-						}
-					}
+				if(item.equals(TelepadItems.transmitter)){
 					//check for server only. syncs automatically with client. if doing both sides, client setter will make it look jumpy
-					if(item.equals(TelepadItems.toggler)&& !world.isRemote){
-						if(!tet.hasRedstoneUpgrade()){
-							tet.addRedstoneUpgrade();
-							tet.markDirty();
-							world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 3);
-							this.neighborChanged(state, world, pos, state.getBlock());
-						}
-					}
-
-					if(item.equals(Items.DYE)){
-						int color = EnumDyeColor.byDyeDamage(heldItem.getItemDamage()).getMapColor().colorValue;
-						if(tet.getColorFeet() == tet.COLOR_FEET_BASE)
-							tet.setFeetColor(color);
-						else if(tet.getColorArrow() == tet.COLOR_ARROW_BASE)
-							tet.setArrowColor(color);
+					if(!tet.hasDimensionUpgrade() && !world.isRemote){ 
+						tet.addDimensionUpgrade(true);
 						tet.markDirty();
 						world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 3);
-						if(!player.isCreative())
-							heldItem.stackSize--;
+						TelepadEntry entry = WorldDataHandler.get(world).getEntryForLocation(pos, world.provider.getDimension());
+						entry.hasTransmitter = true;
+						WorldDataHandler.get(world).updateEntry(entry);
 					}
+				}
+				//check for server only. syncs automatically with client. if doing both sides, client setter will make it look jumpy
+				if(item.equals(TelepadItems.toggler)&& !world.isRemote){
+					if(!tet.hasRedstoneUpgrade()){
+						tet.addRedstoneUpgrade();
+						tet.markDirty();
+						world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 3);
+						this.neighborChanged(state, world, pos, state.getBlock(), null);
+					}
+				}
 
-					if(item.equals(Items.WATER_BUCKET)){
-						boolean hasWashed = false;
-						if(tet.getColorFeet() != tet.COLOR_FEET_BASE){
-							wash(tet.getColorFeet(), world, pos);
-							tet.setFeetColor(tet.COLOR_FEET_BASE);
-							hasWashed = true;
-						}
-						if(tet.getColorArrow() != tet.COLOR_ARROW_BASE){
-							wash(tet.getColorArrow(), world, pos);
-							tet.setArrowColor(tet.COLOR_ARROW_BASE);
-							hasWashed=true;
-						}
-						if(!player.isCreative() && hasWashed){
-							world.playSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1, 1, true);
-							player.setHeldItem(hand, new ItemStack(Items.WATER_BUCKET.getContainerItem(), heldItem.stackSize, heldItem.getMetadata()));
-						}
-						return true;
+				if(item.equals(Items.DYE)){
+					int color = EnumDyeColor.byDyeDamage(heldItem.getItemDamage()).getMapColor().colorValue;
+					if(tet.getColorFeet() == tet.COLOR_FEET_BASE)
+						tet.setFeetColor(color);
+					else if(tet.getColorArrow() == tet.COLOR_ARROW_BASE)
+						tet.setArrowColor(color);
+					tet.markDirty();
+					world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 3);
+					if(!player.isCreative())
+						heldItem.shrink(1);
+				}
+
+				if(item.equals(Items.WATER_BUCKET)){
+					boolean hasWashed = false;
+					if(tet.getColorFeet() != tet.COLOR_FEET_BASE){
+						wash(tet.getColorFeet(), world, pos);
+						tet.setFeetColor(tet.COLOR_FEET_BASE);
+						hasWashed = true;
 					}
+					if(tet.getColorArrow() != tet.COLOR_ARROW_BASE){
+						wash(tet.getColorArrow(), world, pos);
+						tet.setArrowColor(tet.COLOR_ARROW_BASE);
+						hasWashed=true;
+					}
+					if(!player.isCreative() && hasWashed){
+						world.playSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1, 1, true);
+						player.setHeldItem(hand, new ItemStack(Items.WATER_BUCKET.getContainerItem(), heldItem.getCount(), heldItem.getMetadata()));
+					}
+					return true;
 				}
 			}
 		}else{
@@ -164,12 +159,12 @@ public class BlockTelepad extends Block{
 						if(entry != null){
 							td.addEntry(entry);
 							if (!world.isRemote)
-								player.addChatMessage(new TextComponentString(TextFormatting.GREEN+"Added " + entry.entryName));
+								player.sendMessage(new TextComponentString(TextFormatting.GREEN+"Added " + entry.entryName));
 						}else
-							player.addChatMessage(new TextComponentString(TextFormatting.RED+ "The Telepad you try to register does not exist in the world save. Cannot add Telepad to your registry."));
+							player.sendMessage(new TextComponentString(TextFormatting.RED+ "The Telepad you try to register does not exist in the world save. Cannot add Telepad to your registry."));
 					}else{
 						if (!world.isRemote)
-							player.addChatMessage(new TextComponentString(TextFormatting.RED+lookingForEntry.entryName+" has already been registered"));
+							player.sendMessage(new TextComponentString(TextFormatting.RED+lookingForEntry.entryName+" has already been registered"));
 					}
 				}
 			}
@@ -185,12 +180,13 @@ public class BlockTelepad extends Block{
 				edc = dye;
 		ItemStack stack = new ItemStack(Items.DYE, 1, edc.getDyeDamage());
 		if(!world.isRemote)
-			world.spawnEntityInWorld(new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), stack));
+			world.spawnEntity(new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), stack));
 	}
 
 	/////////////////////////////REDSTONE////////////////////////////////////////
 	@Override
-	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block) {
+	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos) {
+
 		TileEntity te = world.getTileEntity(pos);
 		TileEntityTelepad tet = null;
 		if(te == null || !(te instanceof TileEntityTelepad))
@@ -276,18 +272,16 @@ public class BlockTelepad extends Block{
 
 		WorldDataHandler wdh = WorldDataHandler.get(world);
 		TelepadEntry entry = wdh.getEntryForLocation(pos, world.provider.getDimension());
-		if(entry != null)
-			if(wdh.contains(entry)){
-				wdh.removeEntry(entry);
-				if(!world.isRemote)
-					dropPad(world, tet, pos);
-				if (tet.hasDimensionUpgrade())
-					world.spawnEntityInWorld(new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(TelepadItems.transmitter, 1)));
-				if (tet.hasRedstoneUpgrade())
-					world.spawnEntityInWorld(new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(TelepadItems.toggler, 1)));
+		if(entry != null && wdh.contains(entry) && !world.isRemote){
+			wdh.removeEntry(entry);
+			dropPad(world, tet, pos);
+			if (tet.hasDimensionUpgrade())
+				world.spawnEntity(new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(TelepadItems.transmitter, 1)));
+			if (tet.hasRedstoneUpgrade())
+				world.spawnEntity(new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(TelepadItems.toggler, 1)));
 
-				return world.setBlockToAir(pos);
-			}
+			return world.setBlockToAir(pos);
+		}
 
 		return super.removedByPlayer(state, world, pos, player, willHarvest);
 	}
@@ -304,8 +298,7 @@ public class BlockTelepad extends Block{
 		stack.setTagCompound(nbt);
 
 		ei.setEntityItemStack(stack);
-		if(!world.isRemote)
-			world.spawnEntityInWorld(ei);
+		world.spawnEntity(ei);
 	}
 
 	///////////////inherited methods////////////////////
@@ -332,7 +325,7 @@ public class BlockTelepad extends Block{
 		return 0;
 	}
 	@Override
-	public boolean isVisuallyOpaque() {
+	public boolean isFullyOpaque(IBlockState state) {
 		return false;
 	}
 	@Override

@@ -5,7 +5,6 @@ import java.util.List;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -13,7 +12,6 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerChangedDimensio
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import subaraki.telepads.capability.TelePadDataCapability;
 import subaraki.telepads.capability.TelepadData;
-import subaraki.telepads.handler.WorldDataHandler;
 import subaraki.telepads.tileentity.TileEntityTelepad;
 import subaraki.telepads.utility.TelepadEntry;
 
@@ -29,7 +27,7 @@ public class PlayerTracker {
 			return;
 
 		TelepadData td = event.getEntityLiving().getCapability(TelePadDataCapability.CAPABILITY, null);
-		TileEntity te = event.getEntityLiving().worldObj.getTileEntity(event.getEntityLiving().getPosition());
+		TileEntity te = event.getEntityLiving().world.getTileEntity(event.getEntityLiving().getPosition());
 		if(te == null || !(te instanceof TileEntityTelepad)){
 			if(td.getCounter() != td.getMaxTime())
 				td.setCounter(td.getMaxTime());
@@ -49,7 +47,7 @@ public class PlayerTracker {
 	@SubscribeEvent
 	public void onEntityJoinWorld (PlayerLoggedInEvent event) {
 		
-		if (event.player instanceof EntityPlayer && !event.player.worldObj.isRemote){
+		if (event.player instanceof EntityPlayer && !event.player.world.isRemote){
 			TelepadData data = event.player.getCapability(TelePadDataCapability.CAPABILITY, null);
 			if(data != null)
 				data.sync();
@@ -58,7 +56,7 @@ public class PlayerTracker {
 	
 	@SubscribeEvent
 	public void onDimensionChange(PlayerChangedDimensionEvent event){
-		if (event.player instanceof EntityPlayer && !event.player.worldObj.isRemote){
+		if (event.player instanceof EntityPlayer && !event.player.world.isRemote){
 			TelepadData data = event.player.getCapability(TelePadDataCapability.CAPABILITY, null);
 			if(data != null)
 				data.sync();
