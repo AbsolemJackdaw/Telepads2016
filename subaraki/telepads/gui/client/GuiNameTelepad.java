@@ -42,8 +42,8 @@ public class GuiNameTelepad extends GuiScreen {
 			String enter = I18n.format("enter.to.confirm");
 			String nameYourPad = I18n.format("name.your.telepad")+ " : " + padNameField.getText();
 
-			fontRendererObj.drawStringWithShadow(enter, posX - fontRendererObj.getStringWidth(enter)/2, posY, 0xffffff);
-			fontRendererObj.drawStringWithShadow(nameYourPad , posX - fontRendererObj.getStringWidth(nameYourPad)/2, posY - 20, 0xff0000);
+			fontRenderer.drawStringWithShadow(enter, posX - fontRenderer.getStringWidth(enter)/2, posY, 0xffffff);
+			fontRenderer.drawStringWithShadow(nameYourPad , posX - fontRenderer.getStringWidth(nameYourPad)/2, posY - 20, 0xff0000);
 		}
 		finally {
 			if (padNameField != null)
@@ -58,7 +58,7 @@ public class GuiNameTelepad extends GuiScreen {
 		int posY = (this.height) / 2;
 		this.buttonList.clear();
 
-		padNameField = new GuiTextField(0, fontRendererObj, posX - (150 / 2), posY - 50, 150, 20);
+		padNameField = new GuiTextField(0, fontRenderer, posX - (150 / 2), posY - 50, 150, 20);
 		padNameField.setFocused(true);
 
 		String padName = te.getWorld().getBiome(te.getPos()).getBiomeName();

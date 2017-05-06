@@ -19,6 +19,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
+import subaraki.telepads.block.TelepadBlocks;
 import subaraki.telepads.capability.TelePadDataCapability;
 import subaraki.telepads.capability.TelepadData;
 import subaraki.telepads.gui.GuiHandler;
@@ -160,11 +161,9 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 	 * using the gui. And causes a block update.
 	 */
 	public void resetTE () {
-
 		isStandingOnPlatform = false;
 		markDirty();
-		world.notifyBlockUpdate(pos, world.getBlockState(getPos()), world.getBlockState(getPos()), 3);
-
+		world.notifyBlockUpdate(pos, world.getBlockState(getPos()), TelepadBlocks.blockTelepad.getDefaultState(), 3);
 	}
 
 	private void activateTelepadGui (TelepadData td){
@@ -176,7 +175,7 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 				td.sync();
 				FMLNetworkHandler.openGui(td.getPlayer(), Telepads.instance, GuiHandler.TELEPORT, world, getPos().getX(), getPos().getY(), getPos().getZ());
 			}
-			markDirty();
+			this.markDirty();
 		}
 	}
 
@@ -239,5 +238,9 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate)
 	{
 		return oldState.getBlock() != newSate.getBlock();
+	}
+	
+	public boolean isUsableByPlayer(EntityPlayer player){
+        return this.world.getTileEntity(this.pos) != this ? false : player.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
 	}
 }

@@ -62,8 +62,8 @@ public class PacketRemoveTelepadEntry implements IMessage {
 
 		@Override
 		public IMessage onMessage (PacketRemoveTelepadEntry packet, MessageContext ctx) {
-			((WorldServer)ctx.getServerHandler().playerEntity.world).addScheduledTask(() -> {
-				EntityPlayer player = ctx.getServerHandler().playerEntity.world.getPlayerEntityByUUID(packet.playerUUID);
+			((WorldServer)ctx.getServerHandler().player.world).addScheduledTask(() -> {
+				EntityPlayer player = ctx.getServerHandler().player.world.getPlayerEntityByUUID(packet.playerUUID);
 				TelepadData td = player.getCapability(TelePadDataCapability.CAPABILITY, null);
 				td.removeEntry(packet.entry);
 				td.removeEventualQueuedForRemovalEntries();

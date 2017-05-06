@@ -71,9 +71,9 @@ public class GuiRemoveTelepad extends GuiScreen {
 
 		String s = I18n.format("cannot.find.remove");
 
-		int lenght = this.fontRendererObj.getStringWidth(s);
+		int lenght = this.fontRenderer.getStringWidth(s);
 
-		fontRendererObj.drawStringWithShadow(s, posX - lenght/2, posY - 30, 0xffffff);
+		fontRenderer.drawStringWithShadow(s, posX - lenght/2, posY - 30, 0xffffff);
 	}
 
 	@Override

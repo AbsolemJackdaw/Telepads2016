@@ -64,8 +64,8 @@ public class PacketAddTelepadEntry implements IMessage {
 		@Override
 		public IMessage onMessage (PacketAddTelepadEntry packet, MessageContext ctx) {
 
-			((WorldServer)ctx.getServerHandler().playerEntity.world).addScheduledTask(() -> {
-				EntityPlayer player = ctx.getServerHandler().playerEntity.world.getPlayerEntityByUUID(packet.playerUUID);
+			((WorldServer)ctx.getServerHandler().player.world).addScheduledTask(() -> {
+				EntityPlayer player = ctx.getServerHandler().player.world.getPlayerEntityByUUID(packet.playerUUID);
 
 				TelepadData td = player.getCapability(TelePadDataCapability.CAPABILITY, null);
 				WorldDataHandler wdh = WorldDataHandler.get(player.world);

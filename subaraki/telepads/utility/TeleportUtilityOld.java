@@ -24,7 +24,7 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToAccessFieldExc
  * 
  * 
  * */
-public class TeleportUtility
+public class TeleportUtilityOld
 {
 
 	public static void teleportEntityTo(Entity entity, BlockPos pos, float yaw, float pitch)

@@ -8,7 +8,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -17,7 +16,7 @@ import subaraki.telepads.capability.TelepadData;
 import subaraki.telepads.handler.WorldDataHandler;
 import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.utility.TelepadEntry;
-import subaraki.telepads.utility.TeleportUtility;
+import subaraki.telepads.utility.masa.Teleport;
 
 public class PacketTeleport implements IMessage {
 
@@ -75,9 +74,10 @@ public class PacketTeleport implements IMessage {
 
 		@Override
 		public IMessage onMessage (PacketTeleport packet, MessageContext ctx) {
-			((WorldServer)ctx.getServerHandler().playerEntity.world).addScheduledTask(() -> {
+			((WorldServer)ctx.getServerHandler().player.world).addScheduledTask(() -> {
 
-				EntityPlayer player = ctx.getServerHandler().playerEntity;
+				
+				EntityPlayer player = ctx.getServerHandler().player;
 				WorldDataHandler wdh = WorldDataHandler.get(player.world);
 
 				TelepadData td = player.getCapability(TelePadDataCapability.CAPABILITY, null);
@@ -85,17 +85,17 @@ public class PacketTeleport implements IMessage {
 
 				BlockPos goTo = packet.goTo.position.up();
 				int goToDimensionid = packet.goTo.dimensionID;
-				
+
 				if (packet.goTo.dimensionID == player.dimension) {
 					if (packet.force) {
-						TeleportUtility.teleportEntityTo(player, goTo, player.rotationYaw, player.rotationPitch);
+						Teleport.teleportEntityInsideSameDimension(player, goTo);
 						return;
 					}
 
 					if(wdh.contains(packet.goTo)){
 						if (!packet.goTo.isPowered) {
 							if (goToDimensionid == player.dimension)
-								TeleportUtility.teleportEntityTo(player, goTo, player.rotationYaw, player.rotationPitch);
+								Teleport.teleportEntityInsideSameDimension(player, goTo);
 						}
 						else
 							player.sendMessage(new TextComponentString(TextFormatting.ITALIC+""+TextFormatting.DARK_RED+"This pad was powered off"));
@@ -107,29 +107,19 @@ public class PacketTeleport implements IMessage {
 				}
 				else {
 					if (packet.force) {
-						TeleportUtility.changeToDimension(player, goTo, goToDimensionid, FMLCommonHandler.instance().getMinecraftServerInstance());
+						Teleport.teleportEntityToDimension(player, goTo, goToDimensionid);
 						return;
 					}
 					if(wdh.contains(packet.goTo))
 						if (!packet.goTo.isPowered) 
-							TeleportUtility.changeToDimension(player, goTo, goToDimensionid, FMLCommonHandler.instance().getMinecraftServerInstance());
+							Teleport.teleportEntityToDimension(player, goTo, goToDimensionid);
 						else
 							player.sendMessage(new TextComponentString(TextFormatting.ITALIC+""+TextFormatting.DARK_RED+"This pad was powered off"));
 					else
 						removePad(player, packet.goTo);
 				}
-				
-				syncUpClientWithServerHotFix((EntityPlayerMP) player);
 			});
 			return null;
-		}
-
-		private void syncUpClientWithServerHotFix(EntityPlayerMP player) {
-			NBTTagCompound tag_basic = new NBTTagCompound();
-			player.writeToNBT(tag_basic);
-			NBTTagCompound tag_entity = new NBTTagCompound();
-			player.writeToNBT(tag_entity);
-			NetworkHandler.NETWORK.sendTo(new PacketSyncPlayerAfterTeleport(tag_basic, tag_entity), player);			
 		}
 
 		private static void removePad (EntityPlayer player,  TelepadEntry entry) {
