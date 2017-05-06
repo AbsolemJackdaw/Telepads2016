@@ -92,8 +92,7 @@ public class BlockTelepad extends Block{
 					//check for server only. syncs automatically with client. if doing both sides, client setter will make it look jumpy
 					if(!tet.hasDimensionUpgrade() && !world.isRemote){ 
 						tet.addDimensionUpgrade(true);
-						tet.markDirty();
-						world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 3);
+						world.notifyBlockUpdate(pos, world.getBlockState(pos), getDefaultState(), 3);
 						TelepadEntry entry = WorldDataHandler.get(world).getEntryForLocation(pos, world.provider.getDimension());
 						entry.hasTransmitter = true;
 						WorldDataHandler.get(world).updateEntry(entry);
@@ -103,8 +102,7 @@ public class BlockTelepad extends Block{
 				if(item.equals(TelepadItems.toggler)&& !world.isRemote){
 					if(!tet.hasRedstoneUpgrade()){
 						tet.addRedstoneUpgrade();
-						tet.markDirty();
-						world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 3);
+						world.notifyBlockUpdate(pos, world.getBlockState(pos), getDefaultState(), 3);
 						this.neighborChanged(state, world, pos, state.getBlock(), null);
 					}
 				}

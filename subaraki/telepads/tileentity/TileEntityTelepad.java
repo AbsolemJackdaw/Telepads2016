@@ -18,7 +18,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
 import subaraki.telepads.block.TelepadBlocks;
 import subaraki.telepads.capability.TelePadDataCapability;
 import subaraki.telepads.capability.TelepadData;
@@ -112,46 +111,55 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 
 	@Override
 	public void update() {
+
 		if(isPowered)
 			return;
 
 		Telepads.proxy.createTelepadParticleEffect(getPos(), isStandingOnPlatform);
 
-		//if(aabb == null)
-		aabb = new AxisAlignedBB(getPos()).expand(0,-0.5,0);
+		if(!world.isRemote)
+		{
 
-		List<EntityPlayer> playersInRange = world.getEntitiesWithinAABB(EntityPlayer.class, aabb);
+			AxisAlignedBB aabb = new AxisAlignedBB(getPos());
+			List<EntityPlayer> list = world.getEntitiesWithinAABB(EntityPlayer.class, aabb);
 
-		if(playersInRange.isEmpty() && isStandingOnPlatform){
-			resetTE();
-			return;
-		}
+			if(!list.isEmpty())
+			{
 
-		for(EntityPlayer playerInAabb : playersInRange){
-			isStandingOnPlatform = true;
-			TelepadData td = playerInAabb.getCapability(TelePadDataCapability.CAPABILITY, null);
-			if(td.getCounter() > 0 && !td.isInTeleportGui()){
-				td.counter--;
-			}else{
+				isStandingOnPlatform = true;
 
-				if(world.provider.getDimension() == 1 && ConfigurationHandler.instance.allowDragonBlocking){
-					for (Object o : world.loadedEntityList)
-						if (o instanceof EntityDragon){
-							td.setCounter(td.getMaxTime());
-							if(!world.isRemote)
-								playerInAabb.sendMessage(new TextComponentString(TextFormatting.DARK_PURPLE+""+TextFormatting.ITALIC+ I18n.format("dragon.obstructs")));
-							break;
-						}
-					if(td.getCounter() <= 0){ //timer gets reset when the dragon is found
-						td.setCounter(td.getMaxTime());
-						activateTelepadGui(td);
-						td.setInTeleportGui(true);
+				for(EntityPlayer standing : list)
+				{
+					TelepadData playersave = standing.getCapability(TelePadDataCapability.CAPABILITY, null);
+
+					if(playersave.getCounter() > 0 && !playersave.isInTeleportGui())
+					{
+						playersave.counter--;
 					}
-				}else{
-					td.setCounter(td.getMaxTime());
-					activateTelepadGui(td);
-					td.setInTeleportGui(true);
+
+					else if (playersave.getCounter() == 0 && !playersave.isInTeleportGui())
+					{
+						if(world.provider.getDimension() == 1 && ConfigurationHandler.instance.allowDragonBlocking)
+						{
+							for (Object o : world.loadedEntityList)
+								if (o instanceof EntityDragon){
+									playersave.setCounter(playersave.getMaxTime());
+									standing.sendMessage(new TextComponentString(TextFormatting.DARK_PURPLE+""+TextFormatting.ITALIC+ I18n.format("dragon.obstructs")));
+									return;
+								}
+						}
+						//if no dragon is found, or dimension != the end, you end up here
+						playersave.setInTeleportGui(true);
+						playersave.setCounter(playersave.getMaxTime());
+						activateTelepadGui(playersave);
+					}
 				}
+			}
+
+			else
+			{
+				//reset
+				isStandingOnPlatform = false;
 			}
 		}
 	}
@@ -162,20 +170,17 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 	 */
 	public void resetTE () {
 		isStandingOnPlatform = false;
-		markDirty();
 		world.notifyBlockUpdate(pos, world.getBlockState(getPos()), TelepadBlocks.blockTelepad.getDefaultState(), 3);
 	}
 
 	private void activateTelepadGui (TelepadData td){
-		if (!td.isInTeleportGui() && !(td.getPlayer().openContainer instanceof ContainerTelepad)) {
-			if(!world.isRemote){
-				WorldDataHandler.get(world).syncClient();
-				td.removeEventualQueuedForRemovalEntries();
-				td.syncPoweredWithWorldData(WorldDataHandler.get(world));
-				td.sync();
-				FMLNetworkHandler.openGui(td.getPlayer(), Telepads.instance, GuiHandler.TELEPORT, world, getPos().getX(), getPos().getY(), getPos().getZ());
-			}
-			this.markDirty();
+		if (!(td.getPlayer().openContainer instanceof ContainerTelepad)) 
+		{
+			WorldDataHandler.get(world).syncClient();
+			td.removeEventualQueuedForRemovalEntries();
+			td.syncPoweredWithWorldData(WorldDataHandler.get(world));
+			td.sync();
+			td.getPlayer().openGui(Telepads.instance, GuiHandler.TELEPORT, world, getPos().getX(), getPos().getY(), getPos().getZ());
 		}
 	}
 
@@ -239,8 +244,8 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 	{
 		return oldState.getBlock() != newSate.getBlock();
 	}
-	
+
 	public boolean isUsableByPlayer(EntityPlayer player){
-        return this.world.getTileEntity(this.pos) != this ? false : player.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
+		return this.world.getTileEntity(this.pos) != this ? false : player.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
 	}
 }

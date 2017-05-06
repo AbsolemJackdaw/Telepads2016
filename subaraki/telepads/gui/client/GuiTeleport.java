@@ -1,22 +1,15 @@
 package subaraki.telepads.gui.client;
 
-import static net.minecraft.client.renderer.GlStateManager.color;
-import static net.minecraft.client.renderer.GlStateManager.popMatrix;
-import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import org.lwjgl.input.Keyboard;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
+import static net.minecraft.client.renderer.GlStateManager.*;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
@@ -25,15 +18,13 @@ import subaraki.telepads.capability.TelePadDataCapability;
 import subaraki.telepads.capability.TelepadData;
 import subaraki.telepads.gui.server.ContainerTelepad;
 import subaraki.telepads.handler.WorldDataHandler;
-import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.network.NetworkHandler;
 import subaraki.telepads.network.PacketTeleport;
 import subaraki.telepads.tileentity.TileEntityTelepad;
 import subaraki.telepads.utility.TelepadEntry;
 
-public class GuiTeleport extends GuiContainer {
+public class GuiTeleport extends GuiContainer{
 
-	public EntityPlayer player;
 	public TileEntityTelepad te;
 
 	public static final int EXIT_BUTTON = 4000;
@@ -62,7 +53,6 @@ public class GuiTeleport extends GuiContainer {
 	public GuiTeleport(EntityPlayer player, TileEntityTelepad te) {
 		super(new ContainerTelepad(te));
 		this.te = te;
-		this.player = player;
 		dimension_ID = player.world.provider.getDimension();
 
 		TelepadData td = player.getCapability(TelePadDataCapability.CAPABILITY, null);
@@ -81,54 +71,39 @@ public class GuiTeleport extends GuiContainer {
 	@Override
 	public void actionPerformed (GuiButton button) {
 
-		if (player != null ){
-			int id = button.id;
+		int id = button.id;
 
-			if (id == SCROLL) {
-				if(pageEntries != null && !pageEntries.isEmpty()){
-					scroll_index++;
-					if(scroll_index > pageEntries.size()/15)
-						scroll_index = 0;
-				}
+		if (id == EXIT_BUTTON)
+			closeScreen();
 
-				drawButtonsOnScreen(scroll_index);
+		else if (id == SCROLL) {
+			if(pageEntries != null && !pageEntries.isEmpty()){
+				scroll_index++;
+				if(scroll_index > pageEntries.size()/15)
+					scroll_index = 0;
 			}
 
-			else if (id == EXIT_BUTTON)
-				this.mc.player.closeScreen(); // closes the screen
+			drawButtonsOnScreen(scroll_index);
+		}
 
-			else if (id == AREA_LEFT) {
-				if(dimensionsVisited.size() > 1){
-					tuner_counter--;
-					drawButtonsOnScreen(0);
-				}
-			}
-
-			else if (id == AREA_RIGHT) {
-				if(dimensionsVisited.size() > 1){
-					tuner_counter++;
-					drawButtonsOnScreen(0);
-				}
-			}
-
-			else {
-				sendPacket(id);
-				te.resetTE();
+		else if (id == AREA_LEFT) {
+			if(dimensionsVisited.size() > 1){
+				tuner_counter--;
+				drawButtonsOnScreen(0);		
 			}
 		}
-	}
 
-	@Override
-	public boolean doesGuiPauseGame () {
-		return false;
-	}
+		else if (id == AREA_RIGHT) {
+			if(dimensionsVisited.size() > 1){
+				tuner_counter++;
+				drawButtonsOnScreen(0);		
+			}
+		}
 
-	private float backgroundScroll = 0;
-	private float backgroundSideScroll = 0;
-
-	@Override
-	public void drawBackground (int par1) {
-
+		else {
+			sendPacket(id);
+			te.resetTE();
+		}
 	}
 
 	@Override
@@ -163,6 +138,7 @@ public class GuiTeleport extends GuiContainer {
 			else 
 				fontRenderer.drawStringWithShadow("No%Dim- Error : Hz " + dimension_ID, stringX + offset, y+3, 0xffffff);
 		}
+
 	}
 
 	public void drawButtonsOnScreen (int scroll_page) {
@@ -196,7 +172,7 @@ public class GuiTeleport extends GuiContainer {
 
 	@Override
 	public void initGui () {
-
+		super.initGui();
 		if(xPosition != width/2)
 			xPosition = width/2;
 		if(yPosition != height/2)
@@ -205,29 +181,14 @@ public class GuiTeleport extends GuiContainer {
 		drawButtonsOnScreen(0);
 	}
 
-	@Override
-	protected void keyTyped (char c, int i) throws IOException {
-
-		super.keyTyped(c, i);
-
-		if (i == Keyboard.KEY_ESCAPE) {
-			te.resetTE();
-			mc.player.closeScreen();
-		}
-	}
-
 	public void sendPacket (int id) {
-
-		if (player == null)
-			return;
-
-		this.mc.player.closeScreen();
-		TelepadData td = player.getCapability(TelePadDataCapability.CAPABILITY, null);
-		NetworkHandler.NETWORK.sendToServer(new PacketTeleport(player.getPosition(), td.getEntries().get(id), false));
+		closeScreen();
+		TelepadData td = mc.player.getCapability(TelePadDataCapability.CAPABILITY, null);
+		NetworkHandler.NETWORK.sendToServer(new PacketTeleport( mc.player.getPosition(), td.getEntries().get(id), false));
 	}
 
 	private void fillEntries(){
-		TelepadData td = player.getCapability(TelePadDataCapability.CAPABILITY, null);
+		TelepadData td =  mc.player.getCapability(TelePadDataCapability.CAPABILITY, null);
 
 		int classificationID = 0;
 
@@ -239,7 +200,8 @@ public class GuiTeleport extends GuiContainer {
 		}
 	}
 
-	private void makePage (int scroll_page) {
+	private void makePage (int scroll_page) 
+	{
 
 		int entry = 0;
 
@@ -277,27 +239,35 @@ public class GuiTeleport extends GuiContainer {
 		}
 	}
 
+	private float backgroundScroll = 0;
+	private float backgroundSideScroll = 0;
+
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float arg0, int arg1, int arg2) {
-		
 		backgroundScroll += 1f;
 		backgroundSideScroll += 0.01f;
 		float scrollSpeed = backgroundScroll + 2;
 
 		pushMatrix();
-		GlStateManager.enableBlend();
+
+		enableBlend();
+
 		color(0.2f, 0.6f, 1f, backgroundSideScroll < 0.6f ? backgroundSideScroll : 0.6f);
 		renderEngine.bindTexture(enderPortalEndSkyTextures);
 		drawTexturedModalRect(0, 0, -(int) scrollSpeed * 2, (int) backgroundScroll * 2, width, height);
 		color(1, 1, 1, 1);
-		
+
 		color(0.2f, 0.6f, 1f, backgroundSideScroll < 0.75f ? backgroundSideScroll : 0.75f);
 		renderEngine.bindTexture(endPortalTextures);
 		drawTexturedModalRect(0, 0, (int) scrollSpeed * 2, (int) backgroundScroll*2, width, height);
 		color(1, 1, 1, 1);
-		GlStateManager.disableBlend();
-		popMatrix();
 
-		
+		disableBlend();
+
+		popMatrix();
+	}
+
+	private void closeScreen(){
+		this.mc.player.closeScreen();
 	}
 }
