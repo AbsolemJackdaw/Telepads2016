@@ -9,7 +9,6 @@ import static net.minecraft.client.renderer.GlStateManager.translate;
 
 import java.awt.Color;
 
-import lib.modelloader.ModelHandle;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
@@ -22,7 +21,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.tileentity.TileEntityTelepad;
 
 public class TileEntityTelepadSpecialRenderer extends TileEntitySpecialRenderer {
