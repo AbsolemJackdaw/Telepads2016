@@ -28,7 +28,7 @@ public class Telepads {
 
 	public static final String MODID = "telepads";
 	public static final String NAME = "Telepads";
-	public static final String VERSION = "1.11 v1.0.1.2";
+	public static final String VERSION = "1.11.2-1.0.2.0";
 	public static final String DEPENDENCY = "required-after:subcommonlib";
 
 	@SidedProxy(clientSide = "subaraki.telepads.handler.proxy.ClientProxy", serverSide = "subaraki.telepads.handler.proxy.ServerProxy")
@@ -70,5 +70,7 @@ public class Telepads {
 		new GuiHandler();
 
 		new WorldDataHandler.WorldDataHandlerSaveEvent();
+		
+		new subaraki.telepads.handler.EventHandler();
 	}
 }
