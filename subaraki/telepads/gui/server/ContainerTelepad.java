@@ -11,8 +11,11 @@ public class ContainerTelepad extends Container {
 		this.pad = pad;
 	}
 	
+	public ContainerTelepad() {
+	}
+	
 	@Override
 	public boolean canInteractWith(EntityPlayer playerIn) {
-		return pad.isUsableByPlayer(playerIn);
+		return pad == null ? true : pad.isUsableByPlayer(playerIn);
 	}
 }

@@ -1,25 +1,35 @@
 package subaraki.telepads.gui.client;
 
+import static net.minecraft.client.renderer.GlStateManager.color;
+import static net.minecraft.client.renderer.GlStateManager.disableBlend;
+import static net.minecraft.client.renderer.GlStateManager.enableBlend;
+import static net.minecraft.client.renderer.GlStateManager.popMatrix;
+import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
+
 import com.mojang.realmsclient.gui.ChatFormatting;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import subaraki.telepads.capability.TelePadDataCapability;
+import subaraki.telepads.gui.server.ContainerTelepad;
 import subaraki.telepads.network.NetworkHandler;
 import subaraki.telepads.network.PacketRemoveTelepadEntry;
 import subaraki.telepads.network.PacketTeleport;
 import subaraki.telepads.utility.TelepadEntry;
 
-public class GuiRemoveTelepad extends GuiScreen {
+public class GuiRemoveTelepad extends GuiContainer {
 
 	private EntityPlayer player;
 	private TelepadEntry entryToRemove;
 
 	public GuiRemoveTelepad(EntityPlayer player) {
-		super();
+		super(new ContainerTelepad());
 		this.player = player;
 
 		entryToRemove = null;
@@ -88,5 +98,36 @@ public class GuiRemoveTelepad extends GuiScreen {
 
 		this.buttonList.add(new GuiButton(0, posX - 50, posY - 12, 100, 20, ChatFormatting.RED + I18n.format("button.forget")));
 		this.buttonList.add(new GuiButton(1, posX - 50, posY + 12, 100, 20, I18n.format("button.teleport")));
+	}
+
+	private float backgroundScroll = 0;
+	private float backgroundSideScroll = 0;
+	private TextureManager renderEngine = Minecraft.getMinecraft().renderEngine;
+	private static final ResourceLocation enderPortalEndSkyTextures = new ResourceLocation("textures/environment/end_sky.png");
+	private static final ResourceLocation endPortalTextures = new ResourceLocation("textures/entity/end_portal.png");
+
+	@Override
+	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+		backgroundScroll += 1f;
+		backgroundSideScroll += 0.01f;
+		float scrollSpeed = backgroundScroll + 2;
+
+		pushMatrix();
+
+		enableBlend();
+
+		color(0.2f, 0.6f, 1f, 0.6f);
+		renderEngine.bindTexture(enderPortalEndSkyTextures);
+		drawTexturedModalRect(0, 0, -(int) scrollSpeed * 2, (int) backgroundScroll * 2, width, height);
+		color(1, 1, 1, 1);
+
+		color(0.2f, 0.6f, 1f, 0.75f);
+		renderEngine.bindTexture(endPortalTextures);
+		drawTexturedModalRect(0, 0, (int) scrollSpeed * 2, (int) backgroundScroll*2, width, height);
+		color(1, 1, 1, 1);
+
+		disableBlend();
+
+		popMatrix();
 	}
 }

@@ -107,14 +107,13 @@ public class GuiTeleport extends GuiContainer{
 
 		else {
 			sendPacket(id);
-			te.resetTE();
+			te.setPlatform(false);
 		}
 	}
 
 	@Override
 	public void drawScreen (int par1, int par2, float par3) {
 
-		this.drawBackground(par1);
 		super.drawScreen(par1, par2, par3);
 
 		int offset = 60;

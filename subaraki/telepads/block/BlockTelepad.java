@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -21,6 +22,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -341,5 +343,35 @@ public class BlockTelepad extends Block{
 	@Override
 	public float getExplosionResistance(World world, BlockPos pos, Entity exploder, Explosion explosion) {
 		return Float.MAX_VALUE;
+	}
+	
+	@Override
+	public void randomDisplayTick(IBlockState stateIn, World world, BlockPos pos, Random rand) {
+	
+		TileEntity te = world.getTileEntity(pos);
+
+		if(te == null || !(te instanceof TileEntityTelepad))
+			return;
+		
+		int maxParticleCount = (((TileEntityTelepad)te).isStandingOnPlatform()) ? 15 : 1;
+		
+		for (int particleCount = 0; particleCount < maxParticleCount; ++particleCount) {
+
+			double posX = pos.getX() + 0.5f;
+			double posY = pos.getY() + (rand.nextFloat() * 1.5f);
+			double posZ = pos.getZ() + 0.5f;
+			double velocityX = 0.0D;
+			double volocityY = 0.0D;
+			double velocityZ = 0.0D;
+			int velocityXOffset = (rand.nextInt(2) * 2) - 1;
+			int velocityZOffset = (rand.nextInt(2) * 2) - 1;
+
+			velocityX = (rand.nextFloat() - 0.5D) * 0.125D;
+			volocityY = (rand.nextFloat() - 0.5D) * 0.125D;
+			velocityZ = (rand.nextFloat() - 0.5D) * 0.125D;
+			velocityX = rand.nextFloat() * 1.0F * velocityXOffset;
+			velocityZ = rand.nextFloat() * 1.0F * velocityZOffset;
+			world.spawnParticle(EnumParticleTypes.PORTAL, posX, posY, posZ, velocityX, volocityY, velocityZ);
+		}
 	}
 }

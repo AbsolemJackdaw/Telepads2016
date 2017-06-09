@@ -25,6 +25,11 @@ public class GuiHandler implements IGuiHandler {
 
 	@Override
 	public Object getServerGuiElement (int ID, EntityPlayer player, World world, int x, int y, int z) {
+		//PacketTeleport sends a packet with xyz 0 for opening the remove gui
+		if(x == 0 && y == 0 && z == 0)
+		{
+			return new ContainerTelepad();
+		}
 
 		TileEntity te = world.getTileEntity(new BlockPos(x, y, z));
 
@@ -37,12 +42,16 @@ public class GuiHandler implements IGuiHandler {
 				return null;
 			}
 		}
-
 		return null;
 	}
 
 	@Override
 	public Object getClientGuiElement (int ID, EntityPlayer player, World world, int x, int y, int z) {
+		//PacketTeleport sends a packet with xyz 0 for opening the remove gui
+		if( x == 0 && y == 0 && z == 0)
+		{
+			return new GuiRemoveTelepad(player);
+		}
 
 		TileEntity te = world.getTileEntity(new BlockPos(x, y, z));
 
@@ -53,8 +62,6 @@ public class GuiHandler implements IGuiHandler {
 				return new GuiTeleport(player, (TileEntityTelepad) te);
 			case NAME_TELEPAD:
 				return new GuiNameTelepad(player, (TileEntityTelepad) te);
-			case REMOVE_TELEPAD:
-				return new GuiRemoveTelepad(player);
 			default : 
 				return null;
 			}

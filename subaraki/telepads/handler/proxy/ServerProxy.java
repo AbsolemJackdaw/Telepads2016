@@ -9,10 +9,6 @@ public class ServerProxy {
 
 	public void registerRenders(){};
 	
-	public void openRemovalGui(EntityPlayer player){};
-	
-	public void createTelepadParticleEffect(BlockPos pos, boolean isStandingOnPlatform){};
-	
 	public EntityPlayer getClientPlayer(){return null;};
 	
 	public void registerTileEntityAndRender(){

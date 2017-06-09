@@ -92,6 +92,7 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 		this.colorBase = compound.getInteger("colorBase");
 		this.colorFrame = compound.getInteger("colorFrame");
 		this.upgradeRotation = compound.getInteger("upgradeRotation");
+		isStandingOnPlatform = compound.getBoolean("standingon");
 
 	}
 
@@ -105,6 +106,7 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 		compound.setInteger("colorBase", this.colorBase);
 		compound.setInteger("colorFrame", this.colorFrame);
 		compound.setInteger("upgradeRotation", upgradeRotation);
+		compound.setBoolean("standingon", isStandingOnPlatform);
 		return compound;
 	}
 
@@ -115,8 +117,6 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 		if(isPowered)
 			return;
 
-		Telepads.proxy.createTelepadParticleEffect(getPos(), isStandingOnPlatform);
-
 		if(!world.isRemote)
 		{
 
@@ -126,8 +126,8 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 			if(!list.isEmpty())
 			{
 
-				isStandingOnPlatform = true;
-
+				setPlatform(true);
+				
 				for(EntityPlayer standing : list)
 				{
 					TelepadData playersave = standing.getCapability(TelePadDataCapability.CAPABILITY, null);
@@ -158,8 +158,7 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 
 			else
 			{
-				//reset
-				isStandingOnPlatform = false;
+				setPlatform(false);
 			}
 		}
 	}
@@ -168,8 +167,8 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 	 * Resets the count down of the pad, sets that there is no player on the pad, and no player
 	 * using the gui. And causes a block update.
 	 */
-	public void resetTE () {
-		isStandingOnPlatform = false;
+	public void setPlatform (boolean onPlatform) {
+		isStandingOnPlatform = onPlatform;
 		world.notifyBlockUpdate(pos, world.getBlockState(getPos()), TelepadBlocks.blockTelepad.getDefaultState(), 3);
 	}
 
@@ -247,5 +246,9 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 
 	public boolean isUsableByPlayer(EntityPlayer player){
 		return this.world.getTileEntity(this.pos) != this ? false : player.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
+	}
+	
+	public boolean isStandingOnPlatform() {
+		return isStandingOnPlatform;
 	}
 }

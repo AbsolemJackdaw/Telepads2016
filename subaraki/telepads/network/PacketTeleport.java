@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import subaraki.telepads.capability.TelePadDataCapability;
 import subaraki.telepads.capability.TelepadData;
+import subaraki.telepads.gui.GuiHandler;
 import subaraki.telepads.handler.WorldDataHandler;
 import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.utility.TelepadEntry;
@@ -125,7 +126,7 @@ public class PacketTeleport implements IMessage {
 			td.addEntry(new TelepadEntry("QUEUEDFORREMOVAL", entry.dimensionID, entry.position, false, false));
 			td.sync();
 			td.setInTeleportGui(true);
-			Telepads.proxy.openRemovalGui(player);
+			player.openGui(Telepads.instance, GuiHandler.REMOVE_TELEPAD, player.world, 0,0,0);
 		}
 	}
 }
