@@ -4,13 +4,9 @@ import java.util.Random;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import subaraki.telepads.block.TelepadBlocks;
-import subaraki.telepads.gui.client.GuiRemoveTelepad;
 import subaraki.telepads.item.TelepadItems;
 import subaraki.telepads.tileentity.TileEntityTelepad;
 import subaraki.telepads.tileentity.render.TileEntityTelepadSpecialRenderer;
