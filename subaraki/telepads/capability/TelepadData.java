@@ -17,7 +17,7 @@ public class TelepadData {
 
 	private EntityPlayer player;
 	/**A list of entries that this player has acces to. */
-	private List<TelepadEntry> entries;
+	private List<TelepadEntry> entries = new ArrayList<TelepadEntry>();
 
 	private boolean isInTeleportGui;
 	private static final int MAX_TIME = 3 * 20;
