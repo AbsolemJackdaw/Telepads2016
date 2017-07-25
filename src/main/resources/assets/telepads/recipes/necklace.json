@@ -1,0 +1,16 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "group": "subaraki",
+    
+	"ingredients": [
+    {"item": "telepads:ender_bead"},
+	{"item": "telepads:ender_bead"},
+	{"ore": "string", "type": "forge:ore_dict"},
+	{"ore": "string", "type": "forge:ore_dict"},
+	{"ore": "string", "type": "forge:ore_dict"}
+	],
+	
+    "result": {
+        "item": "telepads:ender_bead_necklace"
+	}
+}

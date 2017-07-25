@@ -1,0 +1,17 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "group": "subaraki",
+    "pattern": [
+        "III",
+        "RDR",
+        "III"
+    ],
+    "key": {
+        "I": { "item": "minecraft:iron_ingot" },
+        "R": { "item": "minecraft:redstone" },
+        "D": { "item": "minecraft:diamond" }
+    },
+    "result": {
+        "item": "telepads:transmitter"
+	}
+}

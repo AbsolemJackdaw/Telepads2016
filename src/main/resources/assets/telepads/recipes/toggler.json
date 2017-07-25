@@ -1,0 +1,16 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "group": "subaraki",
+    "pattern": [
+        "RBR",
+        "DDD"
+    ],
+    "key": {
+        "D": { "item": "minecraft:redstone" },
+        "R": { "item": "minecraft:repeater" },
+        "B": { "item": "minecraft:redstone_block" }
+    },
+    "result": {
+        "item": "telepads:transmitter"
+	}
+}

@@ -1,0 +1,19 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "group": "subaraki",
+    "pattern": [
+        "GGG",
+        "EEE",
+        "ICI"
+    ],
+    "key": {
+        "G": { "item": "minecraft:glass" },
+        "E": { "item": "minecraft:ender_pearl" },
+        "I": { "item": "minecraft:iron_ingot" },
+		"C": { "item": "minecraft:compass" }
+
+    },
+    "result": {
+        "item": "telepads:telepad"
+	}
+}
