@@ -5,14 +5,13 @@ import static lib.item.ItemRegistry.registerRender;
 
 import java.util.List;
 
-import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import subaraki.telepads.block.TelepadBlocks;
 import subaraki.telepads.mod.Telepads;
@@ -51,7 +50,7 @@ public class TelepadItems {
 						for(EnumDyeColor dye : EnumDyeColor.values())
 							if(dye.getColorValue() == color)
 								edc = dye;	
-						tooltip.add("Feet : "+ (edc == null ? I18n.format("feet.color") : edc.getName()));
+						tooltip.add("Feet : "+ (edc == null ? new TextComponentTranslation("feet.color") : edc.getName()));
 					}
 
 					if (stack.getTagCompound().hasKey("colorBase")){
@@ -60,7 +59,7 @@ public class TelepadItems {
 						for(EnumDyeColor dye : EnumDyeColor.values())
 							if(dye.getColorValue() == color)
 								edc = dye;	
-						tooltip.add("Arrows : "+ (edc == null ? I18n.format("arrow.color") : edc.getName()));
+						tooltip.add("Arrows : "+ (edc == null ? new TextComponentTranslation("arrow.color") : edc.getName()));
 					}
 				}
 			}

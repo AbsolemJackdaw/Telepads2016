@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -15,7 +14,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import subaraki.telepads.block.TelepadBlocks;
@@ -127,7 +127,7 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 			{
 
 				setPlatform(true);
-				
+
 				for(EntityPlayer standing : list)
 				{
 					TelepadData playersave = standing.getCapability(TelePadDataCapability.CAPABILITY, null);
@@ -144,7 +144,10 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 							for (Object o : world.loadedEntityList)
 								if (o instanceof EntityDragon){
 									playersave.setCounter(playersave.getMaxTime());
-									standing.sendMessage(new TextComponentString(TextFormatting.DARK_PURPLE+""+TextFormatting.ITALIC+ I18n.format("dragon.obstructs")));
+									
+									standing.sendMessage(
+											new TextComponentTranslation("dragon.obstructs")
+											.setStyle(new Style().setColor(TextFormatting.DARK_PURPLE).setItalic(true)));
 									return;
 								}
 						}
@@ -247,7 +250,7 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 	public boolean isUsableByPlayer(EntityPlayer player){
 		return this.world.getTileEntity(this.pos) != this ? false : player.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
 	}
-	
+
 	public boolean isStandingOnPlatform() {
 		return isStandingOnPlatform;
 	}
