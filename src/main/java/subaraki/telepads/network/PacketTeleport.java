@@ -86,12 +86,14 @@ public class PacketTeleport implements IMessage {
 
 				BlockPos goTo = packet.goTo.position.up();
 				int goToDimensionid = packet.goTo.dimensionID;
-
-				//				if()
-				//				{
-				//					player.sendStatusMessage(new TextComponentTranslation("no.exp").setStyle(new Style().setItalic(true).setColor(TextFormatting.DARK_RED)), true);
-				//					return;
-				//				}
+				int penalty = ConfigurationHandler.instance.expConsume;
+				
+				if(penalty > 0 && (player.experienceLevel == 0 && player.experience * player.xpBarCap() <= penalty))
+				{
+					player.sendStatusMessage(new TextComponentTranslation("no.exp").setStyle(new Style().setItalic(true).setColor(TextFormatting.DARK_RED)), true);
+					return;
+				}
+				
 				if (packet.goTo.dimensionID == player.dimension) 
 				{
 					if (packet.force) 
