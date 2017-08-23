@@ -12,17 +12,18 @@ public class EventHandler {
 	public EventHandler() {
 		MinecraftForge.EVENT_BUS.register(this);
 	}
-	
+
 	@SubscribeEvent
 	public void anvil(AnvilUpdateEvent event)
 	{
 		ItemStack input = event.getLeft();
 		ItemStack ingredient = event.getRight();
-		
-		if(input.getItem().equals(Items.ENDER_PEARL) && input.getItem().equals(ingredient.getItem()))
-		{
-			event.setOutput(new ItemStack(TelepadItems.ender_bead,3));
-			event.setCost(3);
-		}
+
+		if(ConfigurationHandler.instance.allowAnvilPearls)
+			if(input.getItem().equals(Items.ENDER_PEARL) && input.getItem().equals(ingredient.getItem()))
+			{
+				event.setOutput(new ItemStack(TelepadItems.ender_bead,3));
+				event.setCost(3);
+			}
 	}
 }

@@ -6,6 +6,8 @@ name.your.telepad=Nommez votre Telepad
 dragon.obstructs=La force du Dragon de l'End brouille votre Telepad !
 feet.color=Turquoise
 arrow.color=Fuchsia Rose
+no.power=Ce Telepad a été desactivé
+no.exp=Votre experience est trop bas pour satisfaire la pénalité pour téléporter
 
 item.telepads.toggler.name=Cabillot
 item.telepads.transmitter.name=Emetteur

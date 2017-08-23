@@ -6,6 +6,8 @@ name.your.telepad=Name Your Telepad
 dragon.obstructs=The power of the Ender Dragon is jamming your Telepad !
 feet.color=Turquoise
 arrow.color=Fuchsia Pink
+no.power=This Telepad was powered off
+no.exp=Your experience is too low to pay the teleport penalty
 
 item.telepads.toggler.name=Toggler
 item.telepads.transmitter.name=Transmitter
