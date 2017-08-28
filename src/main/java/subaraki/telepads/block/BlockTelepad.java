@@ -97,6 +97,7 @@ public class BlockTelepad extends Block{
 						TelepadEntry entry = WorldDataHandler.get(world).getEntryForLocation(pos, world.provider.getDimension());
 						entry.hasTransmitter = true;
 						WorldDataHandler.get(world).updateEntry(entry);
+						heldItem.shrink(1);
 					}
 				}
 				//check for server only. syncs automatically with client. if doing both sides, client setter will make it look jumpy
@@ -105,6 +106,7 @@ public class BlockTelepad extends Block{
 						tet.addRedstoneUpgrade();
 						world.notifyBlockUpdate(pos, world.getBlockState(pos), getDefaultState(), 3);
 						this.neighborChanged(state, world, pos, state.getBlock(), null);
+						heldItem.shrink(1);
 					}
 				}
 
