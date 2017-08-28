@@ -11,6 +11,6 @@
         "B": { "item": "minecraft:redstone_block" }
     },
     "result": {
-        "item": "telepads:transmitter"
+        "item": "telepads:toggler"
 	}
 }
