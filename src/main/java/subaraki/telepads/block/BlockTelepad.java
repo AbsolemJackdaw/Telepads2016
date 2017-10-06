@@ -26,6 +26,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
@@ -34,6 +35,8 @@ import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
 import subaraki.telepads.capability.TelePadDataCapability;
 import subaraki.telepads.capability.TelepadData;
 import subaraki.telepads.gui.GuiHandler;
+import subaraki.telepads.handler.ConfigurationHandler;
+import subaraki.telepads.handler.CoordinateHandler;
 import subaraki.telepads.handler.WorldDataHandler;
 import subaraki.telepads.item.TelepadItems;
 import subaraki.telepads.mod.Telepads;
@@ -108,6 +111,28 @@ public class BlockTelepad extends Block{
 						this.neighborChanged(state, world, pos, state.getBlock(), null);
 						heldItem.shrink(1);
 					}
+				}
+
+				//check server sideo nly, so server side config is read
+				if(item.equals(TelepadItems.tp_mod_upgrade) && !world.isRemote)
+				{
+					tet.rotateCoordinateHandlerIndex();
+
+					int index = tet.getCoordinateHandlerIndex();
+					if(index > -1)
+					{
+						String[] tpl = ConfigurationHandler.instance.tp_locations;
+						CoordinateHandler ch = new CoordinateHandler(tpl[index]);
+						String name = ch.getName();
+
+						player.sendMessage(new TextComponentTranslation("Telepad now teleports to : "+name));
+
+						world.notifyBlockUpdate(pos, world.getBlockState(pos), getDefaultState(), 3);
+						this.neighborChanged(state, world, pos, state.getBlock(), null);	
+					}
+					else
+						player.sendMessage(new TextComponentTranslation("Telepad is now normal"));
+
 				}
 
 				if(item.equals(Items.DYE)){
@@ -345,34 +370,62 @@ public class BlockTelepad extends Block{
 	public float getExplosionResistance(World world, BlockPos pos, Entity exploder, Explosion explosion) {
 		return Float.MAX_VALUE;
 	}
-	
+
 	@Override
 	public void randomDisplayTick(IBlockState stateIn, World world, BlockPos pos, Random rand) {
-	
+
 		TileEntity te = world.getTileEntity(pos);
 
 		if(te == null || !(te instanceof TileEntityTelepad))
 			return;
-		
+
 		int maxParticleCount = (((TileEntityTelepad)te).isStandingOnPlatform()) ? 15 : 1;
-		
+
 		for (int particleCount = 0; particleCount < maxParticleCount; ++particleCount) {
 
-			double posX = pos.getX() + 0.5f;
-			double posY = pos.getY() + (rand.nextFloat() * 1.5f);
-			double posZ = pos.getZ() + 0.5f;
-			double velocityX = 0.0D;
-			double volocityY = 0.0D;
-			double velocityZ = 0.0D;
-			int velocityXOffset = (rand.nextInt(2) * 2) - 1;
-			int velocityZOffset = (rand.nextInt(2) * 2) - 1;
 
-			velocityX = (rand.nextFloat() - 0.5D) * 0.125D;
-			volocityY = (rand.nextFloat() - 0.5D) * 0.125D;
-			velocityZ = (rand.nextFloat() - 0.5D) * 0.125D;
-			velocityX = rand.nextFloat() * 1.0F * velocityXOffset;
-			velocityZ = rand.nextFloat() * 1.0F * velocityZOffset;
-			world.spawnParticle(EnumParticleTypes.PORTAL, posX, posY, posZ, velocityX, volocityY, velocityZ);
+			if(((TileEntityTelepad)te).getCoordinateHandlerIndex() > -1)
+			{
+				for (int i = -2; i <= 2; ++i)
+				{
+					for (int j = -2; j <= 2; ++j)
+					{
+						if (i > -2 && i < 2 && j == -1)
+						{
+							j = 2;
+						}
+
+						if (rand.nextInt(4) == 0)
+						{
+							for (int k = 0; k <= 2; ++k)
+							{
+								BlockPos blockpos = pos.add(i, k, j);
+
+								world.spawnParticle(EnumParticleTypes.ENCHANTMENT_TABLE, (double)pos.getX() + 0.5D, (double)pos.getY() + 1.0D, (double)pos.getZ() + 0.5D, (double)((float)i + rand.nextFloat()) - 0.5D, (double)((float)k - rand.nextFloat() - .0F), (double)((float)j + rand.nextFloat()) - 0.5D);
+							}
+						}
+					}
+				}			
+			}
+			
+			else
+			{
+				double posX = pos.getX() + 0.5f;
+				double posY = pos.getY() + (rand.nextFloat() * 1.5f);
+				double posZ = pos.getZ() + 0.5f;
+				double velocityX = 0.0D;
+				double velocityY = 0.0D;
+				double velocityZ = 0.0D;
+				int velocityXOffset = (rand.nextInt(2) * 2) - 1;
+				int velocityZOffset = (rand.nextInt(2) * 2) - 1;
+
+				velocityX = (rand.nextFloat() - 0.5D) * 0.125D;
+				velocityY = (rand.nextFloat() - 0.5D) * 0.125D;
+				velocityZ = (rand.nextFloat() - 0.5D) * 0.125D;
+				velocityX = rand.nextFloat() * 1.0F * velocityXOffset;
+				velocityZ = rand.nextFloat() * 1.0F * velocityZOffset;
+				world.spawnParticle(EnumParticleTypes.PORTAL, posX, posY, posZ, velocityX, velocityY, velocityZ);
+			}
 		}
 	}
 }

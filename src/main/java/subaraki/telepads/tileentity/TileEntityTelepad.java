@@ -10,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -18,14 +19,21 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import subaraki.telepads.block.TelepadBlocks;
 import subaraki.telepads.capability.TelePadDataCapability;
 import subaraki.telepads.capability.TelepadData;
 import subaraki.telepads.gui.GuiHandler;
 import subaraki.telepads.gui.server.ContainerTelepad;
 import subaraki.telepads.handler.ConfigurationHandler;
+import subaraki.telepads.handler.CoordinateHandler;
 import subaraki.telepads.handler.WorldDataHandler;
+import subaraki.telepads.handler.WorldDataHandler.WorldDataHandlerSaveEvent;
 import subaraki.telepads.mod.Telepads;
+import subaraki.telepads.utility.masa.Teleport;
 
 public class TileEntityTelepad extends TileEntity implements ITickable{
 
@@ -46,6 +54,8 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 	private boolean isPowered = false;
 
 	private boolean isStandingOnPlatform;
+
+	private int coordinate_handler_index = -1;
 
 	private AxisAlignedBB aabb ;
 
@@ -93,7 +103,7 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 		this.colorFrame = compound.getInteger("colorFrame");
 		this.upgradeRotation = compound.getInteger("upgradeRotation");
 		isStandingOnPlatform = compound.getBoolean("standingon");
-
+		this.coordinate_handler_index = compound.getInteger("mod_tp");
 	}
 
 	@Override
@@ -107,6 +117,7 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 		compound.setInteger("colorFrame", this.colorFrame);
 		compound.setInteger("upgradeRotation", upgradeRotation);
 		compound.setBoolean("standingon", isStandingOnPlatform);
+		compound.setInteger("mod_tp", coordinate_handler_index);
 		return compound;
 	}
 
@@ -144,17 +155,43 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 							for (Object o : world.loadedEntityList)
 								if (o instanceof EntityDragon){
 									playersave.setCounter(playersave.getMaxTime());
-									
+
 									standing.sendMessage(
 											new TextComponentTranslation("dragon.obstructs")
 											.setStyle(new Style().setColor(TextFormatting.DARK_PURPLE).setItalic(true)));
 									return;
 								}
 						}
-						//if no dragon is found, or dimension != the end, you end up here
-						playersave.setInTeleportGui(true);
-						playersave.setCounter(playersave.getMaxTime());
-						activateTelepadGui(playersave);
+
+						if(getCoordinateHandlerIndex() > -1)
+						{
+							int index = getCoordinateHandlerIndex();
+							String[] tpl = ConfigurationHandler.instance.tp_locations;
+							CoordinateHandler coords = new CoordinateHandler(tpl[index]);
+
+							int dimension = coords.getDimension();
+
+							if(standing.dimension != dimension)
+							{
+								MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+								WorldServer worldDestination = server.getWorld(dimension);
+								
+								BlockPos pos = coords.getPosition(worldDestination);
+								Teleport.teleportEntityToDimension(standing, pos, dimension);
+							}
+							else
+							{
+								BlockPos pos = coords.getPosition(getWorld());
+								Teleport.teleportEntityInsideSameDimension(standing, pos);
+							}
+						}
+						else
+						{
+							//if no dragon is found, or dimension != the end, you end up here
+							playersave.setInTeleportGui(true);
+							playersave.setCounter(playersave.getMaxTime());
+							activateTelepadGui(playersave);	
+						}
 					}
 				}
 			}
@@ -239,6 +276,23 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 
 	public boolean isPowered () {
 		return isPowered;
+	}
+
+	public void setCoordinateHandlerIndex(int index)
+	{
+		this.coordinate_handler_index = index;
+	}
+
+	public void rotateCoordinateHandlerIndex()
+	{
+		this.coordinate_handler_index++;
+		if(this.coordinate_handler_index >= ConfigurationHandler.instance.tp_locations.length){
+			coordinate_handler_index = -1;
+		}
+	}
+
+	public int getCoordinateHandlerIndex(){
+		return coordinate_handler_index;
 	}
 
 	@Override

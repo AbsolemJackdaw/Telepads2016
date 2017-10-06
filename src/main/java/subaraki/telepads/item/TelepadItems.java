@@ -25,6 +25,8 @@ public class TelepadItems {
 	public static Item ender_bead;
 	public static Item ender_bead_necklace;
 
+	public static Item tp_mod_upgrade;
+	
 	private static String modid = Telepads.MODID;
 
 	private static ItemBlock telepad_block;
@@ -37,6 +39,14 @@ public class TelepadItems {
 		toggler = new Item().setUnlocalizedName(modid+".toggler").setRegistryName("toggler").setCreativeTab(CreativeTabs.REDSTONE);
 		transmitter = new Item().setUnlocalizedName(modid+".transmitter").setRegistryName("transmitter").setCreativeTab(CreativeTabs.REDSTONE);
 		redstone_upgrade = new Item().setUnlocalizedName(modid+".upgrade").setRegistryName("upgrade");
+		
+		tp_mod_upgrade = new Item(){
+			public void addInformation(ItemStack stack, World worldIn, java.util.List<String> tooltip, ITooltipFlag flagIn) {
+				tooltip.add("can be used by people with creative acces to enable telepads to teleport to a location defined in config");
+			}
+		}
+			.setUnlocalizedName(modid+".tp_upgrade").setRegistryName("tp_upgrade").setCreativeTab(CreativeTabs.REDSTONE);
+		
 		telepad_block =  (ItemBlock) new ItemBlock(TelepadBlocks.blockTelepad){
 
 			@Override
@@ -76,8 +86,8 @@ public class TelepadItems {
 		registerItem(telepad_block);
 		registerItem(ender_bead);
 		registerItem(ender_bead_necklace);
+		registerItem(tp_mod_upgrade);
 	}
-
 
 	public static void registerRenders(){
 		registerRender(toggler, "toggler", modid);
@@ -86,5 +96,6 @@ public class TelepadItems {
 		registerRender(telepad_block, "telepad", modid);
 		registerRender(ender_bead, "ender_bead", modid);
 		registerRender(ender_bead_necklace, "ender_bead_necklace", modid);
+		registerRender(tp_mod_upgrade, "mod_tp_upgrade", modid);
 	}
 }
