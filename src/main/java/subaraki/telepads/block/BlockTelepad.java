@@ -38,7 +38,6 @@ import subaraki.telepads.gui.GuiHandler;
 import subaraki.telepads.handler.ConfigurationHandler;
 import subaraki.telepads.handler.CoordinateHandler;
 import subaraki.telepads.handler.WorldDataHandler;
-import subaraki.telepads.item.TelepadItems;
 import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.tileentity.TileEntityTelepad;
 import subaraki.telepads.utility.TelepadEntry;
@@ -92,7 +91,7 @@ public class BlockTelepad extends Block{
 			TileEntity te = world.getTileEntity(pos);
 			if(te instanceof TileEntityTelepad){
 				TileEntityTelepad tet = (TileEntityTelepad)te;
-				if(item.equals(TelepadItems.transmitter)){
+				if(item.equals(Telepads.items.transmitter)){
 					//check for server only. syncs automatically with client. if doing both sides, client setter will make it look jumpy
 					if(!tet.hasDimensionUpgrade() && !world.isRemote){ 
 						tet.addDimensionUpgrade(true);
@@ -104,7 +103,7 @@ public class BlockTelepad extends Block{
 					}
 				}
 				//check for server only. syncs automatically with client. if doing both sides, client setter will make it look jumpy
-				if(item.equals(TelepadItems.toggler)&& !world.isRemote){
+				if(item.equals(Telepads.items.toggler)&& !world.isRemote){
 					if(!tet.hasRedstoneUpgrade()){
 						tet.addRedstoneUpgrade();
 						world.notifyBlockUpdate(pos, world.getBlockState(pos), getDefaultState(), 3);
@@ -114,7 +113,7 @@ public class BlockTelepad extends Block{
 				}
 
 				//check server sideo nly, so server side config is read
-				if(item.equals(TelepadItems.tp_mod_upgrade) && !world.isRemote)
+				if(item.equals(Telepads.items.tp_mod_upgrade) && !world.isRemote)
 				{
 					tet.rotateCoordinateHandlerIndex();
 
@@ -302,9 +301,9 @@ public class BlockTelepad extends Block{
 			wdh.removeEntry(entry);
 			dropPad(world, tet, pos);
 			if (tet.hasDimensionUpgrade())
-				world.spawnEntity(new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(TelepadItems.transmitter, 1)));
+				world.spawnEntity(new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(Telepads.items.transmitter, 1)));
 			if (tet.hasRedstoneUpgrade())
-				world.spawnEntity(new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(TelepadItems.toggler, 1)));
+				world.spawnEntity(new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(Telepads.items.toggler, 1)));
 
 			return world.setBlockToAir(pos);
 		}
@@ -317,7 +316,7 @@ public class BlockTelepad extends Block{
 		EntityItem ei = new EntityItem(world);
 		ei.setPosition(pos.getX(), pos.getY(), pos.getZ());
 
-		ItemStack stack = new ItemStack(TelepadBlocks.blockTelepad);
+		ItemStack stack = new ItemStack(Telepads.blocks.blockTelepad);
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setInteger("colorBase", telepad.getColorArrow());
 		nbt.setInteger("colorFrame", telepad.getColorFeet());

@@ -38,6 +38,9 @@ public class Telepads {
 
 	public static Logger log = LogManager.getLogger(MODID);
 
+	public static TelepadItems items;
+	public static TelepadBlocks blocks;
+
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent event){
 
@@ -55,8 +58,8 @@ public class Telepads {
 		new TelePadDataCapability().register();
 		new AttachCapability();
 
-		TelepadBlocks.loadBlocks(); // blocks before items.
-		TelepadItems.loadItems(); //items need to register itemBlocks
+		new TelepadBlocks(); // blocks before items.
+		new TelepadItems(); //items need to register itemBlocks
 
 		proxy.registerRenders();
 		proxy.registerTileEntityAndRender();
@@ -67,7 +70,7 @@ public class Telepads {
 		new GuiHandler();
 
 		new WorldDataHandler.WorldDataHandlerSaveEvent();
-		
+
 		new subaraki.telepads.handler.EventHandler();
 	}
 }

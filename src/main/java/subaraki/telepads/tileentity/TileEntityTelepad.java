@@ -209,7 +209,7 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 	 */
 	public void setPlatform (boolean onPlatform) {
 		isStandingOnPlatform = onPlatform;
-		world.notifyBlockUpdate(pos, world.getBlockState(getPos()), TelepadBlocks.blockTelepad.getDefaultState(), 3);
+		world.notifyBlockUpdate(pos, world.getBlockState(getPos()), Telepads.blocks.blockTelepad.getDefaultState(), 3);
 	}
 
 	private void activateTelepadGui (TelepadData td){

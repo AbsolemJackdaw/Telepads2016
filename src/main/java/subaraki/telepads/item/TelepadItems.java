@@ -1,10 +1,10 @@
 package subaraki.telepads.item;
 
-import static lib.item.ItemRegistry.registerItem;
 import static lib.item.ItemRegistry.registerRender;
 
 import java.util.List;
 
+import akka.io.Tcp.Register;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.EnumDyeColor;
@@ -13,25 +13,47 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import subaraki.telepads.block.TelepadBlocks;
 import subaraki.telepads.mod.Telepads;
 
 public class TelepadItems {
 
-	public static Item toggler;
-	public static Item transmitter;
-	public static Item redstone_upgrade;
+	public TelepadItems() {
+		MinecraftForge.EVENT_BUS.register(this);
+		loadItems();
+	}
+	
+	@SubscribeEvent
+	public void register(RegistryEvent.Register<Item> event)
+	{
+		event.getRegistry().registerAll(
+				toggler,
+				transmitter,
+				redstone_upgrade,
+				ender_bead,
+				ender_bead_necklace,
+				tp_mod_upgrade,
+				telepad_block);
+	}
+	
+	public Item toggler;
+	public Item transmitter;
+	public Item redstone_upgrade;
 
-	public static Item ender_bead;
-	public static Item ender_bead_necklace;
+	public Item ender_bead;
+	public Item ender_bead_necklace;
 
-	public static Item tp_mod_upgrade;
+	public Item tp_mod_upgrade;
+	
+	private ItemBlock telepad_block;
 	
 	private static String modid = Telepads.MODID;
 
-	private static ItemBlock telepad_block;
-
-	public static void loadItems(){
+	
+	public void loadItems(){
 
 		ender_bead = new ItemEnderBead().setMaxStackSize(16).setUnlocalizedName(modid+".ender_bead").setRegistryName("ender_bead").setCreativeTab(CreativeTabs.MATERIALS);
 		ender_bead_necklace = new ItemEnderNecklace().setMaxStackSize(8).setUnlocalizedName(modid+".ender_bead_necklace").setRegistryName("ender_bead_necklace").setCreativeTab(CreativeTabs.MATERIALS);
@@ -47,7 +69,7 @@ public class TelepadItems {
 		}
 			.setUnlocalizedName(modid+".tp_upgrade").setRegistryName("tp_upgrade").setCreativeTab(CreativeTabs.REDSTONE);
 		
-		telepad_block =  (ItemBlock) new ItemBlock(TelepadBlocks.blockTelepad){
+		telepad_block =  (ItemBlock) new ItemBlock(Telepads.blocks.blockTelepad){
 
 			@Override
 			public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
@@ -74,22 +96,22 @@ public class TelepadItems {
 				}
 			}
 
-		}.setRegistryName(TelepadBlocks.blockTelepad.getRegistryName());
+		}.setRegistryName(Telepads.blocks.blockTelepad.getRegistryName());
 
-		register();
+//		register();
 	}
 
-	private static void register(){
-		registerItem(redstone_upgrade);
-		registerItem(transmitter);
-		registerItem(toggler);
-		registerItem(telepad_block);
-		registerItem(ender_bead);
-		registerItem(ender_bead_necklace);
-		registerItem(tp_mod_upgrade);
+	private void register(){
+//		registerItem(redstone_upgrade);
+//		registerItem(transmitter);
+//		registerItem(toggler);
+//		registerItem(telepad_block);
+//		registerItem(ender_bead);
+//		registerItem(ender_bead_necklace);
+//		registerItem(tp_mod_upgrade);
 	}
 
-	public static void registerRenders(){
+	public void registerRenders(){
 		registerRender(toggler, "toggler", modid);
 		registerRender(transmitter, "transmitter", modid);
 		registerRender(redstone_upgrade, "redstone_upgrade", modid);
