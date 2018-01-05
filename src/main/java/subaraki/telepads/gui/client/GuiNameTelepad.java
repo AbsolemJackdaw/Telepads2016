@@ -63,6 +63,17 @@ public class GuiNameTelepad extends GuiScreen {
 
 		String padName = te.getWorld().getBiome(te.getPos()).getBiomeName();
 
+		if(padName.length() > 16)
+		{
+			String[] names = padName.split(" ");
+			String newName = "";
+			
+			for(String entry : names)
+				newName += entry.substring(0, Math.min(3, entry.length()))+" ";
+			
+			padName = newName;
+		}
+		
 		if (padNameField != null) {
 			padNameField.setText(padName);
 			padNameField.setMaxStringLength(16);
