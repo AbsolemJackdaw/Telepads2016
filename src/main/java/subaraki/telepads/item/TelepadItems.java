@@ -4,7 +4,6 @@ import static lib.item.ItemRegistry.registerRender;
 
 import java.util.List;
 
-import akka.io.Tcp.Register;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.EnumDyeColor;
@@ -16,7 +15,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import subaraki.telepads.block.TelepadBlocks;
 import subaraki.telepads.mod.Telepads;
 
 public class TelepadItems {

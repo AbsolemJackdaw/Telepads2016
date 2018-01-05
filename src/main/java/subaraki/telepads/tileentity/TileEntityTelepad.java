@@ -21,9 +21,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import subaraki.telepads.block.TelepadBlocks;
 import subaraki.telepads.capability.TelePadDataCapability;
 import subaraki.telepads.capability.TelepadData;
 import subaraki.telepads.gui.GuiHandler;
@@ -31,7 +28,6 @@ import subaraki.telepads.gui.server.ContainerTelepad;
 import subaraki.telepads.handler.ConfigurationHandler;
 import subaraki.telepads.handler.CoordinateHandler;
 import subaraki.telepads.handler.WorldDataHandler;
-import subaraki.telepads.handler.WorldDataHandler.WorldDataHandlerSaveEvent;
 import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.utility.masa.Teleport;
 

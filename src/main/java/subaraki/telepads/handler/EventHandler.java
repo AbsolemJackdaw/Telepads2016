@@ -5,7 +5,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import subaraki.telepads.item.TelepadItems;
 import subaraki.telepads.mod.Telepads;
 
 public class EventHandler {

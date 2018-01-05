@@ -1,10 +1,7 @@
 package subaraki.telepads.handler;
 
 import java.io.File;
-import java.util.ArrayList;
 
-import lib.item.ItemUtil;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.Configuration;
 
 public class ConfigurationHandler {

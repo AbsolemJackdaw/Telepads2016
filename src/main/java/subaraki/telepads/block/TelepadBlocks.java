@@ -1,7 +1,5 @@
 package subaraki.telepads.block;
 
-import static lib.block.BlockRegistry.registerBlock;
-
 import net.minecraft.block.Block;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
@@ -26,6 +24,6 @@ public class TelepadBlocks {
 		blockTelepad = new BlockTelepad();
 	}
 	
-	public static void registerRenders(){
+	public void registerRenders(){
 	}
 }
