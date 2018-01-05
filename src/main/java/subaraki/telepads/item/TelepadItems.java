@@ -12,16 +12,19 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import subaraki.telepads.mod.Telepads;
 
 public class TelepadItems {
 
 	public TelepadItems() {
-		MinecraftForge.EVENT_BUS.register(this);
 		loadItems();
+		MinecraftForge.EVENT_BUS.register(this);
 	}
 	
 	@SubscribeEvent
@@ -35,6 +38,18 @@ public class TelepadItems {
 				ender_bead_necklace,
 				tp_mod_upgrade,
 				telepad_block);
+	}
+	
+	@SideOnly(Side.CLIENT)
+	@SubscribeEvent
+	public void registerRenders(ModelRegistryEvent event){
+		registerRender(toggler, "toggler", modid);
+		registerRender(transmitter, "transmitter", modid);
+		registerRender(redstone_upgrade, "redstone_upgrade", modid);
+		registerRender(telepad_block, "telepad", modid);
+		registerRender(ender_bead, "ender_bead", modid);
+		registerRender(ender_bead_necklace, "ender_bead_necklace", modid);
+		registerRender(tp_mod_upgrade, "mod_tp_upgrade", modid);
 	}
 	
 	public Item toggler;
@@ -96,26 +111,5 @@ public class TelepadItems {
 
 		}.setRegistryName(Telepads.blocks.blockTelepad.getRegistryName());
 
-//		register();
-	}
-
-	private void register(){
-//		registerItem(redstone_upgrade);
-//		registerItem(transmitter);
-//		registerItem(toggler);
-//		registerItem(telepad_block);
-//		registerItem(ender_bead);
-//		registerItem(ender_bead_necklace);
-//		registerItem(tp_mod_upgrade);
-	}
-
-	public void registerRenders(){
-		registerRender(toggler, "toggler", modid);
-		registerRender(transmitter, "transmitter", modid);
-		registerRender(redstone_upgrade, "redstone_upgrade", modid);
-		registerRender(telepad_block, "telepad", modid);
-		registerRender(ender_bead, "ender_bead", modid);
-		registerRender(ender_bead_necklace, "ender_bead_necklace", modid);
-		registerRender(tp_mod_upgrade, "mod_tp_upgrade", modid);
 	}
 }

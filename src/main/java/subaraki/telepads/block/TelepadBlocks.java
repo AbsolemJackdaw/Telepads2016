@@ -8,8 +8,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class TelepadBlocks {
 
 	public TelepadBlocks() {
-		MinecraftForge.EVENT_BUS.register(this);
 		loadBlocks();
+		MinecraftForge.EVENT_BUS.register(this);
 	}
 
 	@SubscribeEvent
@@ -22,8 +22,5 @@ public class TelepadBlocks {
 	
 	public void loadBlocks(){
 		blockTelepad = new BlockTelepad();
-	}
-	
-	public void registerRenders(){
 	}
 }

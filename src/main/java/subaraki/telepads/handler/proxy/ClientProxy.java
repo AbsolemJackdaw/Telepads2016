@@ -19,12 +19,6 @@ public class ClientProxy extends ServerProxy {
 	}
 
 	@Override
-	public void registerRenders() {
-		Telepads.items.registerRenders();
-		Telepads.blocks.registerRenders();
-	}
-
-	@Override
 	public void registerTileEntityAndRender() {
 		GameRegistry.registerTileEntity(TileEntityTelepad.class, "TileEntityTelepad");
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityTelepad.class, new TileEntityTelepadSpecialRenderer());

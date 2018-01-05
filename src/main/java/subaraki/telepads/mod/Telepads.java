@@ -58,10 +58,9 @@ public class Telepads {
 		new TelePadDataCapability().register();
 		new AttachCapability();
 
-		new TelepadBlocks(); // blocks before items.
-		new TelepadItems(); //items need to register itemBlocks
+		blocks = new TelepadBlocks(); // blocks before items.
+		items = new TelepadItems(); //items need to register itemBlocks
 
-		proxy.registerRenders();
 		proxy.registerTileEntityAndRender();
 
 		new PlayerTracker();

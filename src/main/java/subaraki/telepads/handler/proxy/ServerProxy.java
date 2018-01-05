@@ -6,8 +6,6 @@ import subaraki.telepads.tileentity.TileEntityTelepad;
 
 public class ServerProxy {
 
-	public void registerRenders(){};
-	
 	public EntityPlayer getClientPlayer(){return null;};
 	
 	public void registerTileEntityAndRender(){
