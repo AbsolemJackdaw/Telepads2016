@@ -65,7 +65,6 @@ public class TelepadItems {
 	
 	private static String modid = Telepads.MODID;
 
-	
 	public void loadItems(){
 
 		ender_bead = new ItemEnderBead().setMaxStackSize(16).setUnlocalizedName(modid+".ender_bead").setRegistryName("ender_bead").setCreativeTab(CreativeTabs.MATERIALS);
@@ -95,7 +94,10 @@ public class TelepadItems {
 						for(EnumDyeColor dye : EnumDyeColor.values())
 							if(dye.getColorValue() == color)
 								edc = dye;	
-						tooltip.add("Feet : "+ (edc == null ? new TextComponentTranslation("feet.color") : edc.getName()));
+						
+						TextComponentTranslation feet = new TextComponentTranslation("feet.color");
+
+						tooltip.add("Feet : "+ (edc == null ? feet.getFormattedText() : edc.getName()));
 					}
 
 					if (stack.getTagCompound().hasKey("colorBase")){
@@ -104,7 +106,9 @@ public class TelepadItems {
 						for(EnumDyeColor dye : EnumDyeColor.values())
 							if(dye.getColorValue() == color)
 								edc = dye;	
-						tooltip.add("Arrows : "+ (edc == null ? new TextComponentTranslation("arrow.color") : edc.getName()));
+						TextComponentTranslation arrow = new TextComponentTranslation("arrow.color");
+						
+						tooltip.add("Arrows : "+ (edc == null ? arrow.getFormattedText() : edc.getName()));
 					}
 				}
 			}
