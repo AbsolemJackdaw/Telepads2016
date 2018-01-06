@@ -6,8 +6,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import subaraki.telepads.block.TelepadBlocks;
-import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.tileentity.TileEntityTelepad;
 import subaraki.telepads.tileentity.render.TileEntityTelepadSpecialRenderer;
 
