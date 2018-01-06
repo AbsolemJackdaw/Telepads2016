@@ -111,7 +111,7 @@ public class BlockTelepad extends Block{
 						heldItem.shrink(1);
 					}
 				}
-				
+
 				if(item.equals(Telepads.items.tp_mod_upgrade_public)){
 					if(!world.isRemote){ 
 						tet.toggleAcces();
@@ -192,9 +192,17 @@ public class BlockTelepad extends Block{
 					if(lookingForEntry == null){
 						TelepadEntry entry = WorldDataHandler.get(world).getEntryForLocation(pos, world.provider.getDimension());
 						if(entry != null){
-							td.addEntry(entry);
-							if (!world.isRemote)
-								player.sendMessage(new TextComponentString(TextFormatting.GREEN+"Added " + entry.entryName));
+							if(entry.isPublic)
+							{	
+								if (!world.isRemote)
+									player.sendMessage(new TextComponentString(TextFormatting.RED+"Cannot Register Public Pads !"));
+							}
+							else
+							{
+								td.addEntry(entry);
+								if (!world.isRemote)
+									player.sendMessage(new TextComponentString(TextFormatting.GREEN+"Added " + entry.entryName));
+							}
 						}else
 							player.sendMessage(new TextComponentString(TextFormatting.RED+ "The Telepad you try to register does not exist in the world save. Cannot add Telepad to your registry."));
 					}else{
@@ -416,7 +424,7 @@ public class BlockTelepad extends Block{
 					}
 				}			
 			}
-			
+
 			else
 			{
 				double posX = pos.getX() + 0.5f;
