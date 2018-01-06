@@ -29,6 +29,7 @@ import subaraki.telepads.handler.ConfigurationHandler;
 import subaraki.telepads.handler.CoordinateHandler;
 import subaraki.telepads.handler.WorldDataHandler;
 import subaraki.telepads.mod.Telepads;
+import subaraki.telepads.utility.TelepadEntry;
 import subaraki.telepads.utility.masa.Teleport;
 
 public class TileEntityTelepad extends TileEntity implements ITickable{
@@ -48,7 +49,8 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 	private boolean hasDimensionUpgrade = false;
 	private boolean hasRedstoneUpgrade = false;
 	private boolean isPowered = false;
-
+	private boolean isPublic = false;
+	
 	private boolean isStandingOnPlatform;
 
 	private int coordinate_handler_index = -1;
@@ -100,6 +102,7 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 		this.upgradeRotation = compound.getInteger("upgradeRotation");
 		isStandingOnPlatform = compound.getBoolean("standingon");
 		this.coordinate_handler_index = compound.getInteger("mod_tp");
+		this.isPublic = compound.getBoolean("public");
 	}
 
 	@Override
@@ -114,6 +117,7 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 		compound.setInteger("upgradeRotation", upgradeRotation);
 		compound.setBoolean("standingon", isStandingOnPlatform);
 		compound.setInteger("mod_tp", coordinate_handler_index);
+		compound.setBoolean("public", isPublic);
 		return compound;
 	}
 
@@ -214,6 +218,7 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 			WorldDataHandler.get(world).syncClient();
 			td.removeEventualQueuedForRemovalEntries();
 			td.syncPoweredWithWorldData(WorldDataHandler.get(world));
+			td.syncPublicPadsToPlayer(WorldDataHandler.get(world));
 			td.sync();
 			td.getPlayer().openGui(Telepads.instance, GuiHandler.TELEPORT, world, getPos().getX(), getPos().getY(), getPos().getZ());
 		}
@@ -303,5 +308,19 @@ public class TileEntityTelepad extends TileEntity implements ITickable{
 
 	public boolean isStandingOnPlatform() {
 		return isStandingOnPlatform;
+	}
+	
+	public void toggleAcces()
+	{
+		boolean flag = !isPublic;
+		
+		WorldDataHandler wdh = WorldDataHandler.get(getWorld());
+		TelepadEntry tpe = wdh.getEntryForLocation(getPos(), getDimension());
+		tpe.setPublic(flag); //set opposite of current value for public.
+		this.isPublic = flag;
+	}
+	
+	public boolean isPublic(){
+		return isPublic;
 	}
 }

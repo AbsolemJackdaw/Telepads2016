@@ -111,7 +111,17 @@ public class BlockTelepad extends Block{
 						heldItem.shrink(1);
 					}
 				}
-
+				
+				if(item.equals(Telepads.items.tp_mod_upgrade_public)){
+					if(!world.isRemote){ 
+						tet.toggleAcces();
+						world.notifyBlockUpdate(pos, world.getBlockState(pos), getDefaultState(), 3);
+						TelepadEntry entry = WorldDataHandler.get(world).getEntryForLocation(pos, world.provider.getDimension());
+						entry.setPublic(tet.isPublic());
+						WorldDataHandler.get(world).updateEntry(entry);
+						player.sendMessage(new TextComponentTranslation("Telepad is now " + (tet.isPublic() ? "public" : "private")));
+					}
+				}
 				//check server sideo nly, so server side config is read
 				if(item.equals(Telepads.items.tp_mod_upgrade) && !world.isRemote)
 				{

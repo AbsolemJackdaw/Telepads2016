@@ -25,6 +25,7 @@ public class TelepadEntry {
     /***/
     public boolean isPowered;
     public boolean hasTransmitter;
+    public boolean isPublic;
     
     /**
      * Creates a TelepadEntry from a ByteBuf. This is useful for reading from networking.
@@ -33,7 +34,7 @@ public class TelepadEntry {
      */
     public TelepadEntry(ByteBuf buf) {
         
-        this(ByteBufUtils.readUTF8String(buf), buf.readInt(), new BlockPos(buf.readInt(),buf.readInt(),buf.readInt()), buf.readBoolean(), buf.readBoolean());
+        this(ByteBufUtils.readUTF8String(buf), buf.readInt(), new BlockPos(buf.readInt(),buf.readInt(),buf.readInt()), buf.readBoolean(), buf.readBoolean(), buf.readBoolean());
     }
     
     /**
@@ -44,7 +45,7 @@ public class TelepadEntry {
      */
     public TelepadEntry(NBTTagCompound tag) {
         
-        this(tag.getString("entryName"), tag.getInteger("dimensionID"), new BlockPos(tag.getInteger("x"),tag.getInteger("y"),tag.getInteger("z")), tag.getBoolean("power"), tag.getBoolean("transmitter"));
+        this(tag.getString("entryName"), tag.getInteger("dimensionID"), new BlockPos(tag.getInteger("x"),tag.getInteger("y"),tag.getInteger("z")), tag.getBoolean("power"), tag.getBoolean("transmitter"), tag.getBoolean("public"));
     }
     
     /**
@@ -59,13 +60,14 @@ public class TelepadEntry {
      * @param hasTransmitter defaults to false. wether this entry's tile entity has a
      *            transmitter upgrade
      */
-    public TelepadEntry(String name, int dimension, BlockPos pos, boolean isPowered, boolean hasTransmitter) {
+    public TelepadEntry(String name, int dimension, BlockPos pos, boolean isPowered, boolean hasTransmitter, boolean isPublic) {
         
         this.entryName = name;
         this.dimensionID = dimension;
         this.position = pos;
         this.isPowered = isPowered;
         this.hasTransmitter = hasTransmitter;
+        this.isPublic = isPublic;
     }
     
     /**
@@ -80,7 +82,8 @@ public class TelepadEntry {
         tag.setInteger("dimensionID", this.dimensionID);
         tag.setBoolean("power", isPowered);
         tag.setBoolean("transmitter", hasTransmitter);
-
+        tag.setBoolean("public", isPublic);
+        
         tag.setInteger("x", position.getX());
         tag.setInteger("y", position.getY());
         tag.setInteger("z", position.getZ());
@@ -102,18 +105,19 @@ public class TelepadEntry {
         buf.writeInt(position.getZ());
         buf.writeBoolean(isPowered);
         buf.writeBoolean(hasTransmitter);
+        buf.writeBoolean(isPublic);
     }
     
     @Override
     public String toString () {
         
-        return "Entry Name: " + this.entryName + " DimensionID: " + this.dimensionID + " " + this.position.toString();
+        return "Entry Name: " + this.entryName + " DimensionID: " + this.dimensionID + " " + this.position.toString() + " Public Pad:" + this.isPublic;
     }
     
     @Override
     public Object clone () {
         
-        return new TelepadEntry(this.entryName, this.dimensionID, this.position, this.isPowered, this.hasTransmitter);
+        return new TelepadEntry(this.entryName, this.dimensionID, this.position, this.isPowered, this.hasTransmitter, this.isPublic);
     }
     
     @Override
@@ -123,7 +127,7 @@ public class TelepadEntry {
             return false;
             
         TelepadEntry entry = (TelepadEntry) compared;
-        return this.entryName.equals(entry.entryName) && this.dimensionID == entry.dimensionID && this.position.equals(entry.position);
+        return this.entryName.equals(entry.entryName) && this.dimensionID == entry.dimensionID && this.position.equals(entry.position); 
     }
     
     public void setPowered (boolean flag) {
@@ -134,5 +138,9 @@ public class TelepadEntry {
     public void setTransmitter (boolean flag) {
         
         hasTransmitter = flag;
+    }
+    
+    public void setPublic(boolean isPublic){
+    	this.isPublic = isPublic;
     }
 }

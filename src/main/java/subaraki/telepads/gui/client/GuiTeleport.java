@@ -219,7 +219,9 @@ public class GuiTeleport extends GuiContainer{
 			if(worldEntry != null){
 				boolean isPowered = worldEntry.isPowered;
 				boolean isTransmitter = worldEntry.hasTransmitter;
-				telepadName = isPowered ? ChatFormatting.DARK_RED + tpe.entryName : isTransmitter ? ChatFormatting.DARK_GREEN + tpe.entryName : tpe.entryName;
+				boolean isPublic = worldEntry.isPublic;
+				telepadName = isPowered ? ChatFormatting.DARK_RED + tpe.entryName : isTransmitter ? ChatFormatting.DARK_GREEN + tpe.entryName : isPublic ? ChatFormatting.LIGHT_PURPLE + tpe.entryName : tpe.entryName;
+				
 			}else{
 				telepadName = ChatFormatting.DARK_GRAY+tpe.entryName;
 			}

@@ -99,7 +99,7 @@ public class GuiNameTelepad extends GuiScreen {
 	}
 
 	public void sendPacket (String padName) {
-		NetworkHandler.NETWORK.sendToServer(new PacketAddTelepadEntry(mc.player.getUniqueID(), new TelepadEntry(padNameField.getText(), mc.world.provider.getDimension(), te.getPos(), false, false)));
+		NetworkHandler.NETWORK.sendToServer(new PacketAddTelepadEntry(mc.player.getUniqueID(), new TelepadEntry(padNameField.getText(), mc.world.provider.getDimension(), te.getPos(), false, false, false)));
 		this.mc.player.closeScreen();
 	}
 }

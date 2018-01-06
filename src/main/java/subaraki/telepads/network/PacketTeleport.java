@@ -154,7 +154,7 @@ public class PacketTeleport implements IMessage {
 
 		private static void removePad (EntityPlayer player,  TelepadEntry entry) {
 			TelepadData td = player.getCapability(TelePadDataCapability.CAPABILITY, null);
-			td.addEntry(new TelepadEntry("QUEUEDFORREMOVAL", entry.dimensionID, entry.position, false, false));
+			td.addEntry(new TelepadEntry("QUEUEDFORREMOVAL", entry.dimensionID, entry.position, false, false, false));
 			td.sync();
 			td.setInTeleportGui(true);
 			player.openGui(Telepads.instance, GuiHandler.REMOVE_TELEPAD, player.world, 0,0,0);

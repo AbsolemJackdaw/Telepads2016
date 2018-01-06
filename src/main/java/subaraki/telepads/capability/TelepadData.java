@@ -111,6 +111,37 @@ public class TelepadData {
 		sync();
 	}
 
+	public void syncPublicPadsToPlayer(WorldDataHandler wdh){
+		ArrayList<TelepadEntry> remove = new ArrayList<>(); //battling ConcurrentModificationException here
+		
+		for(TelepadEntry owned : getEntries())
+		{
+			//if the public pad got set private
+			if(owned.isPublic && wdh.contains(owned) && !wdh.getEntryForLocation(owned.position, owned.dimensionID).isPublic)
+			{
+				remove.add(owned);
+			}
+
+			//if the public pad doesn't exist anymore
+			if(owned.isPublic && !wdh.contains(owned))
+			{
+				remove.add(owned);
+			}
+		}
+		
+		if(!remove.isEmpty())
+		{
+			for(TelepadEntry entry : remove)
+				removeEntry(entry);
+		}
+		
+		for(TelepadEntry entry : wdh.getEntries())
+		{
+			if(entry.isPublic && !getEntries().contains(entry))
+				addEntry((TelepadEntry)entry.clone());
+		}
+	}
+
 	public boolean isInTeleportGui() {
 		return isInTeleportGui;
 	}

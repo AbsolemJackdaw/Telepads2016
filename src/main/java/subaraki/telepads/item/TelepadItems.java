@@ -26,7 +26,7 @@ public class TelepadItems {
 		loadItems();
 		MinecraftForge.EVENT_BUS.register(this);
 	}
-	
+
 	@SubscribeEvent
 	public void register(RegistryEvent.Register<Item> event)
 	{
@@ -37,9 +37,10 @@ public class TelepadItems {
 				ender_bead,
 				ender_bead_necklace,
 				tp_mod_upgrade,
+				tp_mod_upgrade_public,
 				telepad_block);
 	}
-	
+
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
 	public void registerRenders(ModelRegistryEvent event){
@@ -50,8 +51,9 @@ public class TelepadItems {
 		registerRender(ender_bead, "ender_bead", modid);
 		registerRender(ender_bead_necklace, "ender_bead_necklace", modid);
 		registerRender(tp_mod_upgrade, "mod_tp_upgrade", modid);
+		registerRender(tp_mod_upgrade_public, "mod_tp_upgrade_public", modid);
 	}
-	
+
 	public Item toggler;
 	public Item transmitter;
 	public Item redstone_upgrade;
@@ -60,9 +62,10 @@ public class TelepadItems {
 	public Item ender_bead_necklace;
 
 	public Item tp_mod_upgrade;
-	
+	public Item tp_mod_upgrade_public;
+
 	private ItemBlock telepad_block;
-	
+
 	private static String modid = Telepads.MODID;
 
 	public void loadItems(){
@@ -73,14 +76,21 @@ public class TelepadItems {
 		toggler = new Item().setUnlocalizedName(modid+".toggler").setRegistryName("toggler").setCreativeTab(CreativeTabs.REDSTONE);
 		transmitter = new Item().setUnlocalizedName(modid+".transmitter").setRegistryName("transmitter").setCreativeTab(CreativeTabs.REDSTONE);
 		redstone_upgrade = new Item().setUnlocalizedName(modid+".upgrade").setRegistryName("upgrade");
-		
+
 		tp_mod_upgrade = new Item(){
 			public void addInformation(ItemStack stack, World worldIn, java.util.List<String> tooltip, ITooltipFlag flagIn) {
 				tooltip.add("can be used by people with creative acces to enable telepads to teleport to a location defined in config");
 			}
 		}
-			.setUnlocalizedName(modid+".tp_upgrade").setRegistryName("tp_upgrade").setCreativeTab(CreativeTabs.REDSTONE);
-		
+		.setUnlocalizedName(modid+".tp_upgrade").setRegistryName("tp_upgrade").setCreativeTab(CreativeTabs.REDSTONE);
+
+		tp_mod_upgrade_public = new Item(){
+			public void addInformation(ItemStack stack, World worldIn, java.util.List<String> tooltip, ITooltipFlag flagIn) {
+				tooltip.add("can be used by people with creative acces to toggle public acces to a telepad");
+			}
+		}
+		.setUnlocalizedName(modid+".tp_upgrade_public").setRegistryName("tp_upgrade_public").setCreativeTab(CreativeTabs.REDSTONE);
+
 		telepad_block =  (ItemBlock) new ItemBlock(Telepads.blocks.blockTelepad){
 
 			@Override
@@ -94,7 +104,7 @@ public class TelepadItems {
 						for(EnumDyeColor dye : EnumDyeColor.values())
 							if(dye.getColorValue() == color)
 								edc = dye;	
-						
+
 						TextComponentTranslation feet = new TextComponentTranslation("feet.color");
 
 						tooltip.add("Feet : "+ (edc == null ? feet.getFormattedText() : edc.getName()));
@@ -107,13 +117,12 @@ public class TelepadItems {
 							if(dye.getColorValue() == color)
 								edc = dye;	
 						TextComponentTranslation arrow = new TextComponentTranslation("arrow.color");
-						
+
 						tooltip.add("Arrows : "+ (edc == null ? arrow.getFormattedText() : edc.getName()));
 					}
 				}
 			}
 
 		}.setRegistryName(Telepads.blocks.blockTelepad.getRegistryName());
-
 	}
 }
