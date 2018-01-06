@@ -28,3 +28,5 @@ run
 /resourcepacks/
 /saves/
 *.json
+/server.properties
+/world/
