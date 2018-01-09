@@ -8,6 +8,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import subaraki.telepads.handler.ConfigurationHandler;
 import subaraki.telepads.handler.WorldDataHandler;
 import subaraki.telepads.network.NetworkHandler;
 import subaraki.telepads.network.PacketSyncTelepadEntries;
@@ -20,7 +21,7 @@ public class TelepadData {
 	private List<TelepadEntry> entries;
 
 	private boolean isInTeleportGui;
-	private static final int MAX_TIME = 3 * 20;
+	private static final int MAX_TIME = ConfigurationHandler.instance.teleport_seconds * 20;
 	public int counter = MAX_TIME;
 
 	public TelepadData(){

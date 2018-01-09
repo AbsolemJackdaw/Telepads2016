@@ -17,6 +17,8 @@ public class ConfigurationHandler {
 	public String[] tp_locations = new String[]{};
 	public int expConsume;
 	
+	public int teleport_seconds;
+	
 	public ConfigurationHandler(File file) {
 		instance = this;
 
@@ -32,6 +34,8 @@ public class ConfigurationHandler {
 		
 		tp_locations = configFile.getStringList("teleport locations", "teleport", new String[]{}, "[x,y,z,dimension,locationName] locations can be defined exactly (100/64/100/0/Any Name really), with margin (-500#1000/64#128/0#500/-1#1,Some Location Name) or random (random/random/random/random/LocationNameHere). values can be mixed (-100#5000/random/100/0/yourLocationNameHere) is totally possible");
 
+		teleport_seconds = configFile.getInt("Teleport Cooldown", "Various", 3, 1, 60, "Timer , in seconds, of how long a player has to wait before the teleport gui shows up while standing on a pad");
+		
 		configFile.save();
 	}
 }
