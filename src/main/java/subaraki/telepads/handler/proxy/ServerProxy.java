@@ -11,4 +11,6 @@ public class ServerProxy {
 	public void registerTileEntityAndRender(){
 		GameRegistry.registerTileEntity(TileEntityTelepad.class, "TileEntityTelepad");
 	}
+
+	public void registerKey() {};
 }

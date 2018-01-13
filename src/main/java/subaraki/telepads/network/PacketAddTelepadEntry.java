@@ -26,6 +26,9 @@ public class PacketAddTelepadEntry implements IMessage {
 	 */
 	private TelepadEntry entry;
 
+	/**wether or not to share the telepadentry to whitelisted friends*/
+	private boolean share;
+
 	/**
 	 * A packet to add a new TelepadEntry to a player's list of locations. This packet is used
 	 * to send data from the client to the server, and should not be sent from a server thread.
@@ -35,10 +38,11 @@ public class PacketAddTelepadEntry implements IMessage {
 	 * @param playerUUID : The UUID of the player to add the new TelepadEntry to.
 	 * @param entry : The TelepadEntry to be added to the player's list of locations.
 	 */
-	public PacketAddTelepadEntry(UUID playerUUID, TelepadEntry entry) {
+	public PacketAddTelepadEntry(UUID playerUUID, TelepadEntry entry, boolean share) {
 
 		this.playerUUID = playerUUID;
 		this.entry = entry;
+		this.share = share;
 	}
 
 	@Override
@@ -46,6 +50,7 @@ public class PacketAddTelepadEntry implements IMessage {
 
 		this.playerUUID = UUID.fromString(ByteBufUtils.readUTF8String(buf));
 		this.entry = new TelepadEntry(buf);
+		this.share = buf.readBoolean();
 	}
 
 	@Override
@@ -53,6 +58,7 @@ public class PacketAddTelepadEntry implements IMessage {
 
 		ByteBufUtils.writeUTF8String(buf, this.playerUUID.toString());
 		this.entry.writeToByteBuf(buf);
+		buf.writeBoolean(share);
 	}
 
 	public PacketAddTelepadEntry() {
@@ -70,35 +76,52 @@ public class PacketAddTelepadEntry implements IMessage {
 				TelepadData td = player.getCapability(TelePadDataCapability.CAPABILITY, null);
 				WorldDataHandler wdh = WorldDataHandler.get(player.world);
 
-				if (td.getEntries().isEmpty()){
-					td.addEntry(packet.entry);
-					wdh.addEntry(packet.entry);
-					wdh.markDirty();
-				}else{
-					TelepadEntry hasEntry = null;	
-					for (TelepadEntry tpe : td.getEntries())
-						if (tpe.position.equals(packet.entry.position))
-							if(tpe.dimensionID == packet.entry.dimensionID){
-								hasEntry = tpe;
-								break;
-							}
-					if(hasEntry == null){
-						td.addEntry(packet.entry);
-						wdh.addEntry(packet.entry);
-						wdh.markDirty();
-					}else{
-						//dont know why i add this... should never be reached
-						//remove old entry
-						td.removeEntry(hasEntry);
-						wdh.removeEntry(hasEntry);
-						//replace with given entry
-						td.addEntry(packet.entry);
-						wdh.addEntry(packet.entry);
-						wdh.markDirty();
+				addSafeEntry(td, wdh, packet);
+
+				if(packet.share)
+				{
+					for(String name : td.getWhitelist())
+					{
+						EntityPlayer friend = player.world.getPlayerEntityByName(name);
+						if(friend != null)
+						{
+							TelepadData data = friend.getCapability(TelePadDataCapability.CAPABILITY, null);
+							addSafeEntry(data, wdh, packet);
+						}
 					}
 				}
 			});
 			return null;
+		}
+		
+		private void addSafeEntry(TelepadData td, WorldDataHandler wdh, PacketAddTelepadEntry packet){
+			if (td.getEntries().isEmpty()){
+				td.addEntry(packet.entry);
+				wdh.addEntry(packet.entry);
+				wdh.markDirty();
+			}else{
+				TelepadEntry hasEntry = null;	
+				for (TelepadEntry tpe : td.getEntries())
+					if (tpe.position.equals(packet.entry.position))
+						if(tpe.dimensionID == packet.entry.dimensionID){
+							hasEntry = tpe;
+							break;
+						}
+				if(hasEntry == null){
+					td.addEntry(packet.entry);
+					wdh.addEntry(packet.entry);
+					wdh.markDirty();
+				}else{
+					//dont know why i add this... should never be reached
+					//remove old entry
+					td.removeEntry(hasEntry);
+					wdh.removeEntry(hasEntry);
+					//replace with given entry
+					td.addEntry(packet.entry);
+					wdh.addEntry(packet.entry);
+					wdh.markDirty();
+				}
+			}
 		}
 	}
 }

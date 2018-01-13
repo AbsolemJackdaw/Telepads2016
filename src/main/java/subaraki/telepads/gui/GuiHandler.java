@@ -9,6 +9,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import subaraki.telepads.gui.client.GuiNameTelepad;
 import subaraki.telepads.gui.client.GuiRemoveTelepad;
 import subaraki.telepads.gui.client.GuiTeleport;
+import subaraki.telepads.gui.client.GuiWhitelist;
 import subaraki.telepads.gui.server.ContainerTelepad;
 import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.tileentity.TileEntityTelepad;
@@ -17,6 +18,7 @@ public class GuiHandler implements IGuiHandler {
 
 	public static final int NAME_TELEPAD = 1;
 	public static final int REMOVE_TELEPAD = 2;
+	public static final int WHITELIST= 3;
 	public static final int TELEPORT = 0;
 
 	public GuiHandler() {
@@ -31,6 +33,9 @@ public class GuiHandler implements IGuiHandler {
 			return new ContainerTelepad();
 		}
 
+		if(ID == WHITELIST)
+			return new ContainerTelepad();
+		
 		TileEntity te = world.getTileEntity(new BlockPos(x, y, z));
 
 		if(te instanceof TileEntityTelepad)
@@ -52,6 +57,9 @@ public class GuiHandler implements IGuiHandler {
 		{
 			return new GuiRemoveTelepad(player);
 		}
+
+		if(ID == WHITELIST)
+			return new GuiWhitelist();
 
 		TileEntity te = world.getTileEntity(new BlockPos(x, y, z));
 

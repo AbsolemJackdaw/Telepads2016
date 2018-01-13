@@ -16,7 +16,7 @@ import subaraki.telepads.capability.TelepadData;
 import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.utility.TelepadEntry;
 
-public class PacketSyncTelepadEntries implements IMessage {
+public class PacketSyncTelepadData implements IMessage {
 
 	/**
 	 * The unique identifier of the player sync this data to.
@@ -29,6 +29,11 @@ public class PacketSyncTelepadEntries implements IMessage {
 	private List<TelepadEntry> entries;
 
 	/**
+	 * The list of friends that will have coordinates added.
+	 */
+	private List<String> whiteList;
+
+	/**
 	 * A packet to sync entries to a player, on the client side. This packet must only be sent
 	 * from a server thread. The entries on the client side will be overridden with the
 	 * provided list of entries.
@@ -36,10 +41,11 @@ public class PacketSyncTelepadEntries implements IMessage {
 	 * @param playerUUID : The unique identifier of the player sync this data to.
 	 * @param entries : The list of entries to sync to the player.
 	 */
-	public PacketSyncTelepadEntries(UUID playerUUID, List<TelepadEntry> entries) {
+	public PacketSyncTelepadData(UUID playerUUID, List<TelepadEntry> entries, List<String> whiteList) {
 
 		this.playerUUID = playerUUID;
 		this.entries = entries;
+		this.whiteList = whiteList;
 	}
 
 	@Override
@@ -56,6 +62,14 @@ public class PacketSyncTelepadEntries implements IMessage {
 			entryList.add(new TelepadEntry(buf));
 
 		this.entries = entryList;
+
+		size = buf.readInt();
+		List<String> whiteList = new ArrayList<String>();
+
+		for(int i =0; i <size; i++)
+			whiteList.add(ByteBufUtils.readUTF8String(buf));
+
+		this.whiteList = whiteList;
 	}
 
 	@Override
@@ -66,22 +80,29 @@ public class PacketSyncTelepadEntries implements IMessage {
 
 		for (TelepadEntry entry : this.entries)
 			entry.writeToByteBuf(buf);
+
+		buf.writeInt(this.whiteList.size());
+		for(String s : whiteList)
+			ByteBufUtils.writeUTF8String(buf, s);
 	}
 
-	public PacketSyncTelepadEntries() {
+	public PacketSyncTelepadData() {
 
 	}
 
-	public static class PacketSyncTelepadEntriesHandler implements IMessageHandler<PacketSyncTelepadEntries, IMessage> {
+	public static class PacketSyncTelepadEntriesHandler implements IMessageHandler<PacketSyncTelepadData, IMessage> {
 
 		@Override
-		public IMessage onMessage (PacketSyncTelepadEntries packet, MessageContext ctx) {
+		public IMessage onMessage (PacketSyncTelepadData packet, MessageContext ctx) {
 
 			Minecraft.getMinecraft().addScheduledTask(()->{
 				EntityPlayer player = Telepads.proxy.getClientPlayer();
 				TelepadData td = player.getCapability(TelePadDataCapability.CAPABILITY, null);
 				td.overrideEntries(packet.entries);
-				
+
+				for(String s : packet.whiteList)
+					td.addToWiteList(s);
+
 				//reset states
 				td.setCounter(td.getMaxTime());
 				td.setInTeleportGui(false);

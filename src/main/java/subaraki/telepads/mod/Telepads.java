@@ -16,6 +16,7 @@ import subaraki.telepads.capability.TelePadDataCapability;
 import subaraki.telepads.gui.GuiHandler;
 import subaraki.telepads.handler.ConfigurationHandler;
 import subaraki.telepads.handler.WorldDataHandler;
+import subaraki.telepads.handler.client.KeyHandler;
 import subaraki.telepads.handler.proxy.ServerProxy;
 import subaraki.telepads.hooks.AttachCapability;
 import subaraki.telepads.hooks.PlayerTracker;
@@ -55,6 +56,8 @@ public class Telepads {
 
 		instance = this;
 
+		proxy.registerKey();
+		
 		new TelePadDataCapability().register();
 		new AttachCapability();
 
@@ -68,6 +71,8 @@ public class Telepads {
 		new NetworkHandler();
 		new GuiHandler();
 
+		new KeyHandler();
+		
 		new WorldDataHandler.WorldDataHandlerSaveEvent();
 
 		new subaraki.telepads.handler.EventHandler();

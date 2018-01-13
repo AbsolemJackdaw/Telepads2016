@@ -2,6 +2,7 @@ package subaraki.telepads.capability;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -11,7 +12,7 @@ import net.minecraft.nbt.NBTTagList;
 import subaraki.telepads.handler.ConfigurationHandler;
 import subaraki.telepads.handler.WorldDataHandler;
 import subaraki.telepads.network.NetworkHandler;
-import subaraki.telepads.network.PacketSyncTelepadEntries;
+import subaraki.telepads.network.PacketSyncTelepadData;
 import subaraki.telepads.utility.TelepadEntry;
 
 public class TelepadData {
@@ -19,6 +20,9 @@ public class TelepadData {
 	private EntityPlayer player;
 	/**A list of entries that this player has acces to. */
 	private List<TelepadEntry> entries;
+
+	/**A list of uuid's a player can whitelist, to share coordinates of a placed pad.*/
+	private List<String> whitelist = new ArrayList<String>();
 
 	private boolean isInTeleportGui;
 	private static final int MAX_TIME = ConfigurationHandler.instance.teleport_seconds * 20;
@@ -44,6 +48,16 @@ public class TelepadData {
 			entryList.appendTag(entry.writeToNBT(new NBTTagCompound()));
 
 		tag.setTag("entries", entryList);
+
+		NBTTagList friends = new NBTTagList();
+		for(String S : whitelist)
+		{
+			NBTTagCompound nbt = new NBTTagCompound();
+			nbt.setString("friend", S);
+			friends.appendTag(nbt);
+		}
+		tag.setTag("list", friends);
+
 		return tag;
 	}
 
@@ -58,6 +72,14 @@ public class TelepadData {
 			entryList.add(new TelepadEntry(entryTagList.getCompoundTagAt(tagPos)));
 
 		this.entries = entryList;
+
+		NBTTagList friendList = tag.getTagList("list", 10);
+		for(int i = 0; i < friendList.tagCount(); i++)
+		{
+			NBTTagCompound compound = friendList.getCompoundTagAt(i);
+			String s = compound.getString("friend");
+			whitelist.add(s);
+		}
 
 	}
 
@@ -99,7 +121,7 @@ public class TelepadData {
 	/**sends packet to sync entries with the client*/
 	public void sync () {
 		if (player instanceof EntityPlayerMP)
-			NetworkHandler.NETWORK.sendTo(new PacketSyncTelepadEntries(player.getUniqueID(), this.entries), (EntityPlayerMP) player);
+			NetworkHandler.NETWORK.sendTo(new PacketSyncTelepadData(player.getUniqueID(), this.entries, this.whitelist), (EntityPlayerMP) player);
 	}
 
 	public void syncPoweredWithWorldData(WorldDataHandler wdh){
@@ -114,7 +136,7 @@ public class TelepadData {
 
 	public void syncPublicPadsToPlayer(WorldDataHandler wdh){
 		ArrayList<TelepadEntry> remove = new ArrayList<>(); //battling ConcurrentModificationException here
-		
+
 		for(TelepadEntry owned : getEntries())
 		{
 			//if the public pad got set private
@@ -129,13 +151,13 @@ public class TelepadData {
 				remove.add(owned);
 			}
 		}
-		
+
 		if(!remove.isEmpty())
 		{
 			for(TelepadEntry entry : remove)
 				removeEntry(entry);
 		}
-		
+
 		for(TelepadEntry entry : wdh.getEntries())
 		{
 			if(entry.isPublic && !getEntries().contains(entry))
@@ -170,5 +192,62 @@ public class TelepadData {
 
 	public static int getMaxTime() {
 		return MAX_TIME;
+	}
+
+	public boolean addToWiteList(String player){
+		if(!isWhiteListFull())
+			if(!whitelist.contains(player))
+				whitelist.add(player);
+			else
+				return false;
+
+		return true;
+	}
+
+	public void clearList(){
+		whitelist.clear();
+	}
+
+	public void commandWhitelist(String s) throws Exception{
+		if(s.startsWith("/"))
+		{
+			s = s.substring(1);
+			String[] text = s.split(" ");
+
+			if(text.length == 1)
+			{
+				if(text[0].toLowerCase().equals("clear"))
+					clearList();
+				else
+					throw new Exception("no such command " + text[0]);
+			}
+
+			else if(text.length == 2)
+				if(text[0].toLowerCase().equals("remove"))
+					if(whitelist.contains(text[1]))
+					{
+						whitelist.remove(text[1]);
+					}
+					else;
+				else if(text[0].toLowerCase().equals("add"))
+				{
+					if(player.world.getPlayerEntityByName(text[1]) != null)
+						addToWiteList(text[1]);
+				}
+				else
+					throw new Exception("no such command " + text[0]);
+			else
+				throw new Exception("too much arguments ! ");
+
+			sync();
+		}
+	}
+
+	public List<String> getWhitelist() {
+		return whitelist;
+	}
+
+	public boolean isWhiteListFull(){
+		return whitelist.size() >= 9;
 	}
 }
