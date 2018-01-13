@@ -10,7 +10,7 @@ no.power=这个传送点以关闭
 no.exp=抱歉，你没有足够的经验以消耗进行传送。
 
 item.telepads.toggler.name=传送台红石控制器升级
-item.telepads.transmitter.name=传送台传送台跨世界传送升级
+item.telepads.transmitter.name=传送台跨世界传送升级
 tile.telepads.telepad.name=传送台
 
 item.telepads.ender_bead.name=末影念珠
