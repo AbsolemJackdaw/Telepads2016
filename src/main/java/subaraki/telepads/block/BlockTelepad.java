@@ -144,14 +144,24 @@ public class BlockTelepad extends Block{
 
 				}
 
-				if(item.equals(Items.DYE)){
-					int color = EnumDyeColor.byDyeDamage(heldItem.getItemDamage()).getColorValue();
+				if(item.equals(Items.DYE) && !world.isRemote){
+					EnumDyeColor edc = EnumDyeColor.byDyeDamage(heldItem.getItemDamage());//EnumDyeColor.byDyeDamage(heldItem.getItemDamage()).getColorValue();
+
+					float red = edc.getColorComponentValues()[0];
+					float green = edc.getColorComponentValues()[1];
+					float blue = edc.getColorComponentValues()[2];
+
+					int color = (int) (red*255f);
+					color = (color << 8) + (int)(green*255f);
+					color = (color << 8) + (int)(blue*255f);
+
 					if(tet.getColorFeet() == tet.COLOR_FEET_BASE)
 						tet.setFeetColor(color);
 					else if(tet.getColorArrow() == tet.COLOR_ARROW_BASE)
 						tet.setArrowColor(color);
 					tet.markDirty();
 					world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 3);
+
 					if(!player.isCreative())
 						heldItem.shrink(1);
 				}
@@ -219,7 +229,9 @@ public class BlockTelepad extends Block{
 	private void wash(int color, World world, BlockPos pos){
 		EnumDyeColor edc = EnumDyeColor.WHITE;
 		for(EnumDyeColor dye : EnumDyeColor.values())
-			if(dye.getColorValue() == color)
+			if(dye.getColorComponentValues()[0] == (float)((color & 16711680) >> 16)/255f && 
+			dye.getColorComponentValues()[1] == (float)((color & 65280) >> 8)/255f &&
+			dye.getColorComponentValues()[2] == (float)((color & 255) >> 0)/255f)
 				edc = dye;
 		ItemStack stack = new ItemStack(Items.DYE, 1, edc.getDyeDamage());
 		if(!world.isRemote)
