@@ -19,6 +19,7 @@ public class TelepadData {
 
 	private EntityPlayer player ;
 	/**A list of entries that this player has acces to. */
+	//initialize to prevent null crashes caused by external sources
 	private List<TelepadEntry> entries = new ArrayList<TelepadEntry>();
 
 	/**A list of uuid's a player can whitelist, to share coordinates of a placed pad.*/
