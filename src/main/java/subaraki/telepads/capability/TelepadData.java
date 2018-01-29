@@ -17,9 +17,9 @@ import subaraki.telepads.utility.TelepadEntry;
 
 public class TelepadData {
 
-	private EntityPlayer player;
+	private EntityPlayer player ;
 	/**A list of entries that this player has acces to. */
-	private List<TelepadEntry> entries;
+	private List<TelepadEntry> entries = new ArrayList<TelepadEntry>();
 
 	/**A list of uuid's a player can whitelist, to share coordinates of a placed pad.*/
 	private List<String> whitelist = new ArrayList<String>();
