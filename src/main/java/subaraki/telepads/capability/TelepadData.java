@@ -2,7 +2,6 @@ package subaraki.telepads.capability;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -37,7 +36,6 @@ public class TelepadData {
 	}
 
 	public void setPlayer(EntityPlayer newPlayer){
-		entries = new ArrayList<TelepadEntry>();
 		this.player = newPlayer;
 	}
 
@@ -45,8 +43,10 @@ public class TelepadData {
 		NBTTagCompound tag = new NBTTagCompound();
 
 		NBTTagList entryList = new NBTTagList();
-		for (TelepadEntry entry : this.entries)
-			entryList.appendTag(entry.writeToNBT(new NBTTagCompound()));
+		if(entries != null && !entries.isEmpty())
+			for (TelepadEntry entry : this.entries)
+				if(entry != null)
+					entryList.appendTag(entry.writeToNBT(new NBTTagCompound()));
 
 		tag.setTag("entries", entryList);
 
