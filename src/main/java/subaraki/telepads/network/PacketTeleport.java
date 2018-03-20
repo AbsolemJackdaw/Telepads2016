@@ -86,13 +86,13 @@ public class PacketTeleport implements IMessage {
 				BlockPos goTo = packet.goTo.position.up();
 				int goToDimensionid = packet.goTo.dimensionID;
 				int penalty = ConfigurationHandler.instance.expConsume;
-				
+
 				if(penalty > 0 && (player.experienceLevel == 0 && player.experience * player.xpBarCap() <= penalty))
 				{
 					player.sendStatusMessage(new TextComponentTranslation("no.exp").setStyle(new Style().setItalic(true).setColor(TextFormatting.DARK_RED)), true);
 					return;
 				}
-				
+
 				if (packet.goTo.dimensionID == player.dimension) 
 				{
 					if (packet.force) 
@@ -170,25 +170,37 @@ public class PacketTeleport implements IMessage {
 			//3 : experience is only the representing of the bar, and is calculated from 0.0 to 1.0 to draw the green bar,
 			//it is some amount of experience devided by the level cap 
 			int expConsuming = ConfigurationHandler.instance.expConsume;
+			int lvlConsuming = ConfigurationHandler.instance.lvlConsume;
 
-			float actualExpInBar = player.experience * (float)player.xpBarCap();
+			if(expConsuming == 0 && lvlConsuming == 0)
+				return;
 
-			if(actualExpInBar < expConsuming)//less exp then penalty
+			if(ConfigurationHandler.instance.consumeLvl) 
 			{
-				expConsuming-=actualExpInBar; //remove resting exp from penalty
-				player.addExperienceLevel(-1); //down a level
-				actualExpInBar = (float)player.xpBarCap(); //exp bar is concidered full here when going down a level
-				float total = actualExpInBar - expConsuming; //the total refund is one level of exp - the penalty left
-				player.experience = 0.0f; //reset the 'exp bar' to 0
-				if(total < 0 )
-					total = 0;
-				player.addExperience((int)total); //give exp
+				 player.addExperienceLevel(-lvlConsuming);
 			}
 			else
 			{
-				float total = actualExpInBar - (float)expConsuming;
-				player.experience = 0.0f;
-				player.addExperience((int)total);
+
+				float actualExpInBar = player.experience * (float)player.xpBarCap();
+
+				if(actualExpInBar < expConsuming)//less exp then penalty
+				{
+					expConsuming-=actualExpInBar; //remove resting exp from penalty
+					player.addExperienceLevel(-1); //down a level
+					actualExpInBar = (float)player.xpBarCap(); //exp bar is concidered full here when going down a level
+					float total = actualExpInBar - expConsuming; //the total refund is one level of exp - the penalty left
+					player.experience = 0.0f; //reset the 'exp bar' to 0
+					if(total < 0 )
+						total = 0;
+					player.addExperience((int)total); //give exp
+				}
+				else
+				{
+					float total = actualExpInBar - (float)expConsuming;
+					player.experience = 0.0f;
+					player.addExperience((int)total);
+				}
 			}
 		}
 	}

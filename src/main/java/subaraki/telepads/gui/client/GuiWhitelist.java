@@ -5,8 +5,6 @@ import java.io.IOException;
 
 import org.lwjgl.input.Keyboard;
 
-import com.mojang.realmsclient.gui.ChatFormatting;
-
 import lib.Lib;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -14,20 +12,14 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayer.EnumChatVisibility;
-import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 import subaraki.telepads.capability.TelePadDataCapability;
 import subaraki.telepads.capability.TelepadData;
 import subaraki.telepads.gui.server.ContainerTelepad;
 import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.network.NetworkHandler;
-import subaraki.telepads.network.PacketAddTelepadEntry;
 import subaraki.telepads.network.PacketAddWhitelistEntry;
-import subaraki.telepads.tileentity.TileEntityTelepad;
-import subaraki.telepads.utility.TelepadEntry;
 
 public class GuiWhitelist extends GuiContainer {
 
