@@ -31,7 +31,7 @@ public class Teleport {
 		double z = pos.getZ();
 		
 		// Load the chunk first
-		entity.getEntityWorld().getChunkFromChunkCoords((int) Math.floor(x / 16D), (int) Math.floor(z / 16D));
+		entity.getEntityWorld().getChunk((int) Math.floor(x / 16D), (int) Math.floor(z / 16D));
 
 		entity.setLocationAndAngles(x, y, z, entity.rotationYaw, entity.rotationPitch);
 		entity.setPositionAndUpdate(x, y, z);
@@ -55,7 +55,7 @@ public class Teleport {
 		// Load the chunk first
 		int chunkX = (int) Math.floor(x / 16D);
 		int chunkZ = (int) Math.floor(z / 16D);
-		entity.getEntityWorld().getChunkFromChunkCoords((int) Math.floor(x / 16D), (int) Math.floor(z / 16D));
+		entity.getEntityWorld().getChunk((int) Math.floor(x / 16D), (int) Math.floor(z / 16D));
 
 		if (entity instanceof EntityPlayerMP)
 		{

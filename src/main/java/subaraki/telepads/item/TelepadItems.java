@@ -70,26 +70,26 @@ public class TelepadItems {
 
 	public void loadItems(){
 
-		ender_bead = new ItemEnderBead().setMaxStackSize(16).setUnlocalizedName(modid+".ender_bead").setRegistryName("ender_bead").setCreativeTab(CreativeTabs.MATERIALS);
-		ender_bead_necklace = new ItemEnderNecklace().setMaxStackSize(8).setUnlocalizedName(modid+".ender_bead_necklace").setRegistryName("ender_bead_necklace").setCreativeTab(CreativeTabs.MATERIALS);
+		ender_bead = new ItemEnderBead().setMaxStackSize(16).setTranslationKey(modid+".ender_bead").setRegistryName("ender_bead").setCreativeTab(CreativeTabs.MATERIALS);
+		ender_bead_necklace = new ItemEnderNecklace().setMaxStackSize(8).setTranslationKey(modid+".ender_bead_necklace").setRegistryName("ender_bead_necklace").setCreativeTab(CreativeTabs.MATERIALS);
 
-		toggler = new Item().setUnlocalizedName(modid+".toggler").setRegistryName("toggler").setCreativeTab(CreativeTabs.REDSTONE);
-		transmitter = new Item().setUnlocalizedName(modid+".transmitter").setRegistryName("transmitter").setCreativeTab(CreativeTabs.REDSTONE);
-		redstone_upgrade = new Item().setUnlocalizedName(modid+".upgrade").setRegistryName("upgrade");
+		toggler = new Item().setTranslationKey(modid+".toggler").setRegistryName("toggler").setCreativeTab(CreativeTabs.REDSTONE);
+		transmitter = new Item().setTranslationKey(modid+".transmitter").setRegistryName("transmitter").setCreativeTab(CreativeTabs.REDSTONE);
+		redstone_upgrade = new Item().setTranslationKey(modid+".upgrade").setRegistryName("upgrade");
 
 		tp_mod_upgrade = new Item(){
 			public void addInformation(ItemStack stack, World worldIn, java.util.List<String> tooltip, ITooltipFlag flagIn) {
 				tooltip.add("can be used by people with creative acces to enable telepads to teleport to a location defined in config");
 			}
 		}
-		.setUnlocalizedName(modid+".tp_upgrade").setRegistryName("tp_upgrade").setCreativeTab(CreativeTabs.REDSTONE);
+		.setTranslationKey(modid+".tp_upgrade").setRegistryName("tp_upgrade").setCreativeTab(CreativeTabs.REDSTONE);
 
 		tp_mod_upgrade_public = new Item(){
 			public void addInformation(ItemStack stack, World worldIn, java.util.List<String> tooltip, ITooltipFlag flagIn) {
 				tooltip.add("can be used by people with creative acces to toggle public acces to a telepad");
 			}
 		}
-		.setUnlocalizedName(modid+".tp_upgrade_public").setRegistryName("tp_upgrade_public").setCreativeTab(CreativeTabs.REDSTONE);
+		.setTranslationKey(modid+".tp_upgrade_public").setRegistryName("tp_upgrade_public").setCreativeTab(CreativeTabs.REDSTONE);
 
 		telepad_block =  (ItemBlock) new ItemBlock(Telepads.blocks.blockTelepad){
 

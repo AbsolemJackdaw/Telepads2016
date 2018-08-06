@@ -117,8 +117,7 @@ public class CoordinateHandler {
 		if(definer.toLowerCase().equals("random"))
 		{
 			//load chunk ?
-			world.getChunkFromBlockCoords(new BlockPos(xi, 0, zi));
-			
+			world.getChunk(new BlockPos(xi, 0, zi));
 			if(world.getHeight(xi, zi) > 0)
 			{
 				System.out.println(world.getHeight(xi,zi));

@@ -53,7 +53,7 @@ public class BlockTelepad extends Block{
 		setSoundType(SoundType.GLASS);
 		setCreativeTab(CreativeTabs.TRANSPORTATION);
 		setHarvestLevel("pickaxe", 1);
-		setUnlocalizedName(Telepads.MODID+".telepad");
+		setTranslationKey(Telepads.MODID+".telepad");
 		setRegistryName("telepad");
 	}
 
