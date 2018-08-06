@@ -100,8 +100,9 @@ public class PacketSyncTelepadData implements IMessage {
 				TelepadData td = player.getCapability(TelePadDataCapability.CAPABILITY, null);
 				td.overrideEntries(packet.entries);
 
-				for(String s : packet.whiteList)
-					td.addToWiteList(s);
+				if(packet.whiteList != null && !packet.whiteList.isEmpty())
+					for(String s : packet.whiteList)
+						td.addToWiteList(s);
 
 				//reset states
 				td.setCounter(td.getMaxTime());
