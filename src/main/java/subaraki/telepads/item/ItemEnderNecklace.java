@@ -12,9 +12,11 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import subaraki.telepads.capability.TelePadDataCapability;
 import subaraki.telepads.capability.TelepadData;
+import subaraki.telepads.handler.ConfigurationHandler;
 import subaraki.telepads.handler.WorldDataHandler;
 import subaraki.telepads.utility.TelepadEntry;
 import subaraki.telepads.utility.masa.Teleport;
@@ -24,6 +26,13 @@ public class ItemEnderNecklace extends Item {
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
 
+		if(ConfigurationHandler.instance.disableNecklaceUsage)
+		{
+			if(!world.isRemote)
+				player.sendMessage(new TextComponentString("This Functionality has been disabled by the server operator."));
+			return super.onItemRightClick(world, player, hand);
+		}
+		
 		if(!world.isRemote)
 		{
 
