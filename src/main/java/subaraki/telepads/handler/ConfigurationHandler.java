@@ -13,9 +13,6 @@ public class ConfigurationHandler {
 	public boolean allowParticles = true;
 	
 	public boolean allowAnvilPearls = true;
-	
-	public boolean disableBeadsUsage = false;
-	public boolean disableNecklaceUsage = false;
 
 	public String[] tp_locations = new String[]{};
 	
@@ -34,11 +31,8 @@ public class ConfigurationHandler {
 
 		allowDragonBlocking = configFile.getBoolean("allowJamming", "Various", true, "EnderDragon blocks passage");
 		allowParticles = configFile.getBoolean("allowParticles", "Various", true, "Telepads spawn particles");
-		
-		disableBeadsUsage = configFile.getBoolean("allowParticles", "Beads And Necklace", false, "Telepads spawn particles");
-		disableNecklaceUsage = configFile.getBoolean("allowParticles", "Beads And Necklace", false, "Telepads spawn particles");
 
-		allowAnvilPearls = configFile.getBoolean("Ender Bead Creation", "Beads And Necklace", true, "Allow creation of Ender Beads");
+		allowAnvilPearls = configFile.getBoolean("Ender Bead Creation", "Various", true, "Allow creation of Ender Beads");
 
 		consumeLvl = configFile.getBoolean("Level Penalty", "TP Penalty", false, "Wether to consume levels or exp units");
 		expConsume = configFile.getInt("Teleport Cost", "TP Penalty", 0, 0, Integer.MAX_VALUE, "Experience consumed (in units, not levels) per teleport. If the demand is higher then a exp bar cap, only a level will be substracted");
