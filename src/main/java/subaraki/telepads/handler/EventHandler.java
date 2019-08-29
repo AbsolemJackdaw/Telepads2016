@@ -22,7 +22,10 @@ public class EventHandler {
 		if(ConfigurationHandler.instance.allowAnvilPearls)
 			if(input.getItem().equals(Items.ENDER_PEARL) && input.getItem().equals(ingredient.getItem()))
 			{
-				event.setOutput(new ItemStack(Telepads.items.ender_bead,3));
+				int amount = input.getCount() + ingredient.getCount();
+				if(amount > 8)
+					return;
+				event.setOutput(new ItemStack(Telepads.items.ender_bead, 2*amount));
 				event.setCost(3);
 			}
 	}
