@@ -408,6 +408,9 @@ public class BlockTelepad extends Block{
 		if(te == null || !(te instanceof TileEntityTelepad))
 			return;
 
+		if(((TileEntityTelepad)te).isPowered())
+			return;
+
 		int maxParticleCount = (((TileEntityTelepad)te).isStandingOnPlatform()) ? 15 : 1;
 
 		for (int particleCount = 0; particleCount < maxParticleCount; ++particleCount) {
