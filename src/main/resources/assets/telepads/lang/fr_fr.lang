@@ -15,3 +15,6 @@ tile.telepads.telepad.name=Telepad
 
 item.telepads.ender_bead.name=Bulle d'Ender
 item.telepads.ender_bead_necklace.name=Collier de l'Ender
+
+item.telepads.tp_upgrade.name=Cycleur Telepad pour Moderateur
+item.telepads.tp_upgrade_public.name=Telepad-O-Public pour Moderateur

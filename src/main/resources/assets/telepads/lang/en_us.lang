@@ -15,3 +15,6 @@ tile.telepads.telepad.name=Telepad
 
 item.telepads.ender_bead.name=Ender Bead
 item.telepads.ender_bead_necklace.name=Ender Bead Necklace
+
+item.telepads.tp_upgrade.name=Location Cycler
+item.telepads.tp_upgrade_public.name=Public-O-Matic

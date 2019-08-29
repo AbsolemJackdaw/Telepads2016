@@ -50,8 +50,8 @@ public class TelepadItems {
 		registerRender(telepad_block, "telepad", modid);
 		registerRender(ender_bead, "ender_bead", modid);
 		registerRender(ender_bead_necklace, "ender_bead_necklace", modid);
-		registerRender(tp_mod_upgrade, "mod_tp_upgrade", modid);
-		registerRender(tp_mod_upgrade_public, "mod_tp_upgrade_public", modid);
+		registerRender(tp_mod_upgrade, "tp_upgrade", modid);
+		registerRender(tp_mod_upgrade_public, "tp_upgrade_public", modid);
 	}
 
 	public Item toggler;
