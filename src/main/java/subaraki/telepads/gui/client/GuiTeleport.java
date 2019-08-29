@@ -8,6 +8,7 @@ import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
@@ -48,19 +49,21 @@ public class GuiTeleport extends GuiContainer{
 	/**
 	 * int : buttonID to keep track of entry to look for in player locations, TelepadEntry
 	 */
-	private HashMap<TelepadEntry, Integer> pageEntries = new HashMap<TelepadEntry, Integer>();
+	private LinkedHashMap<TelepadEntry, Integer> pageEntries = new LinkedHashMap<TelepadEntry, Integer>();
 
 	private List<Integer> dimensionsVisited = new ArrayList<Integer>();
 
 	private int xPosition = width/2;
 	private int yPosition = height/2;
 
+	TelepadData td = null;
+
 	public GuiTeleport(EntityPlayer player, TileEntityTelepad te) {
 		super(new ContainerTelepad(te));
 		this.te = te;
 		dimension_ID = player.world.provider.getDimension();
 
-		TelepadData td = player.getCapability(TelePadDataCapability.CAPABILITY, null);
+		td = player.getCapability(TelePadDataCapability.CAPABILITY, null);
 
 		// this 'add' is performed so that the id of the current world
 		// is always set first ! this prevents wrong dimensions from displaying
@@ -209,38 +212,39 @@ public class GuiTeleport extends GuiContainer{
 
 		int entry = 0;
 
-		for (TelepadEntry tpe : pageEntries.keySet()) {
+		for(TelepadEntry tpe : this.pageEntries.keySet())
+		{
 
-			//the world data has all info needed. player data only has location correctly stored
-			TelepadEntry worldEntry = WorldDataHandler.get(te.getWorld()).getEntryForLocation(tpe.position, tpe.dimensionID);
+				//the world data has all info needed. player data only has location correctly stored
+				TelepadEntry worldEntry = WorldDataHandler.get(te.getWorld()).getEntryForLocation(tpe.position, tpe.dimensionID);
 
-			String telepadName = "";
+				String telepadName = "";
 
-			if(worldEntry != null){
-				boolean isPowered = worldEntry.isPowered;
-				boolean isTransmitter = worldEntry.hasTransmitter;
-				boolean isPublic = worldEntry.isPublic;
-				telepadName = isPowered ? ChatFormatting.DARK_RED + tpe.entryName : isTransmitter ? ChatFormatting.DARK_GREEN + tpe.entryName : isPublic ? ChatFormatting.LIGHT_PURPLE + tpe.entryName : tpe.entryName;
-				
-			}else{
-				telepadName = ChatFormatting.DARK_GRAY+tpe.entryName;
-			}
+				if(worldEntry != null){
+					boolean isPowered = worldEntry.isPowered;
+					boolean isTransmitter = worldEntry.hasTransmitter;
+					boolean isPublic = worldEntry.isPublic;
+					telepadName = isPowered ? ChatFormatting.DARK_RED + tpe.entryName : isTransmitter ? ChatFormatting.DARK_GREEN + tpe.entryName : isPublic ? ChatFormatting.LIGHT_PURPLE + tpe.entryName : tpe.entryName;
 
-			if(entry < 15*(scroll_page+1) && entry >= 15*scroll_page){
-				int index = entry - 15*scroll_page; //index = [0;14]
+				}else{
+					telepadName = ChatFormatting.DARK_GRAY+tpe.entryName;
+				}
 
-				int theX = (index/5) * 105;
-				int theY = (index%5) * 25;
-				this.buttonList.add(new GuiButton(pageEntries.get(tpe), 
+				if(entry < 15*(scroll_page+1) && entry >= 15*scroll_page){
+					int index = entry - 15*scroll_page; //index = [0;14]
 
-						/* x */
-						xPosition + theX - (int)(105*1.5f),
-						/* y */
-						yPosition + theY - (int)(25*2.5f), 
+					int theX = (index/5) * 105;
+					int theY = (index%5) * 25;
+					this.buttonList.add(new GuiButton(pageEntries.get(tpe), 
 
-						/* size */100, 20,
-						telepadName));
-			}
+							/* x */
+							xPosition + theX - (int)(105*1.5f),
+							/* y */
+							yPosition + theY - (int)(25*2.5f), 
+
+							/* size */100, 20,
+							telepadName));
+				}
 			entry++;
 		}
 	}
