@@ -1,0 +1,17 @@
+﻿cannot.find.remove=Цей телепорт був видалений
+button.forget=Забути
+button.teleport=Все одно телепортуватись
+enter.to.confirm=Натисніть Enter для підтвердження
+name.your.telepad=Зазначте назву для телепорту
+dragon.obstructs=Сила дракона Краю унеможливлює телепортацію!
+feet.color=Бірюзовий
+arrow.color=Рожевий фуксія
+no.power=Цей телепорт позбав
+no.exp=Не вистачає досвіду для телепортації
+
+item.telepads.toggler.name=Перемикач
+item.telepads.transmitter.name=Передавач
+tile.telepads.telepad.name=Телепорт
+
+item.telepads.ender_bead.name=Намистина Краю
+item.telepads.ender_bead_necklace.name=Намисто Краю
