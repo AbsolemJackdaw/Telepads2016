@@ -1,0 +1,30 @@
+modLoader="javafml" #mandatory
+loaderVersion="[28,)" #mandatory (28 is current forge version)
+issueTrackerURL="https://github.com/ArtixAllMighty/Telepads2016/issues" #optional
+
+logoFile="logo.png" #optional
+
+[[mods]] #mandatory
+modId="telepads" #mandatory
+version="${file.jarVersion}" #mandatory
+displayName="Telepads" #mandatory
+displayURL="https://www.curseforge.com/minecraft/mc-mods/telepad" #optional
+credits="Subaraki, Darkhax for helping back in 2014" #optional
+authors="Subaraki" #optional
+description='''
+
+'''
+
+[[dependencies.telepads]] #optional
+    modId="forge" #mandatory
+    mandatory=true #mandatory
+    versionRange="[28,)" #mandatory
+    ordering="NONE"
+    side="BOTH"
+	
+[[dependencies.telepads]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.14.4]"
+    ordering="NONE"
+    side="BOTH"

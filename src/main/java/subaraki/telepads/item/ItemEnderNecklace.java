@@ -3,93 +3,96 @@ package subaraki.telepads.item;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
-import subaraki.telepads.capability.TelePadDataCapability;
-import subaraki.telepads.capability.TelepadData;
-import subaraki.telepads.handler.ConfigurationHandler;
+import subaraki.telepads.handler.ConfigData;
 import subaraki.telepads.handler.WorldDataHandler;
+import subaraki.telepads.mod.Telepads;
+import subaraki.telepads.utility.PropertiesWrapper;
 import subaraki.telepads.utility.TelepadEntry;
 import subaraki.telepads.utility.masa.Teleport;
 
 public class ItemEnderNecklace extends Item {
 
-	@Override
-	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+    public ItemEnderNecklace() {
 
-		if(ConfigurationHandler.instance.disableNecklaceUsage)
-		{
-			if(!world.isRemote)
-				player.sendMessage(new TextComponentString("This Functionality has been disabled by the server operator."));
-			return super.onItemRightClick(world, player, hand);
-		}
-		
-		if(!world.isRemote)
-		{
+        super(PropertiesWrapper.getItemProperties().maxStackSize(8).group(ItemGroup.MATERIALS));
 
-			TelepadData data = player.getCapability(TelePadDataCapability.CAPABILITY, null);
+        setRegistryName(Telepads.MODID, "ender_bead_necklace");
+    }
 
-			List<TelepadEntry> locations = data.getEntries();
-			List<TelepadEntry> thisDim = new ArrayList<TelepadEntry>();
+    @Override
+    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand)
+    {
 
-			if(locations.isEmpty())
-				return super.onItemRightClick(world, player, hand); //pass
+        if (ConfigData.disableNecklaceUsage)
+        {
+            if (!world.isRemote)
+                player.sendMessage(new StringTextComponent("This Functionality has been disabled by the server operator."));
+            return super.onItemRightClick(world, player, hand);
+        }
 
+        if (!world.isRemote)
+        {
 
-			int dim = player.dimension;
+            WorldDataHandler wdh = WorldDataHandler.get(world);
 
-			for(TelepadEntry entry : locations)
-			{
-				if(entry.dimensionID == dim )
-				{
-					thisDim.add(entry);
-				}
-			}
+            List<TelepadEntry> locations = wdh.getEntries();
+            List<TelepadEntry> thisDim = new ArrayList<TelepadEntry>();
 
-			if(thisDim.isEmpty())
-				return super.onItemRightClick(world, player, hand); //pass
+            if (locations.isEmpty())
+                return super.onItemRightClick(world, player, hand); // pass
 
-			double distance = Double.MAX_VALUE;
-			TelepadEntry closestEntry = null;
+            int dim = player.dimension.getId();
 
-			for(TelepadEntry entry : thisDim){
+            locations.stream().filter(filter -> filter.dimensionID == dim && filter.canUse(player.getUniqueID()) && !filter.isPowered)
+                    .forEach(telepad -> thisDim.add(telepad));
 
-				if(!WorldDataHandler.get(world).contains(entry) || WorldDataHandler.get(world).isEntryPowered(entry))
-					continue;
+            if (thisDim.isEmpty())
+                return super.onItemRightClick(world, player, hand);// pass
 
-				double distanceSQ = entry.position.distanceSq(player.posX, player.posY, player.posZ);
+            double distance = Double.MAX_VALUE;
+            TelepadEntry closestEntry = null;
 
-				if(distance > distanceSQ)
-				{
-					distance = distanceSQ;
-					closestEntry = entry;
-				}
-			}
+            for (TelepadEntry entry : thisDim)
+            {
 
-			if(closestEntry != null)
-			{
-				BlockPos pos = new BlockPos(player.posX, player.posY, player.posZ);
+                double distanceSQ = entry.position.distanceSq(player.posX, player.posY, player.posZ, true);
 
-				player.getHeldItem(hand).shrink(1);
-				if(!player.isCreative())
-					player.inventory.addItemStackToInventory(new ItemStack(Items.STRING , world.rand.nextInt(2)+1));
-				Teleport.teleportEntityInsideSameDimension(player, closestEntry.position.south().west());
+                if (distance > distanceSQ)
+                {
+                    distance = distanceSQ;
+                    closestEntry = entry;
+                }
+            }
 
-				world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_ENDERMEN_TELEPORT, SoundCategory.NEUTRAL, 0.6F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
-				world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.BLOCK_GLASS_BREAK, SoundCategory.NEUTRAL, 0.1F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
-				world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.BLOCK_CLOTH_BREAK, SoundCategory.NEUTRAL, 1.0F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
-			}
-		}
+            if (closestEntry != null)
+            {
 
-		return super.onItemRightClick(world, player, hand);
-	}
+                player.getHeldItem(hand).shrink(1);
+                if (!player.isCreative())
+                    player.inventory.addItemStackToInventory(new ItemStack(Items.STRING, world.rand.nextInt(2) + 1));
+                Teleport.teleportEntityInsideSameDimension(player, closestEntry.position.south().west());
+
+                world.playSound((PlayerEntity) null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.NEUTRAL, 0.6F,
+                        0.4F / (random.nextFloat() * 0.4F + 0.8F));
+                world.playSound((PlayerEntity) null, player.posX, player.posY, player.posZ, SoundEvents.BLOCK_GLASS_BREAK, SoundCategory.NEUTRAL, 0.1F,
+                        0.4F / (random.nextFloat() * 0.4F + 0.8F));
+                world.playSound((PlayerEntity) null, player.posX, player.posY, player.posZ, SoundEvents.BLOCK_WOOL_BREAK, SoundCategory.NEUTRAL, 1.0F,
+                        0.4F / (random.nextFloat() * 0.4F + 0.8F));
+            }
+
+        }
+
+        return super.onItemRightClick(world, player, hand);
+    }
 }

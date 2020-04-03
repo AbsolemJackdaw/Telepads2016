@@ -2,9 +2,9 @@
     "parent": "block/cube",
     
     "textures": {
-         "0": "blocks/wool_colored_black",
-         "1": "blocks/wool_colored_pink",
-         "2": "blocks/prismarine_bricks"
+         "0": "block/black_wool",
+         "1": "block/pink_wool",
+         "2": "block/prismarine_bricks"
     },
      "display": {
       "firstperson_righthand": {

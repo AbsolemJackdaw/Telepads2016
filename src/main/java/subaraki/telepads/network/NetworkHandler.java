@@ -1,36 +1,37 @@
 package subaraki.telepads.network;
 
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.relauncher.Side;
-import subaraki.telepads.network.PacketAddTelepadEntry.PacketAddTelepadEntryHandler;
-import subaraki.telepads.network.PacketAddWhitelistEntry.PacketAddWhitelistEntryHandler;
-import subaraki.telepads.network.PacketOpenWhiteList.PacketOpenWhiteListHandler;
-import subaraki.telepads.network.PacketRemoveTelepadEntry.PacketRemoveTelepadEntryHandler;
-import subaraki.telepads.network.PacketSyncPlayerAfterTeleport.PacketSyncPlayerAfterTeleportHandler;
-import subaraki.telepads.network.PacketSyncTelepadData.PacketSyncTelepadEntriesHandler;
-import subaraki.telepads.network.PacketSyncWorldData.PacketSyncWorldDataHandler;
-import subaraki.telepads.network.PacketTeleport.PacketTeleportHandler;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
+import subaraki.telepads.mod.Telepads;
+import subaraki.telepads.network.client.CPacketEditWhiteListEntry;
+import subaraki.telepads.network.client.CPacketRequestNamingScreen;
+import subaraki.telepads.network.client.CPacketRequestTeleportScreen;
+import subaraki.telepads.network.server.SPacketAddTelepadToWorld;
+import subaraki.telepads.network.server.SPacketAddWhiteListEntry;
+import subaraki.telepads.network.server.SPacketRemoveEntry;
+import subaraki.telepads.network.server.SPacketTeleport;
 
 public class NetworkHandler {
 
-	public static final String CHANNEL = "telepad_channel";
-	public static final SimpleNetworkWrapper NETWORK = NetworkRegistry.INSTANCE.newSimpleChannel(CHANNEL);
+    private static final String PROTOCOL_VERSION = "1";
 
-	public NetworkHandler() {
+    public static final SimpleChannel NETWORK = NetworkRegistry.newSimpleChannel(new ResourceLocation(Telepads.MODID, "telepadchannel"), () -> PROTOCOL_VERSION,
+            PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals);
 
-		NETWORK.registerMessage(PacketAddTelepadEntryHandler.class, PacketAddTelepadEntry.class, 0, Side.SERVER);
-		NETWORK.registerMessage(PacketRemoveTelepadEntryHandler.class, PacketRemoveTelepadEntry.class, 1, Side.SERVER);
-		NETWORK.registerMessage(PacketTeleportHandler.class, PacketTeleport.class, 2, Side.SERVER);
+    public NetworkHandler() {
 
-		NETWORK.registerMessage(PacketSyncTelepadEntriesHandler.class, PacketSyncTelepadData.class, 3, Side.CLIENT);
-		NETWORK.registerMessage(PacketSyncWorldDataHandler.class, PacketSyncWorldData.class, 4, Side.CLIENT);
-		
-		NETWORK.registerMessage(PacketSyncPlayerAfterTeleportHandler.class, PacketSyncPlayerAfterTeleport.class, 5, Side.CLIENT);
+        int id = 0;
 
-		NETWORK.registerMessage(PacketAddWhitelistEntryHandler.class, PacketAddWhitelistEntry.class, 6, Side.SERVER);
+        // client side handling
+        new CPacketRequestTeleportScreen().register(id++);
+        new CPacketRequestNamingScreen().register(id++);
+        new CPacketEditWhiteListEntry().register(id++);
 
-		NETWORK.registerMessage(PacketOpenWhiteListHandler.class, PacketOpenWhiteList.class, 7, Side.SERVER);
-
-	}
+        // server side handling
+        new SPacketAddTelepadToWorld().register(id++);
+        new SPacketTeleport().register(id++);
+        new SPacketRemoveEntry().register(id++);
+        new SPacketAddWhiteListEntry().register(id++);
+    }
 }

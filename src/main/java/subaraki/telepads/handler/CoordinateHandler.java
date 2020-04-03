@@ -1,10 +1,14 @@
 package subaraki.telepads.handler;
 
+import java.util.ArrayList;
 import java.util.Random;
+
+import com.google.common.collect.Lists;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
+import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.gen.Heightmap.Type;
 
 public class CoordinateHandler {
 
@@ -42,7 +46,6 @@ public class CoordinateHandler {
 		if(definer.toLowerCase().equals("random"))
 		{
 			int random = rand.nextInt(worldsize*2)-worldsize;
-			System.out.println(random);
 			return random;
 		}
 
@@ -81,7 +84,11 @@ public class CoordinateHandler {
 	private void defineDim(String dimension)
 	{
 		if(dimension.toLowerCase().equals("random"))
-			dim = DimensionManager.getIDs()[rand.nextInt(DimensionManager.getIDs().length)];
+		{
+		    ArrayList<DimensionType> list = Lists.newArrayList(DimensionType.getAll());
+		    DimensionType type = list.get(rand.nextInt(list.size()));
+		    dim = type.getId();
+		}
 
 		else if(dimension.contains("#"))
 		{
@@ -118,10 +125,10 @@ public class CoordinateHandler {
 		{
 			//load chunk ?
 			world.getChunk(new BlockPos(xi, 0, zi));
-			if(world.getHeight(xi, zi) > 0)
+			if(world.getHeight(Type.WORLD_SURFACE, xi, zi) > 0)
 			{
-				System.out.println(world.getHeight(xi,zi));
-				return world.getHeight(xi,zi);
+				System.out.println(world.getHeight(Type.WORLD_SURFACE, xi,zi));
+				return world.getHeight(Type.WORLD_SURFACE, xi,zi);
 			}
 		
 			return 0;
@@ -146,7 +153,7 @@ public class CoordinateHandler {
 			{
 				counter++;
 				
-				if((world.isBlockFullCube(pos) && world.isAirBlock(pos.up())))
+				if((world.getBlockState(pos).isNormalCube(world, pos) && world.isAirBlock(pos.up())))
 				{
 					break;
 				}

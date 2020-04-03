@@ -1,5 +1,6 @@
 {
+    "parent": "block/cube_all",
     "textures": {
-        "particle": "blocks/glass"
+        "all": "block/glass"
     }
 }

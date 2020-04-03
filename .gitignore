@@ -20,13 +20,6 @@ build
 # other
 eclipse
 run
-*.txt
-/config/
-/crash-reports/
-/logs/
-/mods/
-/resourcepacks/
-/saves/
-*.json
-/server.properties
-/world/
+
+# Files from Forge MDK
+forge*changelog.txt
