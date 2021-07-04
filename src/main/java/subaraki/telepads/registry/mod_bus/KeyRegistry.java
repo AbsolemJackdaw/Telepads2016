@@ -29,9 +29,9 @@ public class KeyRegistry {
     public static void keys(KeyInputEvent evt)
     {
 
-        if (keyWhiteList.isPressed())
+        if (keyWhiteList.consumeClick())
         {
-            Minecraft.getInstance().displayGuiScreen(new WhiteListScreen());
+            Minecraft.getInstance().setScreen(new WhiteListScreen());
         }
     }
 }

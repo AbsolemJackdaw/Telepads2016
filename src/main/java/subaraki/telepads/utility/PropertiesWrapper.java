@@ -12,23 +12,23 @@ public class PropertiesWrapper {
         return new net.minecraft.item.Item.Properties();
     }
 
-    public static net.minecraft.block.Block.Properties createBlockProperty(Material material) {
+    public static net.minecraft.block.AbstractBlock.Properties createBlockProperty(Material material) {
 
-        return net.minecraft.block.Block.Properties.create(material);
+        return net.minecraft.block.AbstractBlock.Properties.of(material);
     }
 
-    public static net.minecraft.block.Block.Properties createBlockProperty(Material material, DyeColor color) {
+    public static net.minecraft.block.AbstractBlock.Properties createBlockProperty(Material material, DyeColor color) {
 
-        return net.minecraft.block.Block.Properties.create(material, color);
+        return net.minecraft.block.AbstractBlock.Properties.of(material, color);
     }
 
-    public static net.minecraft.block.Block.Properties createBlockProperty(Material material, MaterialColor color) {
+    public static net.minecraft.block.AbstractBlock.Properties createBlockProperty(Material material, MaterialColor color) {
 
-        return net.minecraft.block.Block.Properties.create(material, color);
+        return net.minecraft.block.AbstractBlock.Properties.of(material, color);
     }
 
-    public static net.minecraft.block.Block.Properties fromBlockProperty(Block block) {
+    public static net.minecraft.block.AbstractBlock.Properties fromBlockProperty(Block block) {
 
-        return net.minecraft.block.Block.Properties.from(block);
+        return net.minecraft.block.AbstractBlock.Properties.copy(block);
     }
 }

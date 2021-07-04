@@ -7,7 +7,11 @@ import com.google.common.collect.Lists;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.RegistryKey;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
 
 public class TelepadEntry {
 
@@ -19,7 +23,7 @@ public class TelepadEntry {
     /**
      * The dimension that the TelePad entry is located in.
      */
-    public int dimensionID;
+    public RegistryKey<World> dimensionID;
 
     /**
      * The coordinates of the TelePad entry.
@@ -43,13 +47,13 @@ public class TelepadEntry {
      */
     public TelepadEntry(PacketBuffer buf) {
 
-        this(buf.readString(256), buf.readInt(), new BlockPos(buf.readInt(), buf.readInt(), buf.readInt()));
+        this(buf.readUtf(256), RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(buf.readUtf())), new BlockPos(buf.readInt(), buf.readInt(), buf.readInt()));
         addDetails(buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean());
 
         int size = buf.readInt();
         if (size > 0)
             for (int i = 0; i < size; i++)
-                addUser(buf.readUniqueId());
+                addUser(buf.readUUID());
 
     }
 
@@ -61,8 +65,10 @@ public class TelepadEntry {
      *            : An NBTTagCompound to read the required data from.
      */
     public TelepadEntry(CompoundNBT tag) {
+        
+        
 
-        this(tag.getString("entryName"), tag.getInt("dimensionID"), new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")));
+        this(tag.getString("entryName"), RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(tag.getString("dimensionID"))), new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")));
         addDetails(tag.getBoolean("power"), tag.getBoolean("transmitter"), tag.getBoolean("public"), tag.getBoolean("missing"));
 
         int size = tag.getInt("size");
@@ -86,7 +92,7 @@ public class TelepadEntry {
      * @param pos
      *            : The BlockPos of this TelepadEntry.
      */
-    public TelepadEntry(String name, int dimension, BlockPos pos) {
+    public TelepadEntry(String name, RegistryKey<World> dimension, BlockPos pos) {
 
         this.entryName = name;
         this.dimensionID = dimension;
@@ -115,7 +121,7 @@ public class TelepadEntry {
     {
 
         tag.putString("entryName", this.entryName);
-        tag.putInt("dimensionID", this.dimensionID);
+        tag.putString("dimensionID", this.dimensionID.location().toString());
         tag.putBoolean("power", isPowered);
         tag.putBoolean("transmitter", hasTransmitter);
         tag.putBoolean("public", isPublic);
@@ -144,8 +150,8 @@ public class TelepadEntry {
     public void writeToBuffer(PacketBuffer buf)
     {
 
-        buf.writeString(this.entryName);
-        buf.writeInt(this.dimensionID);
+        buf.writeUtf(this.entryName);
+        buf.writeUtf(this.dimensionID.location().toString());
         buf.writeInt(position.getX());
         buf.writeInt(position.getY());
         buf.writeInt(position.getZ());
@@ -156,7 +162,7 @@ public class TelepadEntry {
 
         buf.writeInt(users.size());
         if (!users.isEmpty())
-            users.stream().forEach(entry -> buf.writeUniqueId(entry));
+            users.stream().forEach(entry -> buf.writeUUID(entry));
     }
 
     @Override
@@ -164,7 +170,7 @@ public class TelepadEntry {
     {
 
         return "Entry Name: " + this.entryName + " DimensionID: " + this.dimensionID + " " + this.position.toString() + " Public Pad:" + this.isPublic
-                + " transmitter: " + this.hasTransmitter + " is powered: " + this.isPowered + " is missing: " + this.isMissingFromLocation;
+                + " transmitter: " + this.hasTransmitter + " is powered: " + this.isPowered + " is missing: " + this.isMissingFromLocation + " Users : " + this.users;
     }
 
     @Override

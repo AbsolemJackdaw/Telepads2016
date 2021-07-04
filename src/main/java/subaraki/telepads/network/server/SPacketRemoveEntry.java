@@ -47,7 +47,7 @@ public class SPacketRemoveEntry implements IPacketBase {
 
         context.get().enqueueWork(() -> {
 
-            WorldDataHandler wdh = WorldDataHandler.get(context.get().getSender().world);
+            WorldDataHandler wdh = WorldDataHandler.get(context.get().getSender().level);
 
             if (wdh.contains(entry))
             {

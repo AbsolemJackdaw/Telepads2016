@@ -20,13 +20,13 @@ public class TelepadItems {
         Item bead = new ItemEnderBead();
         Item necklace = new ItemEnderNecklace();
 
-        Item toggler = new Item(PropertiesWrapper.getItemProperties().group(ItemGroup.REDSTONE)).setRegistryName(Telepads.MODID, "toggler");
-        Item transmitter = new Item(PropertiesWrapper.getItemProperties().group(ItemGroup.REDSTONE)).setRegistryName(Telepads.MODID, "transmitter");
+        Item toggler = new Item(PropertiesWrapper.getItemProperties().tab(ItemGroup.TAB_REDSTONE)).setRegistryName(Telepads.MODID, "toggler");
+        Item transmitter = new Item(PropertiesWrapper.getItemProperties().tab(ItemGroup.TAB_REDSTONE)).setRegistryName(Telepads.MODID, "transmitter");
 
-        Item creative_rod = new Item(PropertiesWrapper.getItemProperties().group(ItemGroup.REDSTONE)) {
+        Item creative_rod = new Item(PropertiesWrapper.getItemProperties().tab(ItemGroup.TAB_REDSTONE)) {
 
             @Override
-            public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
+            public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
             {
 
                 tooltip.add(
@@ -34,10 +34,10 @@ public class TelepadItems {
             }
         }.setRegistryName(Telepads.MODID, "tp_upgrade");
 
-        Item creative_rod_2 = new Item(PropertiesWrapper.getItemProperties().group(ItemGroup.REDSTONE)) {
+        Item creative_rod_2 = new Item(PropertiesWrapper.getItemProperties().tab(ItemGroup.TAB_REDSTONE)) {
 
             @Override
-            public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
+            public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
             {
 
                 tooltip.add(new StringTextComponent("can be used by people with creative acces to toggle public acces to a telepad"));

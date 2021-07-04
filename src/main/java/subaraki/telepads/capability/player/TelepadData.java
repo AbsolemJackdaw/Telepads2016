@@ -70,7 +70,7 @@ public class TelepadData {
 
         whitelist.keySet().stream().forEach(name -> {
             CompoundNBT nbt = new CompoundNBT();
-            nbt.putUniqueId(name, whitelist.get(name));
+            nbt.putUUID(name, whitelist.get(name));
             friends.add(nbt);
         });
         tag.put("list", friends);
@@ -92,7 +92,7 @@ public class TelepadData {
         this.entries = entryList;
 
         ListNBT friendList = tag.getList("list", 10);
-        friendList.stream().forEach(entry -> ((CompoundNBT) entry).keySet().forEach(key -> whitelist.put(key, ((CompoundNBT) entry).getUniqueId(key))));
+        friendList.stream().forEach(entry -> ((CompoundNBT) entry).getAllKeys().forEach(key -> whitelist.put(key, ((CompoundNBT) entry).getUUID(key))));
 
     }
 
@@ -170,6 +170,7 @@ public class TelepadData {
     public void removeWhiteListEntryClient(String name)
     {
 
+        System.out.println(name);
         if (whitelist.containsKey(name))
             whitelist.remove(name);
     }
@@ -177,8 +178,12 @@ public class TelepadData {
     public void removeWhiteListEntryServer(String name)
     {
 
+        System.out.println(whitelist);
+        System.out.println(name);
+        System.out.println(whitelist.containsKey(name));
         if (whitelist.containsKey(name))
         {
+            System.out.println(name);
             whitelist.remove(name);
             NetworkHandler.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)player),
                     new CPacketEditWhiteListEntry(name, UUID.randomUUID(), false));
@@ -212,26 +217,26 @@ public class TelepadData {
     public void commandWhitelist(String command)
     {
 
-        if (player.world.isRemote)
+        if (player.level.isClientSide)
         {
             Telepads.log.error("Tried handling commands on the client side.");
             return;
         }
 
-        MinecraftServer serverWorld = player.world.getServer();
+        MinecraftServer serverWorld = player.level.getServer();
 
         // player names are minimum 3 characters
         if (!command.isEmpty() && command.length() > 2)
         {
-            command = command.toLowerCase();
+            //command = command.toLowerCase();
             // didnt add clear command because I was to lazy to add another client packet to
             // sync up the data
-            if (command.equals("clear"))
-            {
-                this.whitelist.clear();
-
-                return;
-            }
+//            if (command.equals("clear"))
+//            {
+//                this.whitelist.clear();
+//
+//                return;
+//            }
 
             String[] command_split = command.split(" ");
 
@@ -242,12 +247,13 @@ public class TelepadData {
                 switch (command_split[0])
                 {
                 case "add":
-                    ServerPlayerEntity player = serverWorld.getPlayerList().getPlayerByUsername(playername);
+                    ServerPlayerEntity player = serverWorld.getPlayerList().getPlayerByName(playername);
                     if (player == null)
                         return;
                     addWhiteListEntryServer(player);
                     break;
                 case "remove":
+                    System.out.println(playername);
                     removeWhiteListEntryServer(playername);
                     break;
                 }

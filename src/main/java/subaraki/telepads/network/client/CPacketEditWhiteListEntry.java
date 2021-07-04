@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 import subaraki.telepads.network.IPacketBase;
 import subaraki.telepads.network.NetworkHandler;
@@ -29,33 +29,37 @@ public class CPacketEditWhiteListEntry implements IPacketBase {
     }
 
     public CPacketEditWhiteListEntry(PacketBuffer buf) {
+
         this.decode(buf);
     }
 
     @Override
     public void encode(PacketBuffer buf)
     {
-        buf.writeString(name, 16);
+
+        buf.writeUtf(name, 16);
         buf.writeBoolean(add);
-        buf.writeUniqueId(id);
+        buf.writeUUID(id);
 
     }
 
     @Override
     public void decode(PacketBuffer buf)
     {
-        this.name = buf.readString();
+
+        this.name = buf.readUtf();
         this.add = buf.readBoolean();
-        this.id = buf.readUniqueId();
+        this.id = buf.readUUID();
     }
 
     @Override
     public void handle(Supplier<Context> context)
     {
+
         context.get().enqueueWork(() -> {
-            DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
+            if (FMLEnvironment.dist == Dist.CLIENT)
                 ClientReferences.handlePacket(this);
-            });
+
         });
         context.get().setPacketHandled(true);
     }

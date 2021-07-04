@@ -9,7 +9,7 @@ import com.google.common.collect.Lists;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 import subaraki.telepads.network.IPacketBase;
 import subaraki.telepads.network.NetworkHandler;
@@ -68,7 +68,7 @@ public class CPacketRequestTeleportScreen implements IPacketBase {
 
         buf.writeInt(this.whiteList.size());
         for (UUID s : whiteList)
-            buf.writeUniqueId(s);
+            buf.writeUUID(s);
 
         buf.writeBoolean(has_transmitter);
 
@@ -89,7 +89,7 @@ public class CPacketRequestTeleportScreen implements IPacketBase {
         size = buf.readInt();
         List<UUID> whiteList = Lists.newArrayList();
         for (int i = 0; i < size; i++)
-            whiteList.add(buf.readUniqueId());
+            whiteList.add(buf.readUUID());
         this.whiteList = whiteList;
 
         has_transmitter = buf.readBoolean();
@@ -101,10 +101,8 @@ public class CPacketRequestTeleportScreen implements IPacketBase {
     {
 
         context.get().enqueueWork(() -> {
-
-            DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
+            if (FMLEnvironment.dist == Dist.CLIENT)
                 ClientReferences.handlePacket(this);
-            });
         });
 
         context.get().setPacketHandled(true);

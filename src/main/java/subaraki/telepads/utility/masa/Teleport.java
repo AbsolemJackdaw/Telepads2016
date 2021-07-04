@@ -2,8 +2,9 @@ package subaraki.telepads.utility.masa;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 
 public class Teleport {
@@ -16,23 +17,22 @@ public class Teleport {
         double z = pos.getZ();
 
         // Load the chunk first
-        entity.getEntityWorld().getChunk((int) Math.floor(x / 16D), (int) Math.floor(z / 16D));
+        entity.getCommandSenderWorld().getChunk((int) Math.floor(x / 16D), (int) Math.floor(z / 16D));
 
-        entity.setLocationAndAngles(x, y, z, entity.rotationYaw, entity.rotationPitch);
-        entity.setPositionAndUpdate(x, y, z);
+        entity.moveTo(x, y, z, entity.yRot, entity.xRot);
+        entity.teleportTo(x, y, z);
         return entity;
     }
 
-    public static Entity teleportEntityToDimension(ServerPlayerEntity player, BlockPos pos, int dimDst)
+    public static Entity teleportEntityToDimension(ServerPlayerEntity player, BlockPos pos, RegistryKey<World> dimension)
     {
 
-        DimensionType destination = DimensionType.getById(dimDst);
-        if (!net.minecraftforge.common.ForgeHooks.onTravelToDimension(player, destination))
+        if (!net.minecraftforge.common.ForgeHooks.onTravelToDimension(player, dimension))
             return null;
 
-        ServerWorld nextWorld = player.getServer().getWorld(destination);
+        ServerWorld nextWorld = player.getServer().getLevel(dimension);
         nextWorld.getChunk(pos); // make sure the chunk is loaded
-        player.teleport(nextWorld, pos.getX(), pos.getY(), pos.getZ(), player.rotationYaw, player.rotationPitch);
+        player.teleportTo(nextWorld, pos.getX(), pos.getY(), pos.getZ(), player.yRot, player.xRot);
 
         return player;
     }

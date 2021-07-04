@@ -1,5 +1,7 @@
 package subaraki.telepads.screen;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -22,9 +24,9 @@ public class MissingEntryScreen extends Screen {
 
         super(new TranslationTextComponent("gui.missing.entry"));
 
-        information = new TranslationTextComponent("cannot.find.remove").getFormattedText();
-        teleport_anyway = new TranslationTextComponent("button.teleport").getFormattedText();
-        forget = new TranslationTextComponent("button.forget").getFormattedText();
+        information = new TranslationTextComponent("cannot.find.remove").getString();
+        teleport_anyway = new TranslationTextComponent("button.teleport").getString();
+        forget = new TranslationTextComponent("button.forget").getString();
 
         this.missing_entry = missing_entry;
     }
@@ -42,33 +44,35 @@ public class MissingEntryScreen extends Screen {
 
         super.init();
 
-        this.center_x = minecraft.mainWindow.getScaledWidth() / 2;
-        this.center_y = minecraft.mainWindow.getScaledHeight() / 2;
+        this.center_x = minecraft.getWindow().getGuiScaledWidth() / 2;
+        this.center_y = minecraft.getWindow().getGuiScaledHeight() / 2;
 
         int x = 120;
         int y = 20;
-        addButton(new Button(center_x - x -10, center_y + y, x, y, teleport_anyway, button -> {
-            NetworkHandler.NETWORK.sendToServer(new SPacketTeleport(minecraft.player.getPosition(), missing_entry, false));
+        this.addButton(new Button(center_x - x - 10, center_y + y, x, y, new TranslationTextComponent(teleport_anyway), button -> {
+            NetworkHandler.NETWORK.sendToServer(new SPacketTeleport(minecraft.player.blockPosition(), missing_entry, false));
+            this.removed();
             this.onClose();
         }));
 
-        addButton(new Button(center_x +10, center_y + y, x, y, forget, button -> {
+        addButton(new Button(center_x + 10, center_y + y, x, y, new TranslationTextComponent(forget), button -> {
             NetworkHandler.NETWORK.sendToServer(new SPacketRemoveEntry(missing_entry));
+            this.removed();
             this.onClose();
         }));
 
     }
 
     @Override
-    public void render(int mouse_x, int mouse_y, float p_render_3_)
+    public void render(MatrixStack stack, int mouse_x, int mouse_y, float partialTicks)
     {
 
-        this.renderBackground();
+        this.renderBackground(stack);
 
-        super.render(mouse_x, mouse_y, p_render_3_);
+        super.render(stack, mouse_x, mouse_y, partialTicks);
 
-        int half = font.getStringWidth(information) / 2;
-        font.drawStringWithShadow(information, center_x - half, center_y - 30, 0xff99bb);
+        int half = font.width(information) / 2;
+        font.drawShadow(stack, information, center_x - half, center_y - 30, 0xff99bb);
     }
 
 }

@@ -5,193 +5,178 @@ import java.util.Random;
 
 import com.google.common.collect.Lists;
 
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.Heightmap.Type;
+import net.minecraft.world.server.ServerWorld;
 
 public class CoordinateHandler {
 
-	public static final Random rand = new Random();
-	public int worldsize = 25000000;
+    public static final Random rand = new Random();
+    public int worldsize = 25000000;
 
-	int xi = 0;
-	int zi = 0;
-	String yi = "";
-	int dim = 0;
-	
-	String name = "default";
+    int xi = 0;
+    int zi = 0;
+    String yi = "";
+    ResourceLocation dim = null;
 
-	public CoordinateHandler(String args)
-	{
-		String[] s = args.split("/");
-		
-		System.out.println(args);
-		
-		xi = define(s[0]);
-		yi = s[1];
-		zi = define(s[2]);
-		
-		defineDim(s[3]);
-		
-		this.name = s[4];
-	}
-	
-	public String getName() {
-		return name;
-	}
+    String name = "default";
 
-	private int define(String definer){
+    public CoordinateHandler(ServerWorld server , String args) {
 
-		if(definer.toLowerCase().equals("random"))
-		{
-			int random = rand.nextInt(worldsize*2)-worldsize;
-			return random;
-		}
+        String[] s = args.split("/");
 
-		else if(definer.contains("#"))
-		{
-			String[] vals = definer.split("#");
-			int min = Integer.valueOf(vals[0]);
-			int max = Integer.valueOf(vals[1]);
+        xi = define(s[0]);
+        yi = s[1];
+        zi = define(s[2]);
 
-			if(max < min)
-			{
-				throw new IllegalArgumentException(min + "cannot be more then " + max + "! this is an error from the end user in the Telepads configuration file!");
-			}
+        defineDim(server , s[3]);
 
-			int total = 0;
+        this.name = s[4];
+    }
 
-			if(min < 0 && max >= 0)
-			{
-				total = max + (-1*min);
-			}
-			else
-				total = max + min;
+    public String getName()
+    {
 
-			int result = rand.nextInt(total);
+        return name;
+    }
 
-			if(min < 0 && max >= 0)
-				result += min;
+    private int define(String definer)
+    {
 
-			return result;
-			
-		}
-		else 
-			return Integer.valueOf(definer);
-	}
-	
-	private void defineDim(String dimension)
-	{
-		if(dimension.toLowerCase().equals("random"))
-		{
-		    ArrayList<DimensionType> list = Lists.newArrayList(DimensionType.getAll());
-		    DimensionType type = list.get(rand.nextInt(list.size()));
-		    dim = type.getId();
-		}
+        if (definer.toLowerCase().equals("random"))
+        {
+            int random = rand.nextInt(worldsize * 2) - worldsize;
+            return random;
+        }
 
-		else if(dimension.contains("#"))
-		{
-			String[] vals = dimension.split("#");
-			int min = Integer.valueOf(vals[0]);
-			int max = Integer.valueOf(vals[1]);
+        else
+            if (definer.contains("#"))
+            {
+                String[] vals = definer.split("#");
+                int min = Integer.valueOf(vals[0]);
+                int max = Integer.valueOf(vals[1]);
 
-			if(max < min)
-			{
-				throw new IllegalArgumentException(min + "cannot be more then " + max + "! this is an error from the end user in the Telepads configuration file!");
-			}
+                if (max < min) { throw new IllegalArgumentException(
+                        min + "cannot be more then " + max + "! this is an error from the end user in the Telepads configuration file!"); }
 
-			int total = 0;
+                int total = 0;
 
-			if(min < 0 && max >= 0)
-			{
-				total = max + (-1*min);
-			}
-			else
-				total = max + min;
+                if (min < 0 && max >= 0)
+                {
+                    total = max + (-1 * min);
+                }
+                else
+                    total = max + min;
 
-			dim = rand.nextInt(total);
+                int result = rand.nextInt(total);
 
-			if(min < 0 && max >= 0)
-				dim += min;
-		}
-		else 
-			dim = Integer.valueOf(dimension);
-	}
-	
-	private int defineY(String definer, World world){
+                if (min < 0 && max >= 0)
+                    result += min;
 
-		if(definer.toLowerCase().equals("random"))
-		{
-			//load chunk ?
-			world.getChunk(new BlockPos(xi, 0, zi));
-			if(world.getHeight(Type.WORLD_SURFACE, xi, zi) > 0)
-			{
-				System.out.println(world.getHeight(Type.WORLD_SURFACE, xi,zi));
-				return world.getHeight(Type.WORLD_SURFACE, xi,zi);
-			}
-		
-			return 0;
-		}
+                return result;
 
-		else if(definer.contains("#"))
-		{
-			String[] vals = definer.split("#");
-			int min = Integer.valueOf(vals[0]);
-			int max = Integer.valueOf(vals[1]);
+            }
+            else
+                return Integer.valueOf(definer);
+    }
 
-			if(max < min)
-			{
-				throw new IllegalArgumentException(min + "cannot be more then " + max + "! this is an error from the end user in the Telepads configuration file!");
-			}
+    private void defineDim(ServerWorld world, String dimension)
+    {
 
-			BlockPos pos = new BlockPos(xi, min, zi);
-			
-			int counter = min;
-			
-			while(counter < max)
-			{
-				counter++;
-				
-				if((world.getBlockState(pos).isNormalCube(world, pos) && world.isAirBlock(pos.up())))
-				{
-					break;
-				}
-				
-				pos = new BlockPos(xi,counter,zi);
-			}
-			
-			int result = counter;
-			
-			//if it reached higher then max, meaning no suitable position was found, get an average of the given height
-			if(counter >= max)
-			{
-				if(min < 0 && max >= 0)
-				{
-					result = max + (-1*min);
-				}
-				else
-					result = max + min;
-				
-				result = result/2 + min;
-			}
-			
-			return result;
+        if (dimension.toLowerCase().equals("random"))
+        {
+            ArrayList<ResourceLocation> list = Lists.newArrayList();
+            // get a random dimension from existing dimensions
+            for (ServerWorld dim : world.getServer().getAllLevels())
+            {
+                list.add(dim.dimension().location());
+            }
 
-		}
-		else 
-			return Integer.valueOf(definer);
-	}
-	
-	
-	public BlockPos getPosition(World world){
-		
-		int y = defineY(yi, world);
-		System.out.println(xi + " "+ y + " " + zi);
-		return new BlockPos(xi,y,zi);		
-	}
-	
-	public int getDimension(){
-		return dim;
-	}
+            ResourceLocation resLoc = list.get(rand.nextInt(list.size()));
+            dim = resLoc;
+
+        }
+
+        else
+            dim = new ResourceLocation(dimension);
+    }
+
+    private int defineY(String definer, World world)
+    {
+
+        if (definer.toLowerCase().equals("random"))
+        {
+            // load chunk ?
+            world.getChunk(new BlockPos(xi, 0, zi));
+            if (world.getHeight(Type.WORLD_SURFACE, xi, zi) > 0)
+            {
+                return world.getHeight(Type.WORLD_SURFACE, xi, zi);
+            }
+
+            return 0;
+        }
+
+        else
+            if (definer.contains("#"))
+            {
+                String[] vals = definer.split("#");
+                int min = Integer.valueOf(vals[0]);
+                int max = Integer.valueOf(vals[1]);
+
+                if (max < min) { throw new IllegalArgumentException(
+                        min + "cannot be more then " + max + "! this is an error from the end user in the Telepads configuration file!"); }
+
+                BlockPos pos = new BlockPos(xi, min, zi);
+
+                int counter = min;
+
+                while (counter < max)
+                {
+                    counter++;
+
+                    if ((world.getBlockState(pos).isRedstoneConductor(world, pos) && world.isEmptyBlock(pos.above())))
+                    {
+                        break;
+                    }
+
+                    pos = new BlockPos(xi, counter, zi);
+                }
+
+                int result = counter;
+
+                // if it reached higher then max, meaning no suitable position was found, get an
+                // average of the given height
+                if (counter >= max)
+                {
+                    if (min < 0 && max >= 0)
+                    {
+                        result = max + (-1 * min);
+                    }
+                    else
+                        result = max + min;
+
+                    result = result / 2 + min;
+                }
+
+                return result;
+
+            }
+            else
+                return Integer.valueOf(definer);
+    }
+
+    public BlockPos getPosition(World world)
+    {
+
+        int y = defineY(yi, world);
+        return new BlockPos(xi, y, zi);
+    }
+
+    public ResourceLocation getDimension()
+    {
+
+        return dim;
+    }
 }

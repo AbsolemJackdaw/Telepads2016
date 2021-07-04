@@ -30,14 +30,14 @@ public class SPacketAddWhiteListEntry implements IPacketBase {
     public void encode(PacketBuffer buf)
     {
 
-        buf.writeString(command, 23);
+        buf.writeUtf(command, 23);
     }
 
     @Override
     public void decode(PacketBuffer buf)
     {
 
-        this.command = buf.readString(23);
+        this.command = buf.readUtf(23);
     }
 
     @Override

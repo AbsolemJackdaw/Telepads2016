@@ -23,31 +23,31 @@ public class ClientReferences {
     public static void openNamingScreen(BlockPos pos)
     {
 
-        Minecraft.getInstance().displayGuiScreen(new NameTelepadScreen(pos));
+        Minecraft.getInstance().setScreen(new NameTelepadScreen(pos));
     }
 
     public static void openMissingScreen(TelepadEntry entry)
     {
 
-        Minecraft.getInstance().displayGuiScreen(new MissingEntryScreen(entry));
+        Minecraft.getInstance().setScreen(new MissingEntryScreen(entry));
     }
 
     public static World getClientWorld()
     {
 
-        return Minecraft.getInstance().world;
+        return Minecraft.getInstance().level;
     }
 
     public static void displayScreen(Screen screen)
     {
 
-        Minecraft.getInstance().displayGuiScreen(screen);
+        Minecraft.getInstance().setScreen(screen);
     }
 
     public static void displayTeleportScreen(boolean has_transmitter)
     {
 
-        Minecraft.getInstance().displayGuiScreen(new TeleportScreen(has_transmitter));
+        Minecraft.getInstance().setScreen(new TeleportScreen(has_transmitter));
     }
 
     public static void handlePacket(CPacketRequestTeleportScreen packet)

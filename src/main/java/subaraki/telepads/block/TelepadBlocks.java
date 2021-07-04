@@ -8,12 +8,10 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.client.TextureTracker;
 import subaraki.telepads.mod.Telepads.ObjectHolders;
 import subaraki.telepads.utility.PropertiesWrapper;
 
@@ -30,13 +28,13 @@ public class TelepadBlocks {
     public static BlockItem[] registerBlockItems()
     {
 
-        BlockItem telepadItem = new BlockItem(ObjectHolders.TELEPAD_BLOCK, PropertiesWrapper.getItemProperties().group(ItemGroup.TRANSPORTATION)) {
+        BlockItem telepadItem = new BlockItem(ObjectHolders.TELEPAD_BLOCK, PropertiesWrapper.getItemProperties().tab(ItemGroup.TAB_TRANSPORTATION)) {
 
             @Override
-            public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
+            public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
             {
 
-                super.addInformation(stack, worldIn, tooltip, flagIn);
+                super.appendHoverText(stack, worldIn, tooltip, flagIn);
 
                 if (stack.hasTag())
                 {
@@ -57,14 +55,14 @@ public class TelepadBlocks {
                             {
                                 if (dye.getColorValue() == saved_color)
                                 {
-                                    color_name = "item.minecraft.firework_star." + dye.getTranslationKey();
+                                    color_name = "item.minecraft.firework_star." + dye.getName();
                                     break;
                                 }
                             }
 
                             TranslationTextComponent part_name = new TranslationTextComponent(translate_part_names[iteration]);
                             TranslationTextComponent dye_name = new TranslationTextComponent(color_name);
-                            StringTextComponent text = new StringTextComponent(part_name.getFormattedText() + dye_name.getFormattedText());
+                            StringTextComponent text = new StringTextComponent(part_name.getString() + dye_name.getString());
                             tooltip.add(text);
                         }
 

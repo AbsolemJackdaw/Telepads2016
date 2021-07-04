@@ -15,7 +15,7 @@ public class RegisterTileEntity {
     public static void registerTE(RegistryEvent.Register<TileEntityType<?>> evt)
     {
 
-        TileEntityType<?> type = TileEntityType.Builder.create(TileEntityTelepad::new, Telepads.ObjectHolders.TELEPAD_BLOCK).build(null);
+        TileEntityType<?> type = TileEntityType.Builder.of(TileEntityTelepad::new, Telepads.ObjectHolders.TELEPAD_BLOCK).build(null);
         type.setRegistryName(Telepads.MODID, "telepadtileentity");
         evt.getRegistry().register(type);
     }

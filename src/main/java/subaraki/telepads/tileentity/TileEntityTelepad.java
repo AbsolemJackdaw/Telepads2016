@@ -1,9 +1,9 @@
 package subaraki.telepads.tileentity;
 
-import java.awt.Color;
 import java.util.List;
 import java.util.Random;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -12,12 +12,16 @@ import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.RegistryKey;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.text.Color;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.network.PacketDistributor;
 import subaraki.telepads.capability.player.TelepadData;
@@ -32,9 +36,9 @@ import subaraki.telepads.utility.masa.Teleport;
 
 public class TileEntityTelepad extends TileEntity implements ITickableTileEntity {
 
-    private int dimension;
-    public static final int COLOR_FEET_BASE = new Color(26, 246, 172).getRGB();
-    public static final int COLOR_ARROW_BASE = new Color(243, 89, 233).getRGB();
+    private RegistryKey<World> dimension;
+    public static final int COLOR_FEET_BASE = new java.awt.Color(26, 246, 172).getRGB();
+    public static final int COLOR_ARROW_BASE = new java.awt.Color(243, 89, 233).getRGB();
     private int colorFrame = COLOR_FEET_BASE;
     private int colorBase = COLOR_ARROW_BASE;
 
@@ -58,7 +62,6 @@ public class TileEntityTelepad extends TileEntity implements ITickableTileEntity
     public TileEntityTelepad() {
 
         super(ObjectHolders.TILE_ENTITY_TELEPAD);
-        // aabb = new AxisAlignedBB(getPos()).expand(1, 1, 1);
     }
 
     ///////////////// 3 METHODS ABSOLUTELY NEEDED FOR CLIENT/SERVER
@@ -69,9 +72,9 @@ public class TileEntityTelepad extends TileEntity implements ITickableTileEntity
     {
 
         CompoundNBT nbt = new CompoundNBT();
-        this.write(nbt);
+        this.save(nbt);
 
-        return new SUpdateTileEntityPacket(getPos(), 0, nbt);
+        return new SUpdateTileEntityPacket(getBlockPos(), 0, nbt);
 
     }
 
@@ -79,7 +82,7 @@ public class TileEntityTelepad extends TileEntity implements ITickableTileEntity
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt)
     {
 
-        this.read(pkt.getNbtCompound());
+        this.load(getBlockState(), pkt.getTag());
     }
 
     @Override
@@ -87,25 +90,25 @@ public class TileEntityTelepad extends TileEntity implements ITickableTileEntity
     {
 
         CompoundNBT nbt = super.getUpdateTag();
-        write(nbt);
+        save(nbt);
         return nbt;
     }
 
     // calls readFromNbt by default. no need to add anything in here
     @Override
-    public void handleUpdateTag(CompoundNBT tag)
+    public void handleUpdateTag(BlockState state, CompoundNBT tag)
     {
 
-        super.handleUpdateTag(tag);
+        super.handleUpdateTag(state, tag);
     }
     ////////////////////////////////////////////////////////////////////
 
     @Override
-    public void read(CompoundNBT compound)
+    public void load(BlockState state, CompoundNBT compound)
     {
 
-        super.read(compound);
-        dimension = compound.getInt("dimension");
+        super.load(state, compound);
+        String dim = compound.getString("dimension");
         hasDimensionUpgrade = compound.getBoolean("upgrade_dimension");
         hasRedstoneUpgrade = compound.getBoolean("upgrade_redstone");
         isPowered = compound.getBoolean("is_powered");
@@ -115,14 +118,17 @@ public class TileEntityTelepad extends TileEntity implements ITickableTileEntity
         isStandingOnPlatform = compound.getBoolean("standingon");
         this.coordinate_handler_index = compound.getInt("mod_tp");
         this.isPublic = compound.getBoolean("public");
+
+        if (!dim.isEmpty())
+            dimension = RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(dim));
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT compound)
+    public CompoundNBT save(CompoundNBT compound)
     {
 
-        super.write(compound);
-        compound.putInt("dimension", dimension);
+        super.save(compound);
+        compound.putString("dimension", dimension.location().toString());
         compound.putBoolean("upgrade_dimension", hasDimensionUpgrade);
         compound.putBoolean("upgrade_redstone", hasRedstoneUpgrade);
         compound.putBoolean("is_powered", isPowered);
@@ -142,11 +148,11 @@ public class TileEntityTelepad extends TileEntity implements ITickableTileEntity
         if (isPowered)
             return;
 
-        if (!world.isRemote)
+        if (!level.isClientSide)
         {
 
-            AxisAlignedBB aabb = new AxisAlignedBB(getPos());
-            List<ServerPlayerEntity> list = world.getEntitiesWithinAABB(ServerPlayerEntity.class, aabb);
+            AxisAlignedBB aabb = new AxisAlignedBB(getBlockPos());
+            List<ServerPlayerEntity> list = level.getEntitiesOfClass(ServerPlayerEntity.class, aabb);
 
             if (!list.isEmpty())
             {
@@ -162,7 +168,7 @@ public class TileEntityTelepad extends TileEntity implements ITickableTileEntity
                         if (player_data.getRequestTeleportScreen())
                         {
                             player_data.setRequestTeleportScreen(false);
-                            TelepadEntry telepad = WorldDataHandler.get(getWorld()).getEntryForLocation(getPos(), dimension);
+                            TelepadEntry telepad = WorldDataHandler.get(getLevel()).getEntryForLocation(getBlockPos(), dimension);
                             boolean is_transmitter = telepad == null ? false : telepad.hasTransmitter;
 
                             NetworkHandler.NETWORK.send(PacketDistributor.PLAYER.with(() -> player_standing_on_pad),
@@ -181,17 +187,18 @@ public class TileEntityTelepad extends TileEntity implements ITickableTileEntity
                         else
                             if (player_data.getCounter() == 0 && !player_data.isInTeleportGui())
                             {
-                                if (world.dimension.getType().equals(DimensionType.THE_END) && ConfigData.allowDragonBlocking)
+                                if (level.dimension().equals(World.END) && ConfigData.allowDragonBlocking)
                                 {
-                                    if (world instanceof ServerWorld)
+                                    if (level instanceof ServerWorld)
                                     {
-                                        if (!((ServerWorld) world).getDragons().isEmpty())
+                                        if (!((ServerWorld) level).getDragons().isEmpty())
                                         {
                                             player_data.setCounter(TelepadData.getMaxTime());
 
-                                            player_standing_on_pad.sendMessage(new TranslationTextComponent("dragon.obstructs")
-                                                    .setStyle(new Style().setColor(TextFormatting.DARK_PURPLE).setItalic(true)));
-                                            return ;
+                                            player_standing_on_pad.sendMessage(new TranslationTextComponent("dragon.obstructs").setStyle(Style.EMPTY
+                                                    .withColor(Color.fromLegacyFormat(TextFormatting.DARK_PURPLE)).withItalic(true)),
+                                                    player_standing_on_pad.getUUID());
+                                            return;
                                         }
                                     }
                                 }
@@ -200,21 +207,30 @@ public class TileEntityTelepad extends TileEntity implements ITickableTileEntity
                                 {
                                     int index = getCoordinateHandlerIndex();
                                     String[] tpl = ConfigData.tp_locations;
-                                    CoordinateHandler coords = new CoordinateHandler(tpl[index]);
+                                    CoordinateHandler coords = new CoordinateHandler((ServerWorld) level, tpl[index]);
 
-                                    int dimension = coords.getDimension();
+                                    ResourceLocation dimension = coords.getDimension();
 
-                                    if (player_standing_on_pad.dimension.getId() != dimension)
+                                    if (!player_standing_on_pad.level.dimension().location().equals(dimension))
                                     {
                                         MinecraftServer server = player_standing_on_pad.getServer();
-                                        ServerWorld worldDestination = server.getWorld(DimensionType.getById(dimension));
 
+                                        RegistryKey<World> dim_key = null;
+                                        for (ServerWorld dim : server.getAllLevels())
+                                        {
+                                            if (dim.dimension().location().equals(dimension))
+                                                dim_key = dim.dimension();
+                                        }
+                                        if (dim_key == null)
+                                            return;
+
+                                        ServerWorld worldDestination = server.getLevel(level.dimension());
                                         BlockPos pos = coords.getPosition(worldDestination);
-                                        Teleport.teleportEntityToDimension(player_standing_on_pad, pos, dimension);
+                                        Teleport.teleportEntityToDimension(player_standing_on_pad, pos, dim_key);
                                     }
                                     else
                                     {
-                                        BlockPos pos = coords.getPosition(getWorld());
+                                        BlockPos pos = coords.getPosition(getLevel());
                                         Teleport.teleportEntityInsideSameDimension(player_standing_on_pad, pos);
                                     }
                                 }
@@ -245,7 +261,7 @@ public class TileEntityTelepad extends TileEntity implements ITickableTileEntity
     {
 
         isStandingOnPlatform = onPlatform;
-        world.notifyBlockUpdate(pos, world.getBlockState(getPos()), ObjectHolders.TELEPAD_BLOCK.getDefaultState(), 3);
+        level.sendBlockUpdated(worldPosition, level.getBlockState(getBlockPos()), ObjectHolders.TELEPAD_BLOCK.defaultBlockState(), 3);
     }
 
     // called server side only in tick
@@ -254,14 +270,14 @@ public class TileEntityTelepad extends TileEntity implements ITickableTileEntity
 
         TelepadData.get(player).ifPresent(data -> {
 
-            ServerWorld world = player.getServerWorld();
+            ServerWorld world = player.getLevel();
             WorldDataHandler save = WorldDataHandler.get(world);
 
             List<TelepadEntry> world_save_entries = save.getEntries();
 
             // copy all user entries to the player
             data.getEntries().clear();
-            world_save_entries.stream().filter(entry -> entry.canUse(player.getUniqueID())).forEach(entry -> data.addEntry(entry));
+            world_save_entries.stream().filter(entry -> entry.canUse(player.getUUID())).forEach(entry -> data.addEntry(entry));
 
             data.setRequestTeleportScreen(true);
         });
@@ -269,13 +285,13 @@ public class TileEntityTelepad extends TileEntity implements ITickableTileEntity
 
     ///////////////// Setters and Getters/////////////////////////
 
-    public int getDimension()
+    public RegistryKey<World> getDimension()
     {
 
         return dimension;
     }
 
-    public void setDimension(int dimensionID)
+    public void setDimension(RegistryKey<World> dimensionID)
     {
 
         dimension = dimensionID;
@@ -373,8 +389,8 @@ public class TileEntityTelepad extends TileEntity implements ITickableTileEntity
     public boolean isUsableByPlayer(PlayerEntity player)
     {
 
-        return this.world.getTileEntity(this.pos) != this ? false
-                : player.getDistanceSq((double) this.pos.getX() + 0.5D, (double) this.pos.getY() + 0.5D, (double) this.pos.getZ() + 0.5D) <= 64.0D;
+        return this.level.getBlockEntity(this.worldPosition) != this ? false
+                : player.distanceToSqr((double) this.worldPosition.getX() + 0.5D, (double) this.worldPosition.getY() + 0.5D, (double) this.worldPosition.getZ() + 0.5D) <= 64.0D;
     }
 
     public boolean isStandingOnPlatform()
@@ -388,8 +404,8 @@ public class TileEntityTelepad extends TileEntity implements ITickableTileEntity
 
         boolean flag = !isPublic;
 
-        WorldDataHandler wdh = WorldDataHandler.get(getWorld());
-        TelepadEntry tpe = wdh.getEntryForLocation(getPos(), getDimension());
+        WorldDataHandler wdh = WorldDataHandler.get(getLevel());
+        TelepadEntry tpe = wdh.getEntryForLocation(getBlockPos(), getDimension());
         tpe.setPublic(flag); // set opposite of current value for public.
         this.isPublic = flag;
     }

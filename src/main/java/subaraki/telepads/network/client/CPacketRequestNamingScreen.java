@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 import subaraki.telepads.network.IPacketBase;
 import subaraki.telepads.network.NetworkHandler;
@@ -50,7 +50,8 @@ public class CPacketRequestNamingScreen implements IPacketBase {
         context.get().enqueueWork(() -> {
             // use a layer of indirection when subscribing client events to avoid
             // classloading client classes on server
-            DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> ClientReferences.openNamingScreen(pos));
+            if (FMLEnvironment.dist == Dist.CLIENT)
+                ClientReferences.openNamingScreen(pos);
         });
         context.get().setPacketHandled(true);
     }

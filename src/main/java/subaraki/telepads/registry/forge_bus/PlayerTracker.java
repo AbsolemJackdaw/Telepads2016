@@ -24,7 +24,7 @@ public class PlayerTracker {
             return;
 
         TelepadData.get((PlayerEntity) event.getEntityLiving()).ifPresent(data -> {
-            TileEntity te = event.getEntityLiving().world.getTileEntity(event.getEntityLiving().getPosition());
+            TileEntity te = event.getEntityLiving().level.getBlockEntity(event.getEntityLiving().blockPosition());
             if (te == null || !(te instanceof TileEntityTelepad))
             {
                 if (data.getCounter() != TelepadData.getMaxTime())
@@ -52,7 +52,7 @@ public class PlayerTracker {
     public static void onEntityJoinWorld(PlayerLoggedInEvent event)
     {
 
-        if (!event.getPlayer().world.isRemote)
+        if (!event.getPlayer().level.isClientSide)
         {
             TelepadData.get(event.getPlayer()).ifPresent(data -> {
             });
@@ -63,7 +63,7 @@ public class PlayerTracker {
     public static void onDimensionChange(PlayerChangedDimensionEvent event)
     {
 
-        if (!event.getPlayer().world.isRemote)
+        if (!event.getPlayer().level.isClientSide)
         {
             TelepadData.get(event.getPlayer()).ifPresent(data -> {
             });

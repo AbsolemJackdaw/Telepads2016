@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.StringTextComponent;
@@ -25,23 +26,23 @@ public class ItemEnderNecklace extends Item {
 
     public ItemEnderNecklace() {
 
-        super(PropertiesWrapper.getItemProperties().maxStackSize(8).group(ItemGroup.MATERIALS));
+        super(PropertiesWrapper.getItemProperties().stacksTo(8).tab(ItemGroup.TAB_MATERIALS));
 
         setRegistryName(Telepads.MODID, "ender_bead_necklace");
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand)
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand)
     {
 
         if (ConfigData.disableNecklaceUsage)
         {
-            if (!world.isRemote)
-                player.sendMessage(new StringTextComponent("This Functionality has been disabled by the server operator."));
-            return super.onItemRightClick(world, player, hand);
+            if (!world.isClientSide)
+                player.sendMessage(new StringTextComponent("This Functionality has been disabled by the server operator."), player.getUUID());
+            return super.use(world, player, hand);
         }
 
-        if (!world.isRemote)
+        if (!world.isClientSide)
         {
 
             WorldDataHandler wdh = WorldDataHandler.get(world);
@@ -50,15 +51,15 @@ public class ItemEnderNecklace extends Item {
             List<TelepadEntry> thisDim = new ArrayList<TelepadEntry>();
 
             if (locations.isEmpty())
-                return super.onItemRightClick(world, player, hand); // pass
+                return super.use(world, player, hand); // pass
 
-            int dim = player.dimension.getId();
+            RegistryKey<World> dim = world.dimension();
 
-            locations.stream().filter(filter -> filter.dimensionID == dim && filter.canUse(player.getUniqueID()) && !filter.isPowered)
+            locations.stream().filter(filter -> filter.dimensionID.equals(dim) && filter.canUse(player.getUUID()) && !filter.isPowered)
                     .forEach(telepad -> thisDim.add(telepad));
 
             if (thisDim.isEmpty())
-                return super.onItemRightClick(world, player, hand);// pass
+                return super.use(world, player, hand);// pass
 
             double distance = Double.MAX_VALUE;
             TelepadEntry closestEntry = null;
@@ -66,7 +67,7 @@ public class ItemEnderNecklace extends Item {
             for (TelepadEntry entry : thisDim)
             {
 
-                double distanceSQ = entry.position.distanceSq(player.posX, player.posY, player.posZ, true);
+                double distanceSQ = entry.position.distSqr(player.getX(), player.getY(), player.getZ(), true);
 
                 if (distance > distanceSQ)
                 {
@@ -78,21 +79,21 @@ public class ItemEnderNecklace extends Item {
             if (closestEntry != null)
             {
 
-                player.getHeldItem(hand).shrink(1);
+                player.getItemInHand(hand).shrink(1);
                 if (!player.isCreative())
-                    player.inventory.addItemStackToInventory(new ItemStack(Items.STRING, world.rand.nextInt(2) + 1));
+                    player.inventory.add(new ItemStack(Items.STRING, world.random.nextInt(2) + 1));
                 Teleport.teleportEntityInsideSameDimension(player, closestEntry.position.south().west());
 
-                world.playSound((PlayerEntity) null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.NEUTRAL, 0.6F,
+                world.playSound((PlayerEntity) null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENDERMAN_TELEPORT, SoundCategory.NEUTRAL, 0.6F,
                         0.4F / (random.nextFloat() * 0.4F + 0.8F));
-                world.playSound((PlayerEntity) null, player.posX, player.posY, player.posZ, SoundEvents.BLOCK_GLASS_BREAK, SoundCategory.NEUTRAL, 0.1F,
+                world.playSound((PlayerEntity) null, player.getX(), player.getY(), player.getZ(), SoundEvents.GLASS_BREAK, SoundCategory.NEUTRAL, 0.1F,
                         0.4F / (random.nextFloat() * 0.4F + 0.8F));
-                world.playSound((PlayerEntity) null, player.posX, player.posY, player.posZ, SoundEvents.BLOCK_WOOL_BREAK, SoundCategory.NEUTRAL, 1.0F,
+                world.playSound((PlayerEntity) null, player.getX(), player.getY(), player.getZ(), SoundEvents.WOOL_BREAK, SoundCategory.NEUTRAL, 1.0F,
                         0.4F / (random.nextFloat() * 0.4F + 0.8F));
             }
 
         }
 
-        return super.onItemRightClick(world, player, hand);
+        return super.use(world, player, hand);
     }
 }

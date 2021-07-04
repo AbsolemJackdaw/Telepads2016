@@ -66,7 +66,7 @@ public class SPacketAddTelepadToWorld implements IPacketBase {
             PlayerEntity player = context.get().getSender();
 
             TelepadData.get(player).ifPresent(data -> {
-                WorldDataHandler wdh = WorldDataHandler.get(player.world);
+                WorldDataHandler wdh = WorldDataHandler.get(player.level);
 
                 TelepadEntry old_entry = wdh.getEntryForLocation(entry.position, entry.dimensionID);
 

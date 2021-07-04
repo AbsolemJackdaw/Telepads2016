@@ -6,17 +6,22 @@ import java.util.List;
 import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.realmsclient.gui.ChatFormatting;
+import com.mojang.blaze3d.matrix.MatrixStack;
 
 import net.minecraft.client.MainWindow;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.RegistryKey;
+import net.minecraft.util.text.Color;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 import subaraki.telepads.capability.player.TelepadData;
 import subaraki.telepads.network.NetworkHandler;
 import subaraki.telepads.network.server.SPacketTeleport;
@@ -30,7 +35,7 @@ public class TeleportScreen extends Screen {
     // array only contains entries from selected dimension
     private LinkedList<TelepadEntry> entries = new LinkedList<>();
 
-    private int lookup_dim_id = 0;
+    private RegistryKey<World> lookup_dim_id = World.OVERWORLD;
 
     private RenderEndPortalFrame endPortalFrame;
 
@@ -40,7 +45,7 @@ public class TeleportScreen extends Screen {
 
     protected final List<Widget> unscrollables = Lists.newArrayList();
 
-    protected List<Integer> dimensions_visited = Lists.newArrayList();
+    protected List<RegistryKey<World>> dimensions_visited = Lists.newArrayList();
 
     private final boolean is_transmitter_pad;
 
@@ -69,48 +74,46 @@ public class TeleportScreen extends Screen {
 
         super.init();
 
-        lookup_dim_id = minecraft.world.dimension.getType().getId();
+        lookup_dim_id = minecraft.level.dimension();
 
         scrollbarscroll = 0;
-        dimension_indicator = new TextFieldWidget(font, minecraft.mainWindow.getScaledWidth() / 2 - 75, 5, 150, 20, "indicator");
-        dimension_indicator.setText(DimensionType.getById(lookup_dim_id).getRegistryName().getPath());
+        dimension_indicator = new TextFieldWidget(font, minecraft.getWindow().getGuiScaledWidth() / 2 - 75, 5, 150, 20,
+                new TranslationTextComponent("indicator"));
+        dimension_indicator.setValue(lookup_dim_id.location().getPath());
 
         initialize_pages();
 
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float p_render_3_)
+    public void render(MatrixStack stack, int mouseX, int mouseY, float partialTicks)
     {
 
-        endPortalFrame.renderEndPortalSurfaceGUI(0, 0, 0, minecraft, this);
+        endPortalFrame.renderEndPortalSurfaceGUI(stack, Minecraft.getInstance().renderBuffers().bufferSource(), mouseX, mouseY);
 
-        GlStateManager.disableLighting();
-
-        fill(START_X, START_Y, width - START_X, height - START_Y, 0x0055444444);
+        fill(stack, START_X, START_Y, width - START_X, height - START_Y, 0x0055444444);
 
         GL11.glColor4f(1, 1, 1, 1);
 
-        MainWindow window = minecraft.mainWindow;
-        int scale = (int) window.getGuiScaleFactor();
+        MainWindow window = minecraft.getWindow();
+        int scale = (int) window.getGuiScale();
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
         GL11.glScissor(START_X * scale, START_Y * scale, width * scale, (height - (START_Y * 2)) * scale);
 
-        super.render(mouseX, mouseY, p_render_3_);
+        super.render(stack, mouseX, mouseY, partialTicks);
 
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
 
         if (!buttons.isEmpty())
         {
-            drawFakeScrollBar();
+            drawFakeScrollBar(stack);
         }
 
         GL11.glColor4f(1, 1, 1, 1);
 
-        dimension_indicator.render(mouseX, mouseY, p_render_3_);
+        dimension_indicator.render(stack, mouseX, mouseY, partialTicks);
 
-        unscrollables.forEach(b -> b.render(mouseX, mouseY, p_render_3_));
-        GlStateManager.enableLighting();
+        unscrollables.forEach(b -> b.render(stack, mouseX, mouseY, partialTicks));
 
     }
 
@@ -147,13 +150,13 @@ public class TeleportScreen extends Screen {
     }
 
     @Override
-    public void onClose()
+    public void removed()
     {
 
-        super.onClose();
+        super.removed();
     }
 
-    private void drawFakeScrollBar()
+    private void drawFakeScrollBar(MatrixStack stack)
     {
 
         int top = buttons.get(0).y;
@@ -182,9 +185,10 @@ public class TeleportScreen extends Screen {
             // 0xff00ffff);
 
             // draw a black background background
-            this.fillGradient(width - START_X, START_Y, width, START_Y + (int) containerSize, 0x80000000, 0x80222222);
+            this.fillGradient(stack, width - START_X, START_Y, width, START_Y + (int) containerSize, 0x80000000, 0x80222222);
             // Draw scrollbar
-            this.fillGradient(width - START_X, START_Y + (int) relativeScroll, width, START_Y + (int) relativeScroll + (int) sizeBar, 0x80ffffff, 0x80222222);
+            this.fillGradient(stack, width - START_X, START_Y + (int) relativeScroll, width, START_Y + (int) relativeScroll + (int) sizeBar, 0x80ffffff,
+                    0x80222222);
 
         }
     }
@@ -211,37 +215,40 @@ public class TeleportScreen extends Screen {
 
             for (TelepadEntry entry : data.getEntries())
             {
-                if (entry.dimensionID == lookup_dim_id)
+                if (entry.dimensionID.equals(lookup_dim_id))
                     entries.add(entry);
             }
         });
 
-        int max_collumns = minecraft.mainWindow.getScaledWidth() / 130;
+        int max_collumns = minecraft.getWindow().getGuiScaledWidth() / 130;
         int increment = max_collumns;
-        int central_offset = (minecraft.mainWindow.getScaledWidth() / 2) - ((max_collumns * 120) / 2);
+        int central_offset = (minecraft.getWindow().getGuiScaledWidth() / 2) - ((max_collumns * 120) / 2);
 
         for (TelepadEntry entry : entries)
         {
 
             int extra_y = increment / max_collumns;
             int extra_x = increment % max_collumns;
-            ChatFormatting info = entry.isMissingFromLocation ? ChatFormatting.GRAY
-                    : entry.isPowered ? ChatFormatting.DARK_RED
-                            : entry.hasTransmitter ? ChatFormatting.GREEN : entry.isPublic ? ChatFormatting.LIGHT_PURPLE : ChatFormatting.WHITE;
+            TextFormatting color = entry.isMissingFromLocation ? TextFormatting.GRAY
+                    : entry.isPowered ? TextFormatting.DARK_RED
+                            : entry.hasTransmitter ? TextFormatting.GREEN : entry.isPublic ? TextFormatting.LIGHT_PURPLE : TextFormatting.WHITE;
 
-            addButton(new Button(central_offset + 5 + (extra_x * 120), 15 + (extra_y * 25), 110, 20, info + entry.entryName, (button) -> {
+            addButton(new Button(central_offset + 5 + (extra_x * 120), 15 + (extra_y * 25), 110, 20,
+                    new StringTextComponent(entry.entryName).setStyle(Style.EMPTY.withColor(Color.fromLegacyFormat(color))), (button) -> {
 
-                if (entry.isMissingFromLocation)
-                {
-                    this.onClose();
-                    ClientReferences.openMissingScreen(entry);
-                }
-                else
-                {
-                    NetworkHandler.NETWORK.sendToServer(new SPacketTeleport(minecraft.player.getPosition(), entry, false));
-                    this.onClose();
-                }
-            }));
+                        if (entry.isMissingFromLocation)
+                        {
+                            this.removed();
+                            this.onClose();
+                            ClientReferences.openMissingScreen(entry);
+                        }
+                        else
+                        {
+                            NetworkHandler.NETWORK.sendToServer(new SPacketTeleport(minecraft.player.blockPosition(), entry, false));
+                            this.removed();
+                            this.onClose();
+                        }
+                    }));
 
             increment++;
 
@@ -258,8 +265,8 @@ public class TeleportScreen extends Screen {
         while (dimensions_visited.get(tuner_counter) != lookup_dim_id)
             tuner_counter++;
 
-        int centerx = minecraft.mainWindow.getScaledWidth() / 2;
-        Widget button_left = new Button(centerx - 75 - 25, 5, 20, 20, "<", (button) -> {
+        int centerx = minecraft.getWindow().getGuiScaledWidth() / 2;
+        Widget button_left = new Button(centerx - 75 - 25, 5, 20, 20, new StringTextComponent("<"), (button) -> {
             if (dimensions_visited.size() > 1)
             {
                 tuner_counter--;
@@ -270,12 +277,12 @@ public class TeleportScreen extends Screen {
             }
 
             lookup_dim_id = dimensions_visited.get(tuner_counter);
-            dimension_indicator.setText(DimensionType.getById(lookup_dim_id).getRegistryName().getPath());
+            dimension_indicator.setValue(lookup_dim_id.location().getPath());
 
             initialize_pages();
         });
 
-        Widget button_right = new Button(centerx + 75 + 5, 5, 20, 20, ">", (button) -> {
+        Widget button_right = new Button(centerx + 75 + 5, 5, 20, 20, new StringTextComponent(">"), (button) -> {
             if (dimensions_visited.size() > 1)
             {
                 tuner_counter++;
@@ -286,7 +293,7 @@ public class TeleportScreen extends Screen {
             }
 
             lookup_dim_id = dimensions_visited.get(tuner_counter);
-            dimension_indicator.setText(DimensionType.getById(lookup_dim_id).getRegistryName().getPath());
+            dimension_indicator.setValue(lookup_dim_id.location().getPath());
 
             initialize_pages();
 

@@ -5,10 +5,13 @@ import java.util.function.Supplier;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.Color;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 import subaraki.telepads.capability.player.TelepadData;
 import subaraki.telepads.handler.ConfigData;
@@ -69,7 +72,7 @@ public class SPacketTeleport implements IPacketBase {
     public void encode(PacketBuffer buf)
     {
 
-        buf.writeLong(oldPos.toLong());
+        buf.writeLong(oldPos.asLong());
         goTo.writeToBuffer(buf);
         buf.writeBoolean(force);
     }
@@ -78,7 +81,7 @@ public class SPacketTeleport implements IPacketBase {
     public void decode(PacketBuffer buf)
     {
 
-        oldPos = BlockPos.fromLong(buf.readLong());
+        oldPos = BlockPos.of(buf.readLong());
         goTo = new TelepadEntry(buf);
         force = buf.readBoolean();
     }
@@ -89,23 +92,23 @@ public class SPacketTeleport implements IPacketBase {
 
         context.get().enqueueWork(() -> {
             ServerPlayerEntity player = context.get().getSender();
-            WorldDataHandler wdh = WorldDataHandler.get(player.world);
+            WorldDataHandler wdh = WorldDataHandler.get(player.level);
 
             TelepadData.get(player).ifPresent(data -> {
                 data.setInTeleportGui(false);
 
-                BlockPos destination = goTo.position.up();
-                int destination_dimension_id = goTo.dimensionID;
+                BlockPos destination = goTo.position.above();
+                RegistryKey<World> destination_dimension_id = goTo.dimensionID;
                 int penalty = ConfigData.expConsume;
 
-                if (penalty > 0 && (player.experienceLevel == 0 && player.experience * player.xpBarCap() <= penalty))
+                if (penalty > 0 && (player.experienceLevel == 0 && player.experienceProgress * player.getXpNeededForNextLevel() <= penalty))
                 {
-                    player.sendStatusMessage(new TranslationTextComponent("no.exp").setStyle(new Style().setItalic(true).setColor(TextFormatting.DARK_RED)),
-                            true);
+                    player.displayClientMessage(new TranslationTextComponent("no.exp")
+                            .setStyle(Style.EMPTY.withItalic(true).withColor(Color.fromLegacyFormat(TextFormatting.DARK_RED))), true);
                     return;
                 }
 
-                if (goTo.dimensionID == player.dimension.getId())
+                if (goTo.dimensionID.equals(player.level.dimension()))
                 {
                     if (force)
                     {
@@ -120,7 +123,7 @@ public class SPacketTeleport implements IPacketBase {
                     {
                         if (!goTo.isPowered)
                         {
-                            if (destination_dimension_id == player.dimension.getId())
+                            if (destination_dimension_id.equals(player.level.dimension()))
                             {
                                 if (teleportPenalty(player))
                                 {
@@ -130,8 +133,8 @@ public class SPacketTeleport implements IPacketBase {
                         }
                         else
                         {
-                            player.sendStatusMessage(
-                                    new TranslationTextComponent("no.power").setStyle(new Style().setItalic(true).setColor(TextFormatting.DARK_RED)), true);
+                            player.displayClientMessage(
+                                    new TranslationTextComponent("no.power").setStyle(Style.EMPTY.withItalic(true).withColor(Color.fromLegacyFormat(TextFormatting.DARK_RED))), true);
                         }
                     }
                     else
@@ -160,8 +163,8 @@ public class SPacketTeleport implements IPacketBase {
                         }
                         else
                         {
-                            player.sendStatusMessage(
-                                    new TranslationTextComponent("no.power").setStyle(new Style().setItalic(true).setColor(TextFormatting.DARK_RED)), true);
+                            player.displayClientMessage(
+                                    new TranslationTextComponent("no.power").setStyle(Style.EMPTY.withItalic(true).withColor(Color.fromLegacyFormat(TextFormatting.DARK_RED))), true);
                         }
                     }
                 }
@@ -193,7 +196,7 @@ public class SPacketTeleport implements IPacketBase {
         {
             if (player.experienceLevel >= lvlConsuming)
             {
-                player.addExperienceLevel(-lvlConsuming);
+                player.giveExperienceLevels(-lvlConsuming);
                 return true;
             }
             return false;
@@ -201,7 +204,7 @@ public class SPacketTeleport implements IPacketBase {
         else
         {
 
-            float actualExpInBar = player.experience * (float) player.xpBarCap();
+            float actualExpInBar = player.experienceProgress * (float) player.getXpNeededForNextLevel();
 
             if (actualExpInBar < expConsuming)// less exp then penalty
             {
@@ -209,10 +212,10 @@ public class SPacketTeleport implements IPacketBase {
                 if (player.experienceLevel == 0) { return false; }
 
                 expConsuming -= actualExpInBar; // remove resting exp from penalty
-                player.addExperienceLevel(-1); // down a level
-                actualExpInBar = (float) player.xpBarCap(); // exp bar is considered full here when going down a level
+                player.giveExperienceLevels(-1); // down a level
+                actualExpInBar = (float) player.getXpNeededForNextLevel(); // exp bar is considered full here when going down a level
                 float total = actualExpInBar - expConsuming; // the total refund is one level of exp minus the penalty left
-                player.experience = 0.0f; // reset the 'exp bar' to 0
+                player.experienceProgress = 0.0f; // reset the 'exp bar' to 0
                 if (total < 0)
                     total = 0;
                 player.giveExperiencePoints((int) total); // give exp back to set to correct level
@@ -221,7 +224,7 @@ public class SPacketTeleport implements IPacketBase {
             else
             {
                 float total = actualExpInBar - (float) expConsuming;
-                player.experience = 0.0f;
+                player.experienceProgress = 0.0f;
                 player.giveExperiencePoints((int) total);
                 return true;
             }

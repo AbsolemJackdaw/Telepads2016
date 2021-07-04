@@ -5,9 +5,10 @@ import java.util.List;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.event.world.WorldEvent;
@@ -29,7 +30,7 @@ public class WorldDataHandler extends WorldSavedData {
     }
 
     @Override
-    public void read(CompoundNBT nbt)
+    public void load(CompoundNBT nbt)
     {
 
         List<TelepadEntry> entryList = new ArrayList<TelepadEntry>();
@@ -42,7 +43,7 @@ public class WorldDataHandler extends WorldSavedData {
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT nbt)
+    public CompoundNBT save(CompoundNBT nbt)
     {
 
         ListNBT taglist = new ListNBT();
@@ -60,8 +61,8 @@ public class WorldDataHandler extends WorldSavedData {
     public static WorldDataHandler get(IWorld world)
     {
 
-        ServerWorld overworld = ((ServerWorld) world).getServer().getWorld(DimensionType.OVERWORLD);
-        return overworld.getSavedData().getOrCreate(WorldDataHandler::new, TELEPADS_WORLD_SAVE_DATA);
+        ServerWorld overworld = ((ServerWorld) world).getServer().getLevel(World.OVERWORLD);
+        return overworld.getDataStorage().computeIfAbsent(WorldDataHandler::new, TELEPADS_WORLD_SAVE_DATA);
     }
 
     /////////////////////////////////////////////////////////////////////////////
@@ -95,7 +96,7 @@ public class WorldDataHandler extends WorldSavedData {
     }
 
     /** Compares block position and dimension id, ignoring the name of the entry */
-    public TelepadEntry getEntryForLocation(BlockPos pos, int dimensionId)
+    public TelepadEntry getEntryForLocation(BlockPos pos, RegistryKey<World> dimID)
     {
 
         if (allTelepads.isEmpty())
@@ -103,7 +104,7 @@ public class WorldDataHandler extends WorldSavedData {
 
         for (TelepadEntry entry : allTelepads)
             if (entry.position.equals(pos))
-                if (entry.dimensionID == dimensionId)
+                if (entry.dimensionID.equals(dimID))
                     return entry;
 
         return null;
@@ -158,8 +159,8 @@ public class WorldDataHandler extends WorldSavedData {
             if (event.getWorld() instanceof ServerWorld)
             {
                 ServerWorld server = (ServerWorld) event.getWorld();
-                ServerWorld overworld = server.getServer().getWorld(DimensionType.OVERWORLD);
-                WorldDataHandler.get(overworld).markDirty();
+                ServerWorld overworld = server.getServer().getLevel(World.OVERWORLD);
+                WorldDataHandler.get(overworld).setDirty();
 
             }
         }
@@ -171,7 +172,7 @@ public class WorldDataHandler extends WorldSavedData {
             if (event.getWorld() instanceof ServerWorld)
             {
                 ServerWorld server = (ServerWorld) event.getWorld();
-                ServerWorld overworld = server.getServer().getWorld(DimensionType.OVERWORLD);
+                ServerWorld overworld = server.getServer().getLevel(World.OVERWORLD);
                 // simply calling an instance will load it's data
                 WorldDataHandler.get(overworld);
 
