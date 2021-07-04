@@ -1,4 +1,5 @@
 modLoader="javafml" #mandatory
+license="GNU V3"
 loaderVersion="[28,)" #mandatory (28 is current forge version)
 issueTrackerURL="https://github.com/ArtixAllMighty/Telepads2016/issues" #optional
 
