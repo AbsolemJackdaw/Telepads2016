@@ -107,6 +107,20 @@ public class BlockTelepad extends Block implements IWaterLoggable {
         this.registerDefaultState(defaultBlockState().setValue(WATERLOGGED, Boolean.valueOf(false)));
     }
 
+    @Override
+    public int getLightValue(BlockState state, IBlockReader world, BlockPos pos)
+    {
+    
+        return 0;
+    }
+    
+    @Override
+    public boolean propagatesSkylightDown(BlockState p_200123_1_, IBlockReader p_200123_2_, BlockPos p_200123_3_)
+    {
+    
+        return false;
+    }
+    
     ///////////////// waterlogged//////////////
 
     public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos)

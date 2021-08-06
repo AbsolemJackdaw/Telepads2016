@@ -6,10 +6,13 @@ import org.apache.logging.log4j.Logger;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ObjectHolder;
 import subaraki.telepads.block.BlockTelepad;
 import subaraki.telepads.block.TelepadBlocks;
@@ -30,6 +33,11 @@ public class Telepads {
 
     public static TelepadItems items;
     public static TelepadBlocks blocks;
+
+//    private static final DeferredRegister<TileEntityType<?>> TILE_ENTITIES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, MODID);
+//
+//    private static RegistryObject<TileEntityType<TileEntityTelepad>> HEART_TREE_TILE_ENTITY = TILE_ENTITIES.register("heart_tree_core",
+//            () -> TileEntityType.Builder.<TileEntityTelepad>of(TileEntityTelepad::new, Telepads.ObjectHolders.TELEPAD_BLOCK).build(null));
 
     public Telepads() {
 

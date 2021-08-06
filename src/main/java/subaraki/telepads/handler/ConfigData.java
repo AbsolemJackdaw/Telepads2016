@@ -45,7 +45,6 @@ public class ConfigData {
 
     public static int expConsume;
     public static int lvlConsume;
-    public static boolean consumeLvl;
 
     // CLIENT
     public static boolean allowParticles = true;
@@ -81,7 +80,7 @@ public class ConfigData {
 
             builder.push("Teleportation Details");
             exp = builder.comment(
-                    "Penalty cost for teleportation, if set to 0, there will be no exp loss. Set level to 0 if you onyl want to consume an amount of exp.")
+                    "Penalty cost for teleportation, if set to 0, there will be no exp loss. Set level to 0 if you only want to consume an amount of exp.")
                     .translation("config.consume.exp").defineInRange("Experience Consumation", 0, 0, 10000);
             lvl = builder.comment("Penalty cost for teleportation, if set to 0, there will be no exp loss. set experience to 0 if you want to consume levels.")
                     .translation("config.consume.level").defineInRange("Level Consumation", 0, 0, 32);
@@ -116,10 +115,18 @@ public class ConfigData {
     public static void refreshServer()
     {
 
+        allowDragonBlocking = SERVER.allowDragonBlocking.get();
+        allowAnvilPearls = SERVER.allowAnvilPearls.get();
+        disableBeadsUsage = SERVER.disableBeadsUsage.get();
+        disableNecklaceUsage = SERVER.disableNecklaceUsage.get();
+        expConsume = SERVER.exp.get();
+        lvlConsume = SERVER.lvl.get();
+        teleport_seconds = SERVER.teleport_delay.get();
+        tp_locations = (String[]) SERVER.val.get().toArray();
     }
 
     public static void refreshClient()
     {
-
+        allowParticles = CLIENT.allowParticles.get();
     }
 }

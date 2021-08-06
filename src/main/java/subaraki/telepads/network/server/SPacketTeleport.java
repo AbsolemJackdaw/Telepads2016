@@ -192,7 +192,7 @@ public class SPacketTeleport implements IPacketBase {
         if (expConsuming == 0 && lvlConsuming == 0)
             return true;
 
-        if (ConfigData.consumeLvl)
+        if (lvlConsuming > 0)
         {
             if (player.experienceLevel >= lvlConsuming)
             {

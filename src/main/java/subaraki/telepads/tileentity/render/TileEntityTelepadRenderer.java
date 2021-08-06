@@ -12,8 +12,11 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.OverlayRenderer;
+import net.minecraft.client.renderer.RenderState.OverlayState;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.inventory.container.PlayerContainer;
@@ -157,7 +160,7 @@ public class TileEntityTelepadRenderer extends TileEntityRenderer<TileEntityTele
         BlockState state = Blocks.REDSTONE_TORCH.defaultBlockState().setValue(BlockStateProperties.LIT, te.isPowered());
         stack.translate(offsetX, offsetY, offsetZ);
         IBakedModel model = blockrendererdispatcher.getBlockModel(state);
-        blockrendererdispatcher.getModelRenderer().renderModel(world, model, state, te.getBlockPos(), stack, builder, false, world.random, 0, combinedOverlay,
+        blockrendererdispatcher.getModelRenderer().renderModel(world, model, state, te.getBlockPos(), stack, builder, false, world.random, OverlayTexture.NO_OVERLAY, combinedOverlay,
                 EmptyModelData.INSTANCE);
         stack.popPose();
     }
@@ -171,7 +174,6 @@ public class TileEntityTelepadRenderer extends TileEntityRenderer<TileEntityTele
 
         float f2 = 1.5f;
         stack.scale(f2, f2, f2);
-
         stack.pushPose();
         modeltelepad.renderArrows(stack, bufferIn.getBuffer(RenderType.entityCutoutNoCull(base)), packedLightIn, packedOverlayIn,
                 (float) (colorBase.getRed() / 255.0f), (float) (colorBase.getGreen() / 255.0f), (float) (colorBase.getBlue() / 255.0f));

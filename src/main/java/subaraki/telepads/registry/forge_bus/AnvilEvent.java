@@ -14,7 +14,7 @@ import subaraki.telepads.mod.Telepads.ObjectHolders;
 public class AnvilEvent {
 
     @SubscribeEvent
-    public void anvil(AnvilUpdateEvent event)
+    public static void anvil(AnvilUpdateEvent event)
     {
 
         ItemStack input = event.getLeft();
