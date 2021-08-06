@@ -1,18 +1,16 @@
 package subaraki.telepads.screen;
 
-import org.lwjgl.glfw.GLFW;
-
 import com.mojang.blaze3d.vertex.PoseStack;
-
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import org.lwjgl.glfw.GLFW;
 import subaraki.telepads.capability.player.TelepadData;
 import subaraki.telepads.network.NetworkHandler;
 import subaraki.telepads.network.server.SPacketAddTelepadToWorld;
@@ -80,7 +78,7 @@ public class NameTelepadScreen extends Screen {
             if (!data.getWhitelist().isEmpty())
             {
                 should_show_sharing = true;
-                addButton(new Button(center_x - 40, center_y + 20, 45, 20, new TranslatableComponent(text_share), b -> {
+                this.addRenderableWidget(new Button(center_x - 40, center_y + 20, 45, 20, new TranslatableComponent(text_share), b -> {
                     share = !share;
                 }));
 
