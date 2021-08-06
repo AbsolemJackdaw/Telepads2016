@@ -1,13 +1,13 @@
 package subaraki.telepads.network.server;
 
-import java.util.function.Supplier;
-
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 import subaraki.telepads.handler.WorldDataHandler;
 import subaraki.telepads.network.IPacketBase;
 import subaraki.telepads.network.NetworkHandler;
 import subaraki.telepads.utility.TelepadEntry;
+
+import java.util.function.Supplier;
 
 public class SPacketRemoveEntry implements IPacketBase {
 
@@ -42,7 +42,7 @@ public class SPacketRemoveEntry implements IPacketBase {
     }
 
     @Override
-    public void handle(Supplier<Context> context)
+    public void handle(Supplier<NetworkEvent.Context> context)
     {
 
         context.get().enqueueWork(() -> {

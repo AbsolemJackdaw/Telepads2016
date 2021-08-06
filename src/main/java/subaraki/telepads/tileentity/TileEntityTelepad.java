@@ -1,40 +1,38 @@
 package subaraki.telepads.tileentity;
 
-import java.util.List;
-import java.util.Random;
-
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.level.block.entity.TickableBlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
-import net.minecraft.network.chat.TextColor;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Style;
-import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.world.level.Level;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
 import subaraki.telepads.capability.player.TelepadData;
 import subaraki.telepads.handler.ConfigData;
 import subaraki.telepads.handler.CoordinateHandler;
 import subaraki.telepads.handler.WorldDataHandler;
-import subaraki.telepads.mod.Telepads.ObjectHolders;
+import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.network.NetworkHandler;
 import subaraki.telepads.network.client.CPacketRequestTeleportScreen;
 import subaraki.telepads.utility.TelepadEntry;
 import subaraki.telepads.utility.masa.Teleport;
 
-public class TileEntityTelepad extends BlockEntity implements TickableBlockEntity {
+import java.util.List;
+import java.util.Random;
+
+public class TileEntityTelepad extends BlockEntity {
 
     private ResourceKey<Level> dimension;
     public static final int COLOR_FEET_BASE = new java.awt.Color(26, 246, 172).getRGB();
@@ -59,17 +57,15 @@ public class TileEntityTelepad extends BlockEntity implements TickableBlockEntit
 
     // private AxisAlignedBB aabb;
 
-    public TileEntityTelepad() {
-
-        super(ObjectHolders.TILE_ENTITY_TELEPAD);
+    public TileEntityTelepad(BlockPos pos, BlockState state) {
+        super(Telepads.TILE_ENTITY_TELEPAD.get(), pos, state);
     }
 
     ///////////////// 3 METHODS ABSOLUTELY NEEDED FOR CLIENT/SERVER
     ///////////////// SYNCING/////////////////////
 
     @Override
-    public ClientboundBlockEntityDataPacket getUpdatePacket()
-    {
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
 
         CompoundTag nbt = new CompoundTag();
         this.save(nbt);
@@ -79,15 +75,13 @@ public class TileEntityTelepad extends BlockEntity implements TickableBlockEntit
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt)
-    {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
 
-        this.load(getBlockState(), pkt.getTag());
+        this.load(pkt.getTag());
     }
 
     @Override
-    public CompoundTag getUpdateTag()
-    {
+    public CompoundTag getUpdateTag() {
 
         CompoundTag nbt = super.getUpdateTag();
         save(nbt);
@@ -96,18 +90,16 @@ public class TileEntityTelepad extends BlockEntity implements TickableBlockEntit
 
     // calls readFromNbt by default. no need to add anything in here
     @Override
-    public void handleUpdateTag(BlockState state, CompoundTag tag)
-    {
+    public void handleUpdateTag(CompoundTag tag) {
 
-        super.handleUpdateTag(state, tag);
+        super.handleUpdateTag(tag);
     }
     ////////////////////////////////////////////////////////////////////
 
     @Override
-    public void load(BlockState state, CompoundTag compound)
-    {
+    public void load(CompoundTag compound) {
 
-        super.load(state, compound);
+        super.load(compound);
         String dim = compound.getString("dimension");
         hasDimensionUpgrade = compound.getBoolean("upgrade_dimension");
         hasRedstoneUpgrade = compound.getBoolean("upgrade_redstone");
@@ -124,8 +116,7 @@ public class TileEntityTelepad extends BlockEntity implements TickableBlockEntit
     }
 
     @Override
-    public CompoundTag save(CompoundTag compound)
-    {
+    public CompoundTag save(CompoundTag compound) {
 
         super.save(compound);
         compound.putString("dimension", dimension.location().toString());
@@ -141,35 +132,29 @@ public class TileEntityTelepad extends BlockEntity implements TickableBlockEntit
         return compound;
     }
 
-    @Override
-    public void tick()
-    {
+    public void tick() {
 
-        if (isPowered)
+        if (isPowered || level == null)
             return;
 
-        if (!level.isClientSide)
-        {
+        if (!level.isClientSide) {
 
             AABB aabb = new AABB(getBlockPos());
             List<ServerPlayer> list = level.getEntitiesOfClass(ServerPlayer.class, aabb);
 
-            if (!list.isEmpty())
-            {
+            if (!list.isEmpty()) {
 
                 setPlatform(true);
 
-                for (ServerPlayer player_standing_on_pad : list)
-                {
+                for (ServerPlayer player_standing_on_pad : list) {
                     TelepadData.get(player_standing_on_pad).ifPresent(player_data -> {
 
                         // if in the previous tick, all data has been transfered to the player, then it
                         // will request a teleport screen
-                        if (player_data.getRequestTeleportScreen())
-                        {
+                        if (player_data.getRequestTeleportScreen()) {
                             player_data.setRequestTeleportScreen(false);
                             TelepadEntry telepad = WorldDataHandler.get(getLevel()).getEntryForLocation(getBlockPos(), dimension);
-                            boolean is_transmitter = telepad == null ? false : telepad.hasTransmitter;
+                            boolean is_transmitter = telepad != null && telepad.hasTransmitter;
 
                             NetworkHandler.NETWORK.send(PacketDistributor.PLAYER.with(() -> player_standing_on_pad),
                                     new CPacketRequestTeleportScreen(player_data.getEntries(), player_data.getWhitelist().values(), is_transmitter));
@@ -179,75 +164,58 @@ public class TileEntityTelepad extends BlockEntity implements TickableBlockEntit
                         }
 
                         // if no screen request has been set , do the regular logic to get a request
-                        if (player_data.getCounter() > 0 && !player_data.isInTeleportGui())
-                        {
+                        if (player_data.getCounter() > 0 && !player_data.isInTeleportGui()) {
                             player_data.counter--;
-                        }
+                        } else if (player_data.getCounter() == 0 && !player_data.isInTeleportGui()) {
+                            if (level.dimension().equals(Level.END) && ConfigData.allowDragonBlocking) {
+                                if (level instanceof ServerLevel) {
+                                    if (!((ServerLevel) level).getDragons().isEmpty()) {
+                                        player_data.setCounter(TelepadData.getMaxTime());
 
-                        else
-                            if (player_data.getCounter() == 0 && !player_data.isInTeleportGui())
-                            {
-                                if (level.dimension().equals(Level.END) && ConfigData.allowDragonBlocking)
-                                {
-                                    if (level instanceof ServerLevel)
-                                    {
-                                        if (!((ServerLevel) level).getDragons().isEmpty())
-                                        {
-                                            player_data.setCounter(TelepadData.getMaxTime());
-
-                                            player_standing_on_pad.sendMessage(new TranslatableComponent("dragon.obstructs").setStyle(Style.EMPTY
-                                                    .withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_PURPLE)).withItalic(true)),
-                                                    player_standing_on_pad.getUUID());
-                                            return;
-                                        }
+                                        player_standing_on_pad.sendMessage(new TranslatableComponent("dragon.obstructs").setStyle(Style.EMPTY
+                                                        .withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_PURPLE)).withItalic(true)),
+                                                player_standing_on_pad.getUUID());
+                                        return;
                                     }
                                 }
+                            }
 
-                                if (getCoordinateHandlerIndex() > -1)
-                                {
-                                    int index = getCoordinateHandlerIndex();
-                                    String[] tpl = ConfigData.tp_locations;
-                                    CoordinateHandler coords = new CoordinateHandler((ServerLevel) level, tpl[index]);
+                            if (getCoordinateHandlerIndex() > -1) {
+                                int index = getCoordinateHandlerIndex();
+                                String[] tpl = ConfigData.tp_locations;
+                                CoordinateHandler coords = new CoordinateHandler((ServerLevel) level, tpl[index]);
 
-                                    ResourceLocation dimension = coords.getDimension();
+                                ResourceLocation dimension = coords.getDimension();
 
-                                    if (!player_standing_on_pad.level.dimension().location().equals(dimension))
-                                    {
-                                        MinecraftServer server = player_standing_on_pad.getServer();
+                                if (!player_standing_on_pad.level.dimension().location().equals(dimension)) {
+                                    MinecraftServer server = player_standing_on_pad.getServer();
 
-                                        ResourceKey<Level> dim_key = null;
-                                        for (ServerLevel dim : server.getAllLevels())
-                                        {
+                                    ResourceKey<Level> dim_key = null;
+                                    if (server != null)
+                                        for (ServerLevel dim : server.getAllLevels()) {
                                             if (dim.dimension().location().equals(dimension))
                                                 dim_key = dim.dimension();
                                         }
-                                        if (dim_key == null)
-                                            return;
+                                    if (dim_key == null)
+                                        return;
 
-                                        ServerLevel worldDestination = server.getLevel(level.dimension());
-                                        BlockPos pos = coords.getPosition(worldDestination);
-                                        Teleport.teleportEntityToDimension(player_standing_on_pad, pos, dim_key);
-                                    }
-                                    else
-                                    {
-                                        BlockPos pos = coords.getPosition(getLevel());
-                                        Teleport.teleportEntityInsideSameDimension(player_standing_on_pad, pos);
-                                    }
+                                    ServerLevel worldDestination = server.getLevel(level.dimension());
+                                    BlockPos pos = coords.getPosition(worldDestination);
+                                    Teleport.teleportEntityToDimension(player_standing_on_pad, pos, dim_key);
+                                } else {
+                                    BlockPos pos = coords.getPosition(getLevel());
+                                    Teleport.teleportEntityInsideSameDimension(player_standing_on_pad, pos);
                                 }
-                                else
-                                {
-                                    // if no dragon is found, or dimension != the end, you end up here
-                                    player_data.setInTeleportGui(true);
-                                    player_data.setCounter(TelepadData.getMaxTime());
-                                    activateTelepadGui(player_standing_on_pad);
-                                }
+                            } else {
+                                // if no dragon is found, or dimension != the end, you end up here
+                                player_data.setInTeleportGui(true);
+                                player_data.setCounter(TelepadData.getMaxTime());
+                                activateTelepadGui(player_standing_on_pad);
                             }
+                        }
                     });
                 }
-            }
-
-            else
-            {
+            } else {
                 setPlatform(false);
             }
         }
@@ -257,16 +225,16 @@ public class TileEntityTelepad extends BlockEntity implements TickableBlockEntit
      * Resets the count down of the pad, sets that there is no player on the pad,
      * and no player using the gui. And causes a block update.
      */
-    public void setPlatform(boolean onPlatform)
-    {
+    public void setPlatform(boolean onPlatform) {
 
+        if(level == null)
+            return;
         isStandingOnPlatform = onPlatform;
-        level.sendBlockUpdated(worldPosition, level.getBlockState(getBlockPos()), ObjectHolders.TELEPAD_BLOCK.defaultBlockState(), 3);
+        level.sendBlockUpdated(worldPosition, level.getBlockState(getBlockPos()), Telepads.TELEPAD_BLOCK.get().defaultBlockState(), 3);
     }
 
     // called server side only in tick
-    private void activateTelepadGui(ServerPlayer player)
-    {
+    private void activateTelepadGui(ServerPlayer player) {
 
         TelepadData.get(player).ifPresent(data -> {
 
@@ -277,7 +245,7 @@ public class TileEntityTelepad extends BlockEntity implements TickableBlockEntit
 
             // copy all user entries to the player
             data.getEntries().clear();
-            world_save_entries.stream().filter(entry -> entry.canUse(player.getUUID())).forEach(entry -> data.addEntry(entry));
+            world_save_entries.stream().filter(entry -> entry.canUse(player.getUUID())).forEach(data::addEntry);
 
             data.setRequestTeleportScreen(true);
         });
@@ -285,122 +253,103 @@ public class TileEntityTelepad extends BlockEntity implements TickableBlockEntit
 
     ///////////////// Setters and Getters/////////////////////////
 
-    public ResourceKey<Level> getDimension()
-    {
+    public ResourceKey<Level> getDimension() {
 
         return dimension;
     }
 
-    public void setDimension(ResourceKey<Level> dimensionID)
-    {
+    public void setDimension(ResourceKey<Level> dimensionID) {
 
         dimension = dimensionID;
     }
 
-    public void setFeetColor(int rgb)
-    {
+    public void setFeetColor(int rgb) {
 
         colorFrame = rgb;
     }
 
-    public void setArrowColor(int rgb)
-    {
+    public void setArrowColor(int rgb) {
 
         colorBase = rgb;
     }
 
-    public int getColorFeet()
-    {
+    public int getColorFeet() {
 
         return colorFrame;
     }
 
-    public int getColorArrow()
-    {
+    public int getColorArrow() {
 
         return colorBase;
     }
 
-    public boolean hasDimensionUpgrade()
-    {
+    public boolean hasDimensionUpgrade() {
 
         return hasDimensionUpgrade;
     }
 
-    public void addDimensionUpgrade(boolean allowed)
-    {
+    public void addDimensionUpgrade(boolean allowed) {
 
         this.upgradeRotation = allowed ? new Random().nextInt(4) : 0;
         hasDimensionUpgrade = true;
     }
 
-    public int getUpgradeRotation()
-    {
+    public int getUpgradeRotation() {
 
         return upgradeRotation;
     }
 
-    public boolean hasRedstoneUpgrade()
-    {
+    public boolean hasRedstoneUpgrade() {
 
         return hasRedstoneUpgrade;
     }
 
-    public void addRedstoneUpgrade()
-    {
+    public void addRedstoneUpgrade() {
 
         hasRedstoneUpgrade = true;
     }
 
-    public void setPowered(boolean flag)
-    {
+    public void setPowered(boolean flag) {
 
         isPowered = flag;
     }
 
-    public boolean isPowered()
-    {
+    public boolean isPowered() {
 
         return isPowered;
     }
 
-    public void setCoordinateHandlerIndex(int index)
-    {
+//    public void setCoordinateHandlerIndex(int index) {
+//
+//        this.coordinate_handler_index = index;
+//    }
 
-        this.coordinate_handler_index = index;
-    }
-
-    public void rotateCoordinateHandlerIndex()
-    {
+    public void rotateCoordinateHandlerIndex() {
 
         this.coordinate_handler_index++;
-        if (this.coordinate_handler_index >= ConfigData.tp_locations.length)
-        {
+        if (this.coordinate_handler_index >= ConfigData.tp_locations.length) {
             coordinate_handler_index = -1;
         }
     }
 
-    public int getCoordinateHandlerIndex()
-    {
+    public int getCoordinateHandlerIndex() {
 
         return coordinate_handler_index;
     }
 
-    public boolean isUsableByPlayer(Player player)
-    {
+//    @Override
+//    public boolean isUsableByPlayer(Player player) {
+//
+//        return this.level.getBlockEntity(this.worldPosition) != this ? false
+//                : player.distanceToSqr((double) this.worldPosition.getX() + 0.5D, (double) this.worldPosition.getY() + 0.5D, (double) this.worldPosition.getZ() + 0.5D) <= 64.0D;
+//    }
 
-        return this.level.getBlockEntity(this.worldPosition) != this ? false
-                : player.distanceToSqr((double) this.worldPosition.getX() + 0.5D, (double) this.worldPosition.getY() + 0.5D, (double) this.worldPosition.getZ() + 0.5D) <= 64.0D;
-    }
-
-    public boolean isStandingOnPlatform()
-    {
+    public boolean isStandingOnPlatform() {
 
         return isStandingOnPlatform;
     }
 
-    public void toggleAcces()
-    {
+    public void toggleAcces() {
 
         boolean flag = !isPublic;
 
@@ -410,8 +359,7 @@ public class TileEntityTelepad extends BlockEntity implements TickableBlockEntit
         this.isPublic = flag;
     }
 
-    public boolean isPublic()
-    {
+    public boolean isPublic() {
 
         return isPublic;
     }

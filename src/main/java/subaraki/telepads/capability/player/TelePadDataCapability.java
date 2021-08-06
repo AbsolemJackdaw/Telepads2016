@@ -1,12 +1,10 @@
 package subaraki.telepads.capability.player;
 
-import java.util.concurrent.Callable;
-
-import net.minecraft.nbt.Tag;
-import net.minecraft.core.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+
+import java.util.concurrent.Callable;
 
 public class TelePadDataCapability {
 
@@ -23,33 +21,9 @@ public class TelePadDataCapability {
     public void register() {
 
         CapabilityManager.INSTANCE.register(
-
                 // This is the class the capability works with
-                TelepadData.class,
+                TelepadData.class);
 
-                // This is a helper for users to save and load
-                new StorageHelper(),
-
-                // This is a factory for default instances
-                new DefaultInstanceFactory());
-    }
-
-    /*
-     * This class handles saving and loading the data.
-     */
-    public static class StorageHelper implements Capability.IStorage<TelepadData> {
-
-        @Override
-        public Tag writeNBT(Capability<TelepadData> capability, TelepadData instance, Direction side) {
-
-            return instance.writeData();
-        }
-
-        @Override
-        public void readNBT(Capability<TelepadData> capability, TelepadData instance, Direction side, Tag nbt) {
-
-            instance.readData(nbt);
-        }
     }
 
     /*

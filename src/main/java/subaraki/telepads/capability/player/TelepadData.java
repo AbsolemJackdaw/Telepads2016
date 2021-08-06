@@ -1,25 +1,24 @@
 package subaraki.telepads.capability.player;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.UUID;
-
 import com.mojang.authlib.GameProfile;
-
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
 import subaraki.telepads.handler.ConfigData;
 import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.network.NetworkHandler;
 import subaraki.telepads.network.client.CPacketEditWhiteListEntry;
 import subaraki.telepads.utility.TelepadEntry;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.UUID;
 
 public class TelepadData {
 
@@ -228,6 +227,7 @@ public class TelepadData {
         // player names are minimum 3 characters
         if (!command.isEmpty() && command.length() > 2)
         {
+            //TODO
             //command = command.toLowerCase();
             // didnt add clear command because I was to lazy to add another client packet to
             // sync up the data

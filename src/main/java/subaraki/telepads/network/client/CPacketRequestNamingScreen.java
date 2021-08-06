@@ -1,15 +1,15 @@
 package subaraki.telepads.network.client;
 
-import java.util.function.Supplier;
-
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 import subaraki.telepads.network.IPacketBase;
 import subaraki.telepads.network.NetworkHandler;
 import subaraki.telepads.utility.ClientReferences;
+
+import java.util.function.Supplier;
 
 public class CPacketRequestNamingScreen implements IPacketBase {
 
@@ -44,7 +44,7 @@ public class CPacketRequestNamingScreen implements IPacketBase {
     }
 
     @Override
-    public void handle(Supplier<Context> context)
+    public void handle(Supplier<NetworkEvent.Context> context)
     {
 
         context.get().enqueueWork(() -> {

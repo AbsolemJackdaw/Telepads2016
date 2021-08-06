@@ -1,9 +1,8 @@
 package subaraki.telepads.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.TranslatableComponent;
 import subaraki.telepads.network.NetworkHandler;
 import subaraki.telepads.network.server.SPacketRemoveEntry;
@@ -49,13 +48,13 @@ public class MissingEntryScreen extends Screen {
 
         int x = 120;
         int y = 20;
-        this.addButton(new Button(center_x - x - 10, center_y + y, x, y, new TranslatableComponent(teleport_anyway), button -> {
+        this.addRenderableWidget(new Button(center_x - x - 10, center_y + y, x, y, new TranslatableComponent(teleport_anyway), button -> {
             NetworkHandler.NETWORK.sendToServer(new SPacketTeleport(minecraft.player.blockPosition(), missing_entry, false));
             this.removed();
             this.onClose();
         }));
 
-        addButton(new Button(center_x + 10, center_y + y, x, y, new TranslatableComponent(forget), button -> {
+        this.addRenderableWidget(new Button(center_x + 10, center_y + y, x, y, new TranslatableComponent(forget), button -> {
             NetworkHandler.NETWORK.sendToServer(new SPacketRemoveEntry(missing_entry));
             this.removed();
             this.onClose();

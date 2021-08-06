@@ -8,7 +8,6 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import subaraki.telepads.handler.ConfigData;
 import subaraki.telepads.mod.Telepads;
-import subaraki.telepads.mod.Telepads.ObjectHolders;
 
 @EventBusSubscriber(bus = Bus.FORGE, modid = Telepads.MODID)
 public class AnvilEvent {
@@ -26,7 +25,7 @@ public class AnvilEvent {
                 int amount = input.getCount() + ingredient.getCount();
                 if (amount > 8)
                     return;
-                event.setOutput(new ItemStack(ObjectHolders.BEADS, 2 * amount));
+                event.setOutput(new ItemStack(Telepads.BEAD.get(), 2 * amount));
                 event.setCost(amount);
             }
     }

@@ -1,49 +1,47 @@
 package subaraki.telepads.item;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.level.Level;
 import subaraki.telepads.handler.ConfigData;
 import subaraki.telepads.handler.WorldDataHandler;
-import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.utility.PropertiesWrapper;
 import subaraki.telepads.utility.TelepadEntry;
 import subaraki.telepads.utility.masa.Teleport;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 public class ItemEnderNecklace extends Item {
+
+    private Random random = new Random();
 
     public ItemEnderNecklace() {
 
         super(PropertiesWrapper.getItemProperties().stacksTo(8).tab(CreativeModeTab.TAB_MATERIALS));
 
-        setRegistryName(Telepads.MODID, "ender_bead_necklace");
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand)
-    {
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
 
-        if (ConfigData.disableNecklaceUsage)
-        {
+        if (ConfigData.disableNecklaceUsage) {
             if (!world.isClientSide)
                 player.sendMessage(new TextComponent("This Functionality has been disabled by the server operator."), player.getUUID());
             return super.use(world, player, hand);
         }
 
-        if (!world.isClientSide)
-        {
+        if (!world.isClientSide) {
 
             WorldDataHandler wdh = WorldDataHandler.get(world);
 
@@ -64,24 +62,21 @@ public class ItemEnderNecklace extends Item {
             double distance = Double.MAX_VALUE;
             TelepadEntry closestEntry = null;
 
-            for (TelepadEntry entry : thisDim)
-            {
+            for (TelepadEntry entry : thisDim) {
 
                 double distanceSQ = entry.position.distSqr(player.getX(), player.getY(), player.getZ(), true);
 
-                if (distance > distanceSQ)
-                {
+                if (distance > distanceSQ) {
                     distance = distanceSQ;
                     closestEntry = entry;
                 }
             }
 
-            if (closestEntry != null)
-            {
+            if (closestEntry != null) {
 
                 player.getItemInHand(hand).shrink(1);
                 if (!player.isCreative())
-                    player.inventory.add(new ItemStack(Items.STRING, world.random.nextInt(2) + 1));
+                    player.getInventory().add(new ItemStack(Items.STRING, world.random.nextInt(2) + 1));
                 Teleport.teleportEntityInsideSameDimension(player, closestEntry.position.south().west());
 
                 world.playSound((Player) null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.NEUTRAL, 0.6F,

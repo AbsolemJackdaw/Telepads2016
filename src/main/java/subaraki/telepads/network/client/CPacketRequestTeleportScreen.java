@@ -1,20 +1,19 @@
 package subaraki.telepads.network.client;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
-import java.util.function.Supplier;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 import subaraki.telepads.network.IPacketBase;
 import subaraki.telepads.network.NetworkHandler;
 import subaraki.telepads.utility.ClientReferences;
 import subaraki.telepads.utility.TelepadEntry;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
+import java.util.function.Supplier;
 
 public class CPacketRequestTeleportScreen implements IPacketBase {
 
@@ -97,7 +96,7 @@ public class CPacketRequestTeleportScreen implements IPacketBase {
     }
 
     @Override
-    public void handle(Supplier<Context> context)
+    public void handle(Supplier<NetworkEvent.Context> context)
     {
 
         context.get().enqueueWork(() -> {

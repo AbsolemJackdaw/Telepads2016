@@ -1,15 +1,14 @@
 package subaraki.telepads.handler;
 
-import java.util.ArrayList;
-import java.util.Random;
-
 import com.google.common.collect.Lists;
-
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap.Types;
-import net.minecraft.server.level.ServerLevel;
+
+import java.util.ArrayList;
+import java.util.Random;
 
 public class CoordinateHandler {
 

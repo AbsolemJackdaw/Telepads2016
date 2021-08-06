@@ -1,33 +1,32 @@
 package subaraki.telepads.screen;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import org.lwjgl.opengl.GL11;
-
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.vertex.PoseStack;
-
 import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import org.lwjgl.opengl.GL11;
 import subaraki.telepads.capability.player.TelepadData;
 import subaraki.telepads.network.NetworkHandler;
 import subaraki.telepads.network.server.SPacketTeleport;
 import subaraki.telepads.tileentity.render.RenderEndPortalFrame;
 import subaraki.telepads.utility.ClientReferences;
 import subaraki.telepads.utility.TelepadEntry;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class TeleportScreen extends Screen {
 
@@ -62,15 +61,13 @@ public class TeleportScreen extends Screen {
     }
 
     @Override
-    public boolean isPauseScreen()
-    {
+    public boolean isPauseScreen() {
 
         return false;
     }
 
     @Override
-    protected void init()
-    {
+    protected void init() {
 
         super.init();
 
@@ -86,8 +83,7 @@ public class TeleportScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks)
-    {
+    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
 
         endPortalFrame.renderEndPortalSurfaceGUI(stack, Minecraft.getInstance().renderBuffers().bufferSource(), mouseX, mouseY);
 
@@ -104,8 +100,7 @@ public class TeleportScreen extends Screen {
 
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
 
-        if (!buttons.isEmpty())
-        {
+        if (!this.renderables.isEmpty()) {
             drawFakeScrollBar(stack);
         }
 
@@ -118,103 +113,95 @@ public class TeleportScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double mouseScroll)
-    {
+    public boolean mouseScrolled(double mouseX, double mouseY, double mouseScroll) {
 
-        int index = buttons.size() > 0 ? buttons.size() - 1 : 0;
-        AbstractWidget last = buttons.get(index);
-        AbstractWidget first = buttons.get(0);
+        int index = renderables.size() > 0 ? renderables.size() - 1 : 0;
 
-        int forsee_bottom_limit = (int) (last.y + last.getHeight() + (mouseScroll * 16));
-        int bottom_limit = height - START_Y - last.getHeight();
+        if (renderables.get(index) instanceof AbstractWidget last && renderables.get(0) instanceof AbstractWidget first) {
 
-        int forsee_top_limit = (int) (first.y - 15 + mouseScroll * 16);
-        int top_limit = GAP + START_Y;
-        // scrolling up
-        if (mouseScroll < 0.0 && forsee_bottom_limit < bottom_limit)
-            return super.mouseScrolled(mouseX, mouseY, mouseScroll);
-        // down
-        if (mouseScroll > 0.0 && forsee_top_limit > top_limit)
-            return super.mouseScrolled(mouseX, mouseY, mouseScroll);
+            int forsee_bottom_limit = (int) (last.y + last.getHeight() + (mouseScroll * 16));
+            int bottom_limit = height - START_Y - last.getHeight();
 
-        move(mouseScroll);
+            int forsee_top_limit = (int) (first.y - 15 + mouseScroll * 16);
+            int top_limit = GAP + START_Y;
+            // scrolling up
+            if (mouseScroll < 0.0 && forsee_bottom_limit < bottom_limit)
+                return super.mouseScrolled(mouseX, mouseY, mouseScroll);
+            // down
+            if (mouseScroll > 0.0 && forsee_top_limit > top_limit)
+                return super.mouseScrolled(mouseX, mouseY, mouseScroll);
 
+            move(mouseScroll);
+        }
         return super.mouseScrolled(mouseX, mouseY, mouseScroll);
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int buttonID, double amountX, double amountY)
-    {
+    public boolean mouseDragged(double mouseX, double mouseY, int buttonID, double amountX, double amountY) {
 
         return super.mouseDragged(mouseX, mouseY, buttonID, amountX, amountY);
     }
 
     @Override
-    public void removed()
-    {
+    public void removed() {
 
         super.removed();
     }
 
-    private void drawFakeScrollBar(PoseStack stack)
-    {
+    private void drawFakeScrollBar(PoseStack stack) {
 
-        int top = buttons.get(0).y;
-        int bot = buttons.get(buttons.size() - 1).y + buttons.get(buttons.size() - 1).getHeight();
+        if (renderables.get(renderables.size() - 1) instanceof AbstractWidget last && renderables.get(0) instanceof AbstractWidget first) {
+            int top = first.y;
+            int bot = last.y + last.getHeight();
 
-        // get total size for buttons drawn
-        float totalSize = (bot - top) + (GAP);
-        float containerSize = height - START_Y * 2;
+            // get total size for buttons drawn
+            float totalSize = (bot - top) + (GAP);
+            float containerSize = height - START_Y * 2;
 
-        // relative % of the scale between the buttons drawn and the screen size
-        float percent = (((float) containerSize / (float) totalSize) * 100f);
+            // relative % of the scale between the buttons drawn and the screen size
+            float percent = (((float) containerSize / (float) totalSize) * 100f);
 
-        if (percent < 100)
-        {
+            if (percent < 100) {
 
-            float sizeBar = (containerSize / 100f * percent);
+                float sizeBar = (containerSize / 100f * percent);
 
-            float relativeScroll = ((float) scrollbarscroll / 100f * percent);
+                float relativeScroll = ((float) scrollbarscroll / 100f * percent);
 
-            // what kind of dumbfuck decided it was intelligent to have 'fill' fill in from
-            // left to right
-            // and fillgradient from right to fucking left ???
+                // what kind of dumbfuck decided it was intelligent to have 'fill' fill in from
+                // left to right
+                // and fillgradient from right to fucking left ???
 
-            // this.fill(width - START_X, START_Y + (int) relativeScroll, width - START_X -
-            // 4, START_Y + (int) relativeScroll + (int) sizeBar,
-            // 0xff00ffff);
+                // this.fill(width - START_X, START_Y + (int) relativeScroll, width - START_X -
+                // 4, START_Y + (int) relativeScroll + (int) sizeBar,
+                // 0xff00ffff);
 
-            // draw a black background background
-            this.fillGradient(stack, width - START_X, START_Y, width, START_Y + (int) containerSize, 0x80000000, 0x80222222);
-            // Draw scrollbar
-            this.fillGradient(stack, width - START_X, START_Y + (int) relativeScroll, width, START_Y + (int) relativeScroll + (int) sizeBar, 0x80ffffff,
-                    0x80222222);
-
+                // draw a black background background
+                this.fillGradient(stack, width - START_X, START_Y, width, START_Y + (int) containerSize, 0x80000000, 0x80222222);
+                // Draw scrollbar
+                this.fillGradient(stack, width - START_X, START_Y + (int) relativeScroll, width, START_Y + (int) relativeScroll + (int) sizeBar, 0x80ffffff,
+                        0x80222222);
+            }
         }
     }
 
-    private void move(double scroll)
-    {
+    private void move(double scroll) {
 
         scrollbarscroll -= scroll * 16;
 
-        for (AbstractWidget button : this.buttons)
-        {
-
-            button.y += scroll * 16;
+        for (Widget widget : this.renderables) {
+            if (widget instanceof AbstractWidget button)
+                button.y += scroll * 16;
         }
     }
 
-    private void setup_dimension_page()
-    {
+    private void setup_dimension_page() {
 
         // initialize page for selected dimension
 
         Player player = minecraft.player;
         TelepadData.get(player).ifPresent((data) -> {
 
-            for (TelepadEntry entry : data.getEntries())
-            {
+            for (TelepadEntry entry : data.getEntries()) {
                 if (entry.dimensionID.equals(lookup_dim_id))
                     entries.add(entry);
             }
@@ -224,31 +211,27 @@ public class TeleportScreen extends Screen {
         int increment = max_collumns;
         int central_offset = (minecraft.getWindow().getGuiScaledWidth() / 2) - ((max_collumns * 120) / 2);
 
-        for (TelepadEntry entry : entries)
-        {
+        for (TelepadEntry entry : entries) {
 
             int extra_y = increment / max_collumns;
             int extra_x = increment % max_collumns;
             ChatFormatting color = entry.isMissingFromLocation ? ChatFormatting.GRAY
                     : entry.isPowered ? ChatFormatting.DARK_RED
-                            : entry.hasTransmitter ? ChatFormatting.GREEN : entry.isPublic ? ChatFormatting.LIGHT_PURPLE : ChatFormatting.WHITE;
+                    : entry.hasTransmitter ? ChatFormatting.GREEN : entry.isPublic ? ChatFormatting.LIGHT_PURPLE : ChatFormatting.WHITE;
 
-            addButton(new Button(central_offset + 5 + (extra_x * 120), 15 + (extra_y * 25), 110, 20,
+            addRenderableWidget(new Button(central_offset + 5 + (extra_x * 120), 15 + (extra_y * 25), 110, 20,
                     new TextComponent(entry.entryName).setStyle(Style.EMPTY.withColor(TextColor.fromLegacyFormat(color))), (button) -> {
 
-                        if (entry.isMissingFromLocation)
-                        {
-                            this.removed();
-                            this.onClose();
-                            ClientReferences.openMissingScreen(entry);
-                        }
-                        else
-                        {
-                            NetworkHandler.NETWORK.sendToServer(new SPacketTeleport(minecraft.player.blockPosition(), entry, false));
-                            this.removed();
-                            this.onClose();
-                        }
-                    }));
+                if (entry.isMissingFromLocation) {
+                    this.removed();
+                    this.onClose();
+                    ClientReferences.openMissingScreen(entry);
+                } else {
+                    NetworkHandler.NETWORK.sendToServer(new SPacketTeleport(minecraft.player.blockPosition(), entry, false));
+                    this.removed();
+                    this.onClose();
+                }
+            }));
 
             increment++;
 
@@ -258,8 +241,7 @@ public class TeleportScreen extends Screen {
 
     private int tuner_counter = 0;
 
-    private void add_paging_buttons()
-    {
+    private void add_paging_buttons() {
 
         // set the tuner to the right index for the currently visiting dimension
         while (dimensions_visited.get(tuner_counter) != lookup_dim_id)
@@ -267,8 +249,7 @@ public class TeleportScreen extends Screen {
 
         int centerx = minecraft.getWindow().getGuiScaledWidth() / 2;
         AbstractWidget button_left = new Button(centerx - 75 - 25, 5, 20, 20, new TextComponent("<"), (button) -> {
-            if (dimensions_visited.size() > 1)
-            {
+            if (dimensions_visited.size() > 1) {
                 tuner_counter--;
 
                 if (tuner_counter < 0)
@@ -283,8 +264,7 @@ public class TeleportScreen extends Screen {
         });
 
         AbstractWidget button_right = new Button(centerx + 75 + 5, 5, 20, 20, new TextComponent(">"), (button) -> {
-            if (dimensions_visited.size() > 1)
-            {
+            if (dimensions_visited.size() > 1) {
                 tuner_counter++;
 
                 if (tuner_counter >= dimensions_visited.size())
@@ -301,15 +281,16 @@ public class TeleportScreen extends Screen {
 
         unscrollables.add(button_left);
         unscrollables.add(button_right);
-        children.add(button_left);
-        children.add(button_right);
+        //add the left and right buttons as widgets and render them
+        //in the render method from the unscrollables list.
+        //renderables are used to be scrolled up and down.
+        addWidget(button_left);
+        addWidget(button_right);
     }
 
-    private void initialize_pages()
-    {
+    private void initialize_pages() {
 
-        buttons.clear();
-        children.clear();
+        renderables.clear();
         entries.clear();
         unscrollables.clear();
         dimensions_visited.clear();
@@ -318,14 +299,12 @@ public class TeleportScreen extends Screen {
 
         setup_dimension_page();
 
-        if (is_transmitter_pad)
-        {
+        if (is_transmitter_pad) {
             add_paging_buttons();
         }
     }
 
-    private void setup_dimension_list()
-    {
+    private void setup_dimension_list() {
 
         Player player = minecraft.player;
         TelepadData.get(player).ifPresent((data) -> {

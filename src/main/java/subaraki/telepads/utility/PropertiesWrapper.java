@@ -1,9 +1,9 @@
 package subaraki.telepads.utility;
 
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
-import net.minecraft.world.item.DyeColor;
 
 public class PropertiesWrapper {
 

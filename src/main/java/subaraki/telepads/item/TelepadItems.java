@@ -1,16 +1,16 @@
 package subaraki.telepads.item;
 
-import java.util.List;
-
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.utility.PropertiesWrapper;
+
+import java.util.List;
 
 public class TelepadItems {
 

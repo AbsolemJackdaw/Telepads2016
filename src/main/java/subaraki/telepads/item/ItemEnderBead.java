@@ -1,19 +1,16 @@
 package subaraki.telepads.item;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import subaraki.telepads.handler.ConfigData;
 import subaraki.telepads.handler.WorldDataHandler;
@@ -22,7 +19,13 @@ import subaraki.telepads.utility.PropertiesWrapper;
 import subaraki.telepads.utility.TelepadEntry;
 import subaraki.telepads.utility.masa.Teleport;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 public class ItemEnderBead extends Item {
+
+    Random random = new Random();
 
     public ItemEnderBead() {
 

@@ -1,18 +1,16 @@
 package subaraki.telepads.network.server;
 
-import java.util.function.Supplier;
-
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TextColor;
-import net.minecraft.network.chat.Style;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 import subaraki.telepads.capability.player.TelepadData;
 import subaraki.telepads.handler.ConfigData;
 import subaraki.telepads.handler.WorldDataHandler;
@@ -20,6 +18,8 @@ import subaraki.telepads.network.IPacketBase;
 import subaraki.telepads.network.NetworkHandler;
 import subaraki.telepads.utility.TelepadEntry;
 import subaraki.telepads.utility.masa.Teleport;
+
+import java.util.function.Supplier;
 
 public class SPacketTeleport implements IPacketBase {
 
@@ -42,14 +42,11 @@ public class SPacketTeleport implements IPacketBase {
     /**
      * A packet to teleport the player to a given position from the client side.
      * This packet must be sent from a client thread.
-     * 
-     * @param goTo
-     *            : The position/entry to send the player to.
-     * @param playerFrom
-     *            : The position the player comes from.
-     * @param forceTeleport
-     *            : Flag to force teleport and bypass checking if a telepad entry
-     *            exists to teleport too
+     *
+     * @param goTo          : The position/entry to send the player to.
+     * @param playerFrom    : The position the player comes from.
+     * @param forceTeleport : Flag to force teleport and bypass checking if a telepad entry
+     *                      exists to teleport too
      */
     public SPacketTeleport(BlockPos playerFrom, TelepadEntry goTo, boolean forceTeleport) {
 
@@ -63,14 +60,15 @@ public class SPacketTeleport implements IPacketBase {
         decode(buf);
     }
 
-    /** Necessary empty constructor */
+    /**
+     * Necessary empty constructor
+     */
     public SPacketTeleport() {
 
     }
 
     @Override
-    public void encode(FriendlyByteBuf buf)
-    {
+    public void encode(FriendlyByteBuf buf) {
 
         buf.writeLong(oldPos.asLong());
         goTo.writeToBuffer(buf);
@@ -78,8 +76,7 @@ public class SPacketTeleport implements IPacketBase {
     }
 
     @Override
-    public void decode(FriendlyByteBuf buf)
-    {
+    public void decode(FriendlyByteBuf buf) {
 
         oldPos = BlockPos.of(buf.readLong());
         goTo = new TelepadEntry(buf);
@@ -87,8 +84,7 @@ public class SPacketTeleport implements IPacketBase {
     }
 
     @Override
-    public void handle(Supplier<Context> context)
-    {
+    public void handle(Supplier<NetworkEvent.Context> context) {
 
         context.get().enqueueWork(() -> {
             ServerPlayer player = context.get().getSender();
@@ -101,68 +97,47 @@ public class SPacketTeleport implements IPacketBase {
                 ResourceKey<Level> destination_dimension_id = goTo.dimensionID;
                 int penalty = ConfigData.expConsume;
 
-                if (penalty > 0 && (player.experienceLevel == 0 && player.experienceProgress * player.getXpNeededForNextLevel() <= penalty))
-                {
+                if (penalty > 0 && (player.experienceLevel == 0 && player.experienceProgress * player.getXpNeededForNextLevel() <= penalty)) {
                     player.displayClientMessage(new TranslatableComponent("no.exp")
                             .setStyle(Style.EMPTY.withItalic(true).withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_RED))), true);
                     return;
                 }
 
-                if (goTo.dimensionID.equals(player.level.dimension()))
-                {
-                    if (force)
-                    {
-                        if (teleportPenalty(player))
-                        {
+                if (goTo.dimensionID.equals(player.level.dimension())) {
+                    if (force) {
+                        if (teleportPenalty(player)) {
                             Teleport.teleportEntityInsideSameDimension(player, destination);
                             return;
                         }
                     }
 
-                    if (wdh.contains(goTo))
-                    {
-                        if (!goTo.isPowered)
-                        {
-                            if (destination_dimension_id.equals(player.level.dimension()))
-                            {
-                                if (teleportPenalty(player))
-                                {
+                    if (wdh.contains(goTo)) {
+                        if (!goTo.isPowered) {
+                            if (destination_dimension_id.equals(player.level.dimension())) {
+                                if (teleportPenalty(player)) {
                                     Teleport.teleportEntityInsideSameDimension(player, destination);
                                 }
                             }
-                        }
-                        else
-                        {
+                        } else {
                             player.displayClientMessage(
                                     new TranslatableComponent("no.power").setStyle(Style.EMPTY.withItalic(true).withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_RED))), true);
                         }
-                    }
-                    else
-                    {
+                    } else {
                         data.setInTeleportGui(true); // set to true so when changing gui, it doesnt try to open the teleport gui.
                     }
-                }
-                else
-                {
-                    if (force)
-                    {
-                        if (teleportPenalty(player))
-                        {
+                } else {
+                    if (force) {
+                        if (teleportPenalty(player)) {
                             Teleport.teleportEntityToDimension(player, destination, destination_dimension_id);
                             return;
                         }
                     }
-                    if (wdh.contains(goTo))
-                    {
-                        if (!goTo.isPowered)
-                        {
-                            if (teleportPenalty(player))
-                            {
+                    if (wdh.contains(goTo)) {
+                        if (!goTo.isPowered) {
+                            if (teleportPenalty(player)) {
                                 Teleport.teleportEntityToDimension(player, destination, destination_dimension_id);
                             }
-                        }
-                        else
-                        {
+                        } else {
                             player.displayClientMessage(
                                     new TranslatableComponent("no.power").setStyle(Style.EMPTY.withItalic(true).withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_RED))), true);
                         }
@@ -174,9 +149,10 @@ public class SPacketTeleport implements IPacketBase {
         context.get().setPacketHandled(true);
     }
 
-    /** Teleport Penalty is removed here if any is given in the config file */
-    private static boolean teleportPenalty(Player player)
-    {
+    /**
+     * Teleport Penalty is removed here if any is given in the config file
+     */
+    private static boolean teleportPenalty(Player player) {
 
         // lessons learned from fiddling with experience stuff :
         // 1 : don't use the experienceTotal to calculate whatever. its inconsistent and
@@ -192,24 +168,22 @@ public class SPacketTeleport implements IPacketBase {
         if (expConsuming == 0 && lvlConsuming == 0)
             return true;
 
-        if (lvlConsuming > 0)
-        {
-            if (player.experienceLevel >= lvlConsuming)
-            {
+        if (lvlConsuming > 0) {
+            if (player.experienceLevel >= lvlConsuming) {
                 player.giveExperienceLevels(-lvlConsuming);
                 return true;
             }
             return false;
-        }
-        else
-        {
+        } else {
 
             float actualExpInBar = player.experienceProgress * (float) player.getXpNeededForNextLevel();
 
             if (actualExpInBar < expConsuming)// less exp then penalty
             {
                 // if the player does not have enough experience
-                if (player.experienceLevel == 0) { return false; }
+                if (player.experienceLevel == 0) {
+                    return false;
+                }
 
                 expConsuming -= actualExpInBar; // remove resting exp from penalty
                 player.giveExperienceLevels(-1); // down a level
@@ -220,9 +194,7 @@ public class SPacketTeleport implements IPacketBase {
                     total = 0;
                 player.giveExperiencePoints((int) total); // give exp back to set to correct level
                 return true;
-            }
-            else
-            {
+            } else {
                 float total = actualExpInBar - (float) expConsuming;
                 player.experienceProgress = 0.0f;
                 player.giveExperiencePoints((int) total);
@@ -232,8 +204,7 @@ public class SPacketTeleport implements IPacketBase {
     }
 
     @Override
-    public void register(int id)
-    {
+    public void register(int id) {
 
         NetworkHandler.NETWORK.registerMessage(id, SPacketTeleport.class, SPacketTeleport::encode, SPacketTeleport::new, SPacketTeleport::handle);
 

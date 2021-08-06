@@ -1,20 +1,19 @@
 package subaraki.telepads.tileentity.render;
 
-import java.util.List;
-import java.util.Random;
-import java.util.stream.IntStream;
-
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-
+import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.core.Direction;
-import com.mojang.math.Matrix4f;
 import subaraki.telepads.tileentity.TileEntityTelepad;
+
+import java.util.List;
+import java.util.Random;
+import java.util.stream.IntStream;
 
 public class RenderEndPortalFrame {
 

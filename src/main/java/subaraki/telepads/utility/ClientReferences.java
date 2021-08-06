@@ -2,8 +2,8 @@ package subaraki.telepads.utility;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import subaraki.telepads.capability.player.TelepadData;
 import subaraki.telepads.network.client.CPacketEditWhiteListEntry;

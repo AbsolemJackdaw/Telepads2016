@@ -1,17 +1,16 @@
 package subaraki.telepads.utility;
 
-import java.util.ArrayList;
-import java.util.UUID;
-
 import com.google.common.collect.Lists;
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
 import net.minecraft.world.level.Level;
+
+import java.util.ArrayList;
+import java.util.UUID;
 
 public class TelepadEntry {
 

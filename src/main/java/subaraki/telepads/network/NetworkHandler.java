@@ -1,8 +1,8 @@
 package subaraki.telepads.network;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.fmllegacy.network.NetworkRegistry;
+import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
 import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.network.client.CPacketEditWhiteListEntry;
 import subaraki.telepads.network.client.CPacketRequestNamingScreen;

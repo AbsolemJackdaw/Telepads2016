@@ -1,13 +1,11 @@
 package subaraki.telepads.handler;
 
-import java.util.List;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.google.common.collect.Lists;
-
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.List;
 
 public class ConfigData {
 

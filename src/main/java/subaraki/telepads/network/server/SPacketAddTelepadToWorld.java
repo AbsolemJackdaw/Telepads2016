@@ -1,15 +1,15 @@
 package subaraki.telepads.network.server;
 
-import java.util.function.Supplier;
-
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 import subaraki.telepads.capability.player.TelepadData;
 import subaraki.telepads.handler.WorldDataHandler;
 import subaraki.telepads.network.IPacketBase;
 import subaraki.telepads.network.NetworkHandler;
 import subaraki.telepads.utility.TelepadEntry;
+
+import java.util.function.Supplier;
 
 public class SPacketAddTelepadToWorld implements IPacketBase {
 
@@ -24,7 +24,7 @@ public class SPacketAddTelepadToWorld implements IPacketBase {
      * sent from a server thread. When this packet is handled on the server side, a
      * sync packet with automatically be sent back to the client to ensure
      * everything is consistent.
-     * 
+     *
      * @param playerUUID
      *            : The UUID of the player to add the new TelepadEntry to.
      * @param entry
@@ -59,7 +59,7 @@ public class SPacketAddTelepadToWorld implements IPacketBase {
     }
 
     @Override
-    public void handle(Supplier<Context> context)
+    public void handle(Supplier<NetworkEvent.Context> context)
     {
 
         context.get().enqueueWork(() -> {

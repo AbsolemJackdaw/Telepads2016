@@ -1,14 +1,14 @@
 package subaraki.telepads.screen;
 
-import org.lwjgl.glfw.GLFW;
-
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import org.lwjgl.glfw.GLFW;
 import subaraki.telepads.capability.player.TelepadData;
 import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.network.NetworkHandler;
@@ -47,7 +47,11 @@ public class WhiteListScreen extends Screen {
     {
 
         this.renderBackground(stack);
-        this.minecraft.textureManager.bind(BACKGROUND);
+
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderTexture(0, BACKGROUND);
+
         blit(stack, center_x - tex_x / 2, center_y - tex_y / 2, 0, 0, tex_x, tex_y);
 
         // tiny hack to better control the suggestion text.
@@ -131,6 +135,6 @@ public class WhiteListScreen extends Screen {
         textfield.setMaxLength(23);
         textfield.setFocus(true);
         textfield.setEditable(true);
-        addButton(textfield);
+        addRenderableWidget(textfield);
     }
 }

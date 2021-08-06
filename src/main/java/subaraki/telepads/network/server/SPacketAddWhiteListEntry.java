@@ -1,12 +1,12 @@
 package subaraki.telepads.network.server;
 
-import java.util.function.Supplier;
-
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 import subaraki.telepads.capability.player.TelepadData;
 import subaraki.telepads.network.IPacketBase;
 import subaraki.telepads.network.NetworkHandler;
+
+import java.util.function.Supplier;
 
 public class SPacketAddWhiteListEntry implements IPacketBase {
 
@@ -41,7 +41,7 @@ public class SPacketAddWhiteListEntry implements IPacketBase {
     }
 
     @Override
-    public void handle(Supplier<Context> context)
+    public void handle(Supplier<NetworkEvent.Context> context)
     {
 
         context.get().enqueueWork(() -> {

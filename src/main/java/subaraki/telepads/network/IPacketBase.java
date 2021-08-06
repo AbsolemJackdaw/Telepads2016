@@ -1,9 +1,9 @@
 package subaraki.telepads.network;
 
-import java.util.function.Supplier;
-
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 public interface IPacketBase {
 

@@ -1,9 +1,9 @@
 package subaraki.telepads.capability.player;
 
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
@@ -33,13 +33,13 @@ public class CapabilityTelepadProvider implements ICapabilitySerializable<Compou
     @Override
     public CompoundTag serializeNBT() {
 
-        return (CompoundTag) TelePadDataCapability.CAPABILITY.writeNBT(data, null);
+        return (CompoundTag) data.writeData();
     }
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
 
-        TelePadDataCapability.CAPABILITY.readNBT(data, null, nbt);
+        data.readData(nbt);
     }
 
     @SuppressWarnings("unchecked")
