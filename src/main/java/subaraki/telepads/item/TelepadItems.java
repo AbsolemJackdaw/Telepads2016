@@ -2,13 +2,13 @@ package subaraki.telepads.item;
 
 import java.util.List;
 
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.level.Level;
 import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.utility.PropertiesWrapper;
 
@@ -20,27 +20,27 @@ public class TelepadItems {
         Item bead = new ItemEnderBead();
         Item necklace = new ItemEnderNecklace();
 
-        Item toggler = new Item(PropertiesWrapper.getItemProperties().tab(ItemGroup.TAB_REDSTONE)).setRegistryName(Telepads.MODID, "toggler");
-        Item transmitter = new Item(PropertiesWrapper.getItemProperties().tab(ItemGroup.TAB_REDSTONE)).setRegistryName(Telepads.MODID, "transmitter");
+        Item toggler = new Item(PropertiesWrapper.getItemProperties().tab(CreativeModeTab.TAB_REDSTONE)).setRegistryName(Telepads.MODID, "toggler");
+        Item transmitter = new Item(PropertiesWrapper.getItemProperties().tab(CreativeModeTab.TAB_REDSTONE)).setRegistryName(Telepads.MODID, "transmitter");
 
-        Item creative_rod = new Item(PropertiesWrapper.getItemProperties().tab(ItemGroup.TAB_REDSTONE)) {
+        Item creative_rod = new Item(PropertiesWrapper.getItemProperties().tab(CreativeModeTab.TAB_REDSTONE)) {
 
             @Override
-            public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
+            public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn)
             {
 
                 tooltip.add(
-                        new StringTextComponent("can be used by people with creative acces to enable telepads to teleport to a location defined in config"));
+                        new TextComponent("can be used by people with creative acces to enable telepads to teleport to a location defined in config"));
             }
         }.setRegistryName(Telepads.MODID, "tp_upgrade");
 
-        Item creative_rod_2 = new Item(PropertiesWrapper.getItemProperties().tab(ItemGroup.TAB_REDSTONE)) {
+        Item creative_rod_2 = new Item(PropertiesWrapper.getItemProperties().tab(CreativeModeTab.TAB_REDSTONE)) {
 
             @Override
-            public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
+            public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn)
             {
 
-                tooltip.add(new StringTextComponent("can be used by people with creative acces to toggle public acces to a telepad"));
+                tooltip.add(new TextComponent("can be used by people with creative acces to toggle public acces to a telepad"));
             }
         }.setRegistryName(Telepads.MODID, "tp_upgrade_public");
 

@@ -5,15 +5,15 @@ import java.util.Random;
 import java.util.stream.IntStream;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
+import net.minecraft.core.Direction;
+import com.mojang.math.Matrix4f;
 import subaraki.telepads.tileentity.TileEntityTelepad;
 
 public class RenderEndPortalFrame {
@@ -23,7 +23,7 @@ public class RenderEndPortalFrame {
         return RenderType.endPortal(itteration + 1);
     }).collect(ImmutableList.toImmutableList());
 
-    public void render(TileEntityTelepad tileEntityIn, TileEntityRendererDispatcher renderDispatcher, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn)
+    public void render(TileEntityTelepad tileEntityIn, BlockEntityRenderDispatcher renderDispatcher, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn)
     {
 
         RANDOM.setSeed(31100L);
@@ -42,7 +42,7 @@ public class RenderEndPortalFrame {
 
     }
 
-    private void renderCube(float offset, float pass, Matrix4f stack, IVertexBuilder vertexBuilder)
+    private void renderCube(float offset, float pass, Matrix4f stack, VertexConsumer vertexBuilder)
     {
 
         float f = (RANDOM.nextFloat() * 0.5F + 0.1F) * pass;
@@ -61,7 +61,7 @@ public class RenderEndPortalFrame {
         this.renderFace(stack, vertexBuilder, 0.0F, 1.0F, offset, offset, 1.0F, 1.0F, 0.0F, 0.0F, f, f1, f2, Direction.UP);
     }
 
-    private void renderFaceGUI(float offset, float pass, Matrix4f stack, IVertexBuilder vertexBuilder, int mouseX, int mouseY)
+    private void renderFaceGUI(float offset, float pass, Matrix4f stack, VertexConsumer vertexBuilder, int mouseX, int mouseY)
     {
 
         float f = (RANDOM.nextFloat() * 0.5F + 0.1F) * pass;
@@ -73,7 +73,7 @@ public class RenderEndPortalFrame {
         this.renderFace(stack, vertexBuilder, 0.0F, max, max, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, f, f1, f2, Direction.NORTH);
     }
 
-    private void renderFace(Matrix4f stack, IVertexBuilder vertexBuilder, float f1, float f2, float f3, float f4, float f5, float f6, float f7, float f8, float red, float green, float blue, Direction direction)
+    private void renderFace(Matrix4f stack, VertexConsumer vertexBuilder, float f1, float f2, float f3, float f4, float f5, float f6, float f7, float f8, float red, float green, float blue, Direction direction)
     {
 
         vertexBuilder.vertex(stack, f1, f3, f5).color(red, green, blue, 1.0F).endVertex();
@@ -131,7 +131,7 @@ public class RenderEndPortalFrame {
         return 0.75F;
     }
 
-    public void renderEndPortalSurfaceGUI(MatrixStack stack, IRenderTypeBuffer buffer, int mouseX, int mouseY)
+    public void renderEndPortalSurfaceGUI(PoseStack stack, MultiBufferSource buffer, int mouseX, int mouseY)
     {
 
         RANDOM.setSeed(31100L);

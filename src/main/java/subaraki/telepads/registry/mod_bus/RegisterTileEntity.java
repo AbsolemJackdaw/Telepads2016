@@ -1,6 +1,6 @@
 package subaraki.telepads.registry.mod_bus;
 
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -12,10 +12,10 @@ import subaraki.telepads.tileentity.TileEntityTelepad;
 public class RegisterTileEntity {
 
     @SubscribeEvent
-    public static void registerTE(RegistryEvent.Register<TileEntityType<?>> evt)
+    public static void registerTE(RegistryEvent.Register<BlockEntityType<?>> evt)
     {
 
-        TileEntityType<?> type = TileEntityType.Builder.of(TileEntityTelepad::new, Telepads.ObjectHolders.TELEPAD_BLOCK).build(null);
+        BlockEntityType<?> type = BlockEntityType.Builder.of(TileEntityTelepad::new, Telepads.ObjectHolders.TELEPAD_BLOCK).build(null);
         type.setRegistryName(Telepads.MODID, "telepadtileentity");
         evt.getRegistry().register(type);
     }

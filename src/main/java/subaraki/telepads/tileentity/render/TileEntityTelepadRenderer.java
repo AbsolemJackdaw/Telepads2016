@@ -4,30 +4,30 @@ import java.awt.Color;
 
 import org.lwjgl.opengl.GL11;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BlockRendererDispatcher;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.OverlayRenderer;
 import net.minecraft.client.renderer.RenderState.OverlayState;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.inventory.container.PlayerContainer;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Quaternion;
-import net.minecraft.world.World;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.resources.ResourceLocation;
+import com.mojang.math.Quaternion;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import subaraki.telepads.tileentity.TileEntityTelepad;
 
-public class TileEntityTelepadRenderer extends TileEntityRenderer<TileEntityTelepad> {
+public class TileEntityTelepadRenderer extends BlockEntityRenderer<TileEntityTelepad> {
 
     private static ModelTelepad modeltelepad;
 
@@ -43,7 +43,7 @@ public class TileEntityTelepadRenderer extends TileEntityRenderer<TileEntityTele
     private static int animation_counter;
     private RenderEndPortalFrame endPortalFrame;
 
-    public TileEntityTelepadRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
+    public TileEntityTelepadRenderer(BlockEntityRenderDispatcher rendererDispatcherIn) {
 
         super(rendererDispatcherIn);
         modeltelepad = new ModelTelepad(RenderType::entityCutoutNoCull);
@@ -51,7 +51,7 @@ public class TileEntityTelepadRenderer extends TileEntityRenderer<TileEntityTele
     }
 
     @Override
-    public void render(TileEntityTelepad te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn)
+    public void render(TileEntityTelepad te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn)
     {
 
         animation_counter++;
@@ -140,26 +140,26 @@ public class TileEntityTelepadRenderer extends TileEntityRenderer<TileEntityTele
 
         if (tet.hasRedstoneUpgrade())
         {
-            renderTorch(tet, matrixStackIn, bufferIn.getBuffer(RenderType.entityCutoutNoCull(PlayerContainer.BLOCK_ATLAS)), combinedOverlayIn,
+            renderTorch(tet, matrixStackIn, bufferIn.getBuffer(RenderType.entityCutoutNoCull(InventoryMenu.BLOCK_ATLAS)), combinedOverlayIn,
                     -(0.0625 * 7), -(0.0625 * 4), (0.0625 * 7));
-            renderTorch(tet, matrixStackIn, bufferIn.getBuffer(RenderType.entityCutoutNoCull(PlayerContainer.BLOCK_ATLAS)), combinedOverlayIn,
+            renderTorch(tet, matrixStackIn, bufferIn.getBuffer(RenderType.entityCutoutNoCull(InventoryMenu.BLOCK_ATLAS)), combinedOverlayIn,
                     -(0.0625 * 7), -(0.0625 * 4), -(0.0625 * 7));
-            renderTorch(tet, matrixStackIn, bufferIn.getBuffer(RenderType.entityCutoutNoCull(PlayerContainer.BLOCK_ATLAS)), combinedOverlayIn,
+            renderTorch(tet, matrixStackIn, bufferIn.getBuffer(RenderType.entityCutoutNoCull(InventoryMenu.BLOCK_ATLAS)), combinedOverlayIn,
                     (0.0625 * 7), -(0.0625 * 4), (0.0625 * 7));
-            renderTorch(tet, matrixStackIn, bufferIn.getBuffer(RenderType.entityCutoutNoCull(PlayerContainer.BLOCK_ATLAS)), combinedOverlayIn,
+            renderTorch(tet, matrixStackIn, bufferIn.getBuffer(RenderType.entityCutoutNoCull(InventoryMenu.BLOCK_ATLAS)), combinedOverlayIn,
                     (0.0625 * 7), -(0.0625 * 4), -(0.0625 * 7));
         }
     }
 
-    private void renderTorch(TileEntityTelepad te, MatrixStack stack, IVertexBuilder builder, int combinedOverlay, double offsetX, double offsetY, double offsetZ)
+    private void renderTorch(TileEntityTelepad te, PoseStack stack, VertexConsumer builder, int combinedOverlay, double offsetX, double offsetY, double offsetZ)
     {
 
         stack.pushPose();
-        BlockRendererDispatcher blockrendererdispatcher = Minecraft.getInstance().getBlockRenderer();
-        World world = te.getLevel();
+        BlockRenderDispatcher blockrendererdispatcher = Minecraft.getInstance().getBlockRenderer();
+        Level world = te.getLevel();
         BlockState state = Blocks.REDSTONE_TORCH.defaultBlockState().setValue(BlockStateProperties.LIT, te.isPowered());
         stack.translate(offsetX, offsetY, offsetZ);
-        IBakedModel model = blockrendererdispatcher.getBlockModel(state);
+        BakedModel model = blockrendererdispatcher.getBlockModel(state);
         blockrendererdispatcher.getModelRenderer().renderModel(world, model, state, te.getBlockPos(), stack, builder, false, world.random, OverlayTexture.NO_OVERLAY, combinedOverlay,
                 EmptyModelData.INSTANCE);
         stack.popPose();
@@ -169,7 +169,7 @@ public class TileEntityTelepadRenderer extends TileEntityRenderer<TileEntityTele
      * Renders a telepad model. this is rendered without norm and without end-portal
      * sky texture
      */
-    public void renderPad(MatrixStack stack, Color colorFrame, Color colorBase, IRenderTypeBuffer bufferIn, int packedLightIn, int packedOverlayIn)
+    public void renderPad(PoseStack stack, Color colorFrame, Color colorBase, MultiBufferSource bufferIn, int packedLightIn, int packedOverlayIn)
     {
 
         float f2 = 1.5f;

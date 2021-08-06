@@ -1,7 +1,7 @@
 package subaraki.telepads.registry.forge_bus;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -18,7 +18,7 @@ public class RegisterCapability {
 
         final Object entity = event.getObject();
 
-        if (entity instanceof PlayerEntity)
-            event.addCapability(CapabilityTelepadProvider.KEY, new CapabilityTelepadProvider((PlayerEntity) entity));
+        if (entity instanceof Player)
+            event.addCapability(CapabilityTelepadProvider.KEY, new CapabilityTelepadProvider((Player) entity));
     }
 }

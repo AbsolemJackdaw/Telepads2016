@@ -7,11 +7,11 @@ import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.ListNBT;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -23,7 +23,7 @@ import subaraki.telepads.utility.TelepadEntry;
 
 public class TelepadData {
 
-    private PlayerEntity player;
+    private Player player;
     /** A list of entries that this player has acces to. */
     // initialize to prevent null crashes caused by external sources
     private List<TelepadEntry> entries = new ArrayList<TelepadEntry>();
@@ -41,35 +41,35 @@ public class TelepadData {
 
     private boolean request_teleport = false;
 
-    public void setPlayer(PlayerEntity newPlayer)
+    public void setPlayer(Player newPlayer)
     {
 
         this.player = newPlayer;
     }
 
-    public static LazyOptional<TelepadData> get(PlayerEntity player)
+    public static LazyOptional<TelepadData> get(Player player)
     {
 
         return player.getCapability(TelePadDataCapability.CAPABILITY, null);
     }
 
-    public INBT writeData()
+    public Tag writeData()
     {
 
-        CompoundNBT tag = new CompoundNBT();
+        CompoundTag tag = new CompoundTag();
 
-        ListNBT entryList = new ListNBT();
+        ListTag entryList = new ListTag();
         if (entries != null && !entries.isEmpty())
             for (TelepadEntry entry : this.entries)
                 if (entry != null)
-                    entryList.add(entry.writeToNBT(new CompoundNBT()));
+                    entryList.add(entry.writeToNBT(new CompoundTag()));
 
         tag.put("entries", entryList);
 
-        ListNBT friends = new ListNBT();
+        ListTag friends = new ListTag();
 
         whitelist.keySet().stream().forEach(name -> {
-            CompoundNBT nbt = new CompoundNBT();
+            CompoundTag nbt = new CompoundTag();
             nbt.putUUID(name, whitelist.get(name));
             friends.add(nbt);
         });
@@ -78,21 +78,21 @@ public class TelepadData {
         return tag;
     }
 
-    public void readData(INBT nbt)
+    public void readData(Tag nbt)
     {
 
-        CompoundNBT tag = (CompoundNBT) nbt;
+        CompoundTag tag = (CompoundTag) nbt;
 
         List<TelepadEntry> entryList = new ArrayList<TelepadEntry>();
-        ListNBT entryTagList = tag.getList("entries", 10);
+        ListTag entryTagList = tag.getList("entries", 10);
 
         for (int tagPos = 0; tagPos < entryTagList.size(); tagPos++)
             entryList.add(new TelepadEntry(entryTagList.getCompound(tagPos)));
 
         this.entries = entryList;
 
-        ListNBT friendList = tag.getList("list", 10);
-        friendList.stream().forEach(entry -> ((CompoundNBT) entry).getAllKeys().forEach(key -> whitelist.put(key, ((CompoundNBT) entry).getUUID(key))));
+        ListTag friendList = tag.getList("list", 10);
+        friendList.stream().forEach(entry -> ((CompoundTag) entry).getAllKeys().forEach(key -> whitelist.put(key, ((CompoundTag) entry).getUUID(key))));
 
     }
 
@@ -185,12 +185,12 @@ public class TelepadData {
         {
             System.out.println(name);
             whitelist.remove(name);
-            NetworkHandler.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)player),
+            NetworkHandler.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer)player),
                     new CPacketEditWhiteListEntry(name, UUID.randomUUID(), false));
         }
     }
 
-    public void addWhiteListEntryServer(ServerPlayerEntity player)
+    public void addWhiteListEntryServer(ServerPlayer player)
     {
 
         if (!isWhiteListFull())
@@ -199,7 +199,7 @@ public class TelepadData {
             if (!whitelist.containsKey(profile.getName()))
             {
                 whitelist.put(player.getGameProfile().getName(), player.getGameProfile().getId());
-                NetworkHandler.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)this.player),
+                NetworkHandler.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer)this.player),
                         new CPacketEditWhiteListEntry(profile.getName(), profile.getId(), true));
             }
         }
@@ -247,7 +247,7 @@ public class TelepadData {
                 switch (command_split[0])
                 {
                 case "add":
-                    ServerPlayerEntity player = serverWorld.getPlayerList().getPlayerByName(playername);
+                    ServerPlayer player = serverWorld.getPlayerList().getPlayerByName(playername);
                     if (player == null)
                         return;
                     addWhiteListEntryServer(player);

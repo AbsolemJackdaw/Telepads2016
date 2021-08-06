@@ -3,8 +3,8 @@ package subaraki.telepads.mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
@@ -75,7 +75,7 @@ public class Telepads {
         public static final Item CREATIVE_ROD_PUBLIC = null;
 
         @ObjectHolder(value = "telepadtileentity")
-        public static final TileEntityType<TileEntityTelepad> TILE_ENTITY_TELEPAD = null;
+        public static final BlockEntityType<TileEntityTelepad> TILE_ENTITY_TELEPAD = null;
 
     }
 }

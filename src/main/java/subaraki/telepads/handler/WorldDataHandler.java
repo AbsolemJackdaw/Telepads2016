@@ -3,14 +3,14 @@ package subaraki.telepads.handler;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.WorldSavedData;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -18,7 +18,7 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.utility.TelepadEntry;
 
-public class WorldDataHandler extends WorldSavedData {
+public class WorldDataHandler extends SavedData {
 
     private static final String TELEPADS_WORLD_SAVE_DATA = "telepads_world_save_data";
 
@@ -30,11 +30,11 @@ public class WorldDataHandler extends WorldSavedData {
     }
 
     @Override
-    public void load(CompoundNBT nbt)
+    public void load(CompoundTag nbt)
     {
 
         List<TelepadEntry> entryList = new ArrayList<TelepadEntry>();
-        ListNBT taglist = nbt.getList("entries", 10);
+        ListTag taglist = nbt.getList("entries", 10);
 
         for (int entryTag = 0; entryTag < taglist.size(); entryTag++)
             entryList.add(new TelepadEntry(taglist.getCompound(entryTag)));
@@ -43,25 +43,25 @@ public class WorldDataHandler extends WorldSavedData {
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT nbt)
+    public CompoundTag save(CompoundTag nbt)
     {
 
-        ListNBT taglist = new ListNBT();
+        ListTag taglist = new ListTag();
 
         if (!allTelepads.isEmpty())
             for (TelepadEntry entry : allTelepads)
             {
-                taglist.add(entry.writeToNBT(new CompoundNBT()));
+                taglist.add(entry.writeToNBT(new CompoundTag()));
             }
         nbt.put("entries", taglist);
 
         return nbt;
     }
 
-    public static WorldDataHandler get(IWorld world)
+    public static WorldDataHandler get(LevelAccessor world)
     {
 
-        ServerWorld overworld = ((ServerWorld) world).getServer().getLevel(World.OVERWORLD);
+        ServerLevel overworld = ((ServerLevel) world).getServer().getLevel(Level.OVERWORLD);
         return overworld.getDataStorage().computeIfAbsent(WorldDataHandler::new, TELEPADS_WORLD_SAVE_DATA);
     }
 
@@ -96,7 +96,7 @@ public class WorldDataHandler extends WorldSavedData {
     }
 
     /** Compares block position and dimension id, ignoring the name of the entry */
-    public TelepadEntry getEntryForLocation(BlockPos pos, RegistryKey<World> dimID)
+    public TelepadEntry getEntryForLocation(BlockPos pos, ResourceKey<Level> dimID)
     {
 
         if (allTelepads.isEmpty())
@@ -156,10 +156,10 @@ public class WorldDataHandler extends WorldSavedData {
         public static void onWorldSave(WorldEvent.Save event)
         {
 
-            if (event.getWorld() instanceof ServerWorld)
+            if (event.getWorld() instanceof ServerLevel)
             {
-                ServerWorld server = (ServerWorld) event.getWorld();
-                ServerWorld overworld = server.getServer().getLevel(World.OVERWORLD);
+                ServerLevel server = (ServerLevel) event.getWorld();
+                ServerLevel overworld = server.getServer().getLevel(Level.OVERWORLD);
                 WorldDataHandler.get(overworld).setDirty();
 
             }
@@ -169,10 +169,10 @@ public class WorldDataHandler extends WorldSavedData {
         public static void onWorldLoad(WorldEvent.Load event)
         {
 
-            if (event.getWorld() instanceof ServerWorld)
+            if (event.getWorld() instanceof ServerLevel)
             {
-                ServerWorld server = (ServerWorld) event.getWorld();
-                ServerWorld overworld = server.getServer().getLevel(World.OVERWORLD);
+                ServerLevel server = (ServerLevel) event.getWorld();
+                ServerLevel overworld = server.getServer().getLevel(Level.OVERWORLD);
                 // simply calling an instance will load it's data
                 WorldDataHandler.get(overworld);
 

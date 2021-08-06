@@ -1,10 +1,10 @@
 package subaraki.telepads.utility;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import subaraki.telepads.capability.player.TelepadData;
 import subaraki.telepads.network.client.CPacketEditWhiteListEntry;
 import subaraki.telepads.network.client.CPacketRequestTeleportScreen;
@@ -14,7 +14,7 @@ import subaraki.telepads.screen.TeleportScreen;
 
 public class ClientReferences {
 
-    public static PlayerEntity getClientPlayer()
+    public static Player getClientPlayer()
     {
 
         return Minecraft.getInstance().player;
@@ -32,7 +32,7 @@ public class ClientReferences {
         Minecraft.getInstance().setScreen(new MissingEntryScreen(entry));
     }
 
-    public static World getClientWorld()
+    public static Level getClientWorld()
     {
 
         return Minecraft.getInstance().level;

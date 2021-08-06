@@ -2,7 +2,7 @@ package subaraki.telepads.network.server;
 
 import java.util.function.Supplier;
 
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 import subaraki.telepads.handler.WorldDataHandler;
 import subaraki.telepads.network.IPacketBase;
@@ -22,20 +22,20 @@ public class SPacketRemoveEntry implements IPacketBase {
         this.entry = entry;
     }
 
-    public SPacketRemoveEntry(PacketBuffer buf) {
+    public SPacketRemoveEntry(FriendlyByteBuf buf) {
 
         this.decode(buf);
     }
 
     @Override
-    public void encode(PacketBuffer buf)
+    public void encode(FriendlyByteBuf buf)
     {
 
         entry.writeToBuffer(buf);
     }
 
     @Override
-    public void decode(PacketBuffer buf)
+    public void decode(FriendlyByteBuf buf)
     {
 
         this.entry = new TelepadEntry(buf);

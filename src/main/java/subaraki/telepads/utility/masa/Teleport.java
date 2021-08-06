@@ -1,11 +1,11 @@
 package subaraki.telepads.utility.masa;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 
 public class Teleport {
 
@@ -24,13 +24,13 @@ public class Teleport {
         return entity;
     }
 
-    public static Entity teleportEntityToDimension(ServerPlayerEntity player, BlockPos pos, RegistryKey<World> dimension)
+    public static Entity teleportEntityToDimension(ServerPlayer player, BlockPos pos, ResourceKey<Level> dimension)
     {
 
         if (!net.minecraftforge.common.ForgeHooks.onTravelToDimension(player, dimension))
             return null;
 
-        ServerWorld nextWorld = player.getServer().getLevel(dimension);
+        ServerLevel nextWorld = player.getServer().getLevel(dimension);
         nextWorld.getChunk(pos); // make sure the chunk is loaded
         player.teleportTo(nextWorld, pos.getX(), pos.getY(), pos.getZ(), player.yRot, player.xRot);
 

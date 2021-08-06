@@ -2,8 +2,8 @@ package subaraki.telepads.capability.player;
 
 import java.util.concurrent.Callable;
 
-import net.minecraft.nbt.INBT;
-import net.minecraft.util.Direction;
+import net.minecraft.nbt.Tag;
+import net.minecraft.core.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -40,13 +40,13 @@ public class TelePadDataCapability {
     public static class StorageHelper implements Capability.IStorage<TelepadData> {
 
         @Override
-        public INBT writeNBT(Capability<TelepadData> capability, TelepadData instance, Direction side) {
+        public Tag writeNBT(Capability<TelepadData> capability, TelepadData instance, Direction side) {
 
             return instance.writeData();
         }
 
         @Override
-        public void readNBT(Capability<TelepadData> capability, TelepadData instance, Direction side, INBT nbt) {
+        public void readNBT(Capability<TelepadData> capability, TelepadData instance, Direction side, Tag nbt) {
 
             instance.readData(nbt);
         }

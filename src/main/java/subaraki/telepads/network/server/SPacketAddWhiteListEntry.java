@@ -2,7 +2,7 @@ package subaraki.telepads.network.server;
 
 import java.util.function.Supplier;
 
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 import subaraki.telepads.capability.player.TelepadData;
 import subaraki.telepads.network.IPacketBase;
@@ -21,20 +21,20 @@ public class SPacketAddWhiteListEntry implements IPacketBase {
         this.command = command;
     }
 
-    public SPacketAddWhiteListEntry(PacketBuffer buf) {
+    public SPacketAddWhiteListEntry(FriendlyByteBuf buf) {
 
         this.decode(buf);
     }
 
     @Override
-    public void encode(PacketBuffer buf)
+    public void encode(FriendlyByteBuf buf)
     {
 
         buf.writeUtf(command, 23);
     }
 
     @Override
-    public void decode(PacketBuffer buf)
+    public void decode(FriendlyByteBuf buf)
     {
 
         this.command = buf.readUtf(23);

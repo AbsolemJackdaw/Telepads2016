@@ -1,15 +1,15 @@
 package subaraki.telepads.capability.player;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import subaraki.telepads.mod.Telepads;
 
-public class CapabilityTelepadProvider implements ICapabilitySerializable<CompoundNBT> {
+public class CapabilityTelepadProvider implements ICapabilitySerializable<CompoundTag> {
 
     /**
      * Unique key to identify the attached provider from others
@@ -25,19 +25,19 @@ public class CapabilityTelepadProvider implements ICapabilitySerializable<Compou
      * gets called before world is initiated. player.worldObj will return null here
      * !
      */
-    public CapabilityTelepadProvider(PlayerEntity player) {
+    public CapabilityTelepadProvider(Player player) {
 
         data.setPlayer(player);
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
+    public CompoundTag serializeNBT() {
 
-        return (CompoundNBT) TelePadDataCapability.CAPABILITY.writeNBT(data, null);
+        return (CompoundTag) TelePadDataCapability.CAPABILITY.writeNBT(data, null);
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
 
         TelePadDataCapability.CAPABILITY.readNBT(data, null, nbt);
     }

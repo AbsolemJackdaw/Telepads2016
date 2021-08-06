@@ -2,16 +2,16 @@ package subaraki.telepads.network.server;
 
 import java.util.function.Supplier;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.Color;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.chat.Style;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 import subaraki.telepads.capability.player.TelepadData;
 import subaraki.telepads.handler.ConfigData;
@@ -58,7 +58,7 @@ public class SPacketTeleport implements IPacketBase {
         this.force = forceTeleport;
     }
 
-    public SPacketTeleport(PacketBuffer buf) {
+    public SPacketTeleport(FriendlyByteBuf buf) {
 
         decode(buf);
     }
@@ -69,7 +69,7 @@ public class SPacketTeleport implements IPacketBase {
     }
 
     @Override
-    public void encode(PacketBuffer buf)
+    public void encode(FriendlyByteBuf buf)
     {
 
         buf.writeLong(oldPos.asLong());
@@ -78,7 +78,7 @@ public class SPacketTeleport implements IPacketBase {
     }
 
     @Override
-    public void decode(PacketBuffer buf)
+    public void decode(FriendlyByteBuf buf)
     {
 
         oldPos = BlockPos.of(buf.readLong());
@@ -91,20 +91,20 @@ public class SPacketTeleport implements IPacketBase {
     {
 
         context.get().enqueueWork(() -> {
-            ServerPlayerEntity player = context.get().getSender();
+            ServerPlayer player = context.get().getSender();
             WorldDataHandler wdh = WorldDataHandler.get(player.level);
 
             TelepadData.get(player).ifPresent(data -> {
                 data.setInTeleportGui(false);
 
                 BlockPos destination = goTo.position.above();
-                RegistryKey<World> destination_dimension_id = goTo.dimensionID;
+                ResourceKey<Level> destination_dimension_id = goTo.dimensionID;
                 int penalty = ConfigData.expConsume;
 
                 if (penalty > 0 && (player.experienceLevel == 0 && player.experienceProgress * player.getXpNeededForNextLevel() <= penalty))
                 {
-                    player.displayClientMessage(new TranslationTextComponent("no.exp")
-                            .setStyle(Style.EMPTY.withItalic(true).withColor(Color.fromLegacyFormat(TextFormatting.DARK_RED))), true);
+                    player.displayClientMessage(new TranslatableComponent("no.exp")
+                            .setStyle(Style.EMPTY.withItalic(true).withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_RED))), true);
                     return;
                 }
 
@@ -134,7 +134,7 @@ public class SPacketTeleport implements IPacketBase {
                         else
                         {
                             player.displayClientMessage(
-                                    new TranslationTextComponent("no.power").setStyle(Style.EMPTY.withItalic(true).withColor(Color.fromLegacyFormat(TextFormatting.DARK_RED))), true);
+                                    new TranslatableComponent("no.power").setStyle(Style.EMPTY.withItalic(true).withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_RED))), true);
                         }
                     }
                     else
@@ -164,7 +164,7 @@ public class SPacketTeleport implements IPacketBase {
                         else
                         {
                             player.displayClientMessage(
-                                    new TranslationTextComponent("no.power").setStyle(Style.EMPTY.withItalic(true).withColor(Color.fromLegacyFormat(TextFormatting.DARK_RED))), true);
+                                    new TranslatableComponent("no.power").setStyle(Style.EMPTY.withItalic(true).withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_RED))), true);
                         }
                     }
                 }
@@ -175,7 +175,7 @@ public class SPacketTeleport implements IPacketBase {
     }
 
     /** Teleport Penalty is removed here if any is given in the config file */
-    private static boolean teleportPenalty(PlayerEntity player)
+    private static boolean teleportPenalty(Player player)
     {
 
         // lessons learned from fiddling with experience stuff :

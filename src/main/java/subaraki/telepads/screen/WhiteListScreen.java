@@ -2,13 +2,13 @@ package subaraki.telepads.screen;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import subaraki.telepads.capability.player.TelepadData;
 import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.network.NetworkHandler;
@@ -29,11 +29,11 @@ public class WhiteListScreen extends Screen {
 
     public WhiteListScreen() {
 
-        super(new TranslationTextComponent("screen.whitelist"));
-        suggestion = new TranslationTextComponent("suggest.name").getContents();
+        super(new TranslatableComponent("screen.whitelist"));
+        suggestion = new TranslatableComponent("suggest.name").getContents();
     }
 
-    TextFieldWidget textfield;
+    EditBox textfield;
 
     @Override
     public boolean isPauseScreen()
@@ -43,7 +43,7 @@ public class WhiteListScreen extends Screen {
     }
 
     @Override
-    public void render(MatrixStack stack, int x, int y, float partialTicks)
+    public void render(PoseStack stack, int x, int y, float partialTicks)
     {
 
         this.renderBackground(stack);
@@ -124,7 +124,7 @@ public class WhiteListScreen extends Screen {
         super.init();
         center_x = minecraft.getWindow().getGuiScaledWidth() / 2;
         center_y = minecraft.getWindow().getGuiScaledHeight() / 2;
-        textfield = new TextFieldWidget(font, center_x - tex_x / 2 + 5, center_y - tex_y / 2 + 13, 132, 11, new StringTextComponent("field_name"));
+        textfield = new EditBox(font, center_x - tex_x / 2 + 5, center_y - tex_y / 2 + 13, 132, 11, new TextComponent("field_name"));
         textfield.setSuggestion(suggestion);
         // player names must be between 3 and 16 characters, our command 'remove' is the
         // longest word, space included gives 23 characters max

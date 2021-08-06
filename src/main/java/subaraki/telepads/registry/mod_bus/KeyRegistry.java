@@ -3,7 +3,7 @@ package subaraki.telepads.registry.mod_bus;
 import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.client.KeyMapping;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -16,12 +16,12 @@ import subaraki.telepads.screen.WhiteListScreen;
 @EventBusSubscriber(bus = Bus.FORGE, modid = Telepads.MODID, value = Dist.CLIENT)
 public class KeyRegistry {
 
-    public static KeyBinding keyWhiteList;
+    public static KeyMapping keyWhiteList;
 
     public static void registerKey()
     {
 
-        keyWhiteList = new KeyBinding("Friend Whitelist", GLFW.GLFW_KEY_PERIOD, "Telepad Friend List");
+        keyWhiteList = new KeyMapping("Friend Whitelist", GLFW.GLFW_KEY_PERIOD, "Telepad Friend List");
         ClientRegistry.registerKeyBinding(keyWhiteList);
     }
 

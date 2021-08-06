@@ -5,13 +5,13 @@ import java.util.UUID;
 
 import com.google.common.collect.Lists;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.world.level.Level;
 
 public class TelepadEntry {
 
@@ -23,7 +23,7 @@ public class TelepadEntry {
     /**
      * The dimension that the TelePad entry is located in.
      */
-    public RegistryKey<World> dimensionID;
+    public ResourceKey<Level> dimensionID;
 
     /**
      * The coordinates of the TelePad entry.
@@ -45,9 +45,9 @@ public class TelepadEntry {
      * @param buf
      *            : A ByteBuf containing the data needed to create a TelepadEntry.
      */
-    public TelepadEntry(PacketBuffer buf) {
+    public TelepadEntry(FriendlyByteBuf buf) {
 
-        this(buf.readUtf(256), RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(buf.readUtf())), new BlockPos(buf.readInt(), buf.readInt(), buf.readInt()));
+        this(buf.readUtf(256), ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(buf.readUtf())), new BlockPos(buf.readInt(), buf.readInt(), buf.readInt()));
         addDetails(buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean());
 
         int size = buf.readInt();
@@ -64,11 +64,11 @@ public class TelepadEntry {
      * @param tag
      *            : An NBTTagCompound to read the required data from.
      */
-    public TelepadEntry(CompoundNBT tag) {
+    public TelepadEntry(CompoundTag tag) {
         
         
 
-        this(tag.getString("entryName"), RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(tag.getString("dimensionID"))), new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")));
+        this(tag.getString("entryName"), ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(tag.getString("dimensionID"))), new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")));
         addDetails(tag.getBoolean("power"), tag.getBoolean("transmitter"), tag.getBoolean("public"), tag.getBoolean("missing"));
 
         int size = tag.getInt("size");
@@ -92,7 +92,7 @@ public class TelepadEntry {
      * @param pos
      *            : The BlockPos of this TelepadEntry.
      */
-    public TelepadEntry(String name, RegistryKey<World> dimension, BlockPos pos) {
+    public TelepadEntry(String name, ResourceKey<Level> dimension, BlockPos pos) {
 
         this.entryName = name;
         this.dimensionID = dimension;
@@ -117,7 +117,7 @@ public class TelepadEntry {
      *            : The tag to write the TelepadEntry to.
      * @return CompoundNBT: An CompoundNBT containing all of the TelepadEntry data.
      */
-    public CompoundNBT writeToNBT(CompoundNBT tag)
+    public CompoundTag writeToNBT(CompoundTag tag)
     {
 
         tag.putString("entryName", this.entryName);
@@ -147,7 +147,7 @@ public class TelepadEntry {
      * @param buf
      *            : The ByteBuf to write the TelepadEntry to.
      */
-    public void writeToBuffer(PacketBuffer buf)
+    public void writeToBuffer(FriendlyByteBuf buf)
     {
 
         buf.writeUtf(this.entryName);

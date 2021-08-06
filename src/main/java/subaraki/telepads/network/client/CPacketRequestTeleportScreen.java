@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 
 import com.google.common.collect.Lists;
 
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
@@ -48,7 +48,7 @@ public class CPacketRequestTeleportScreen implements IPacketBase {
         this.has_transmitter = has_transmitter;
     }
 
-    public CPacketRequestTeleportScreen(PacketBuffer buf) {
+    public CPacketRequestTeleportScreen(FriendlyByteBuf buf) {
 
         decode(buf);
     }
@@ -58,7 +58,7 @@ public class CPacketRequestTeleportScreen implements IPacketBase {
     }
 
     @Override
-    public void encode(PacketBuffer buf)
+    public void encode(FriendlyByteBuf buf)
     {
 
         buf.writeInt(this.entries.size());
@@ -75,7 +75,7 @@ public class CPacketRequestTeleportScreen implements IPacketBase {
     }
 
     @Override
-    public void decode(PacketBuffer buf)
+    public void decode(FriendlyByteBuf buf)
     {
 
         int size = buf.readInt();

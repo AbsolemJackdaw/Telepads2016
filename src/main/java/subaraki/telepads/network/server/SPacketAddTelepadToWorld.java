@@ -2,8 +2,8 @@ package subaraki.telepads.network.server;
 
 import java.util.function.Supplier;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 import subaraki.telepads.capability.player.TelepadData;
 import subaraki.telepads.handler.WorldDataHandler;
@@ -35,7 +35,7 @@ public class SPacketAddTelepadToWorld implements IPacketBase {
         this.entry = entry;
     }
 
-    public SPacketAddTelepadToWorld(PacketBuffer buf) {
+    public SPacketAddTelepadToWorld(FriendlyByteBuf buf) {
 
         decode(buf);
     }
@@ -45,14 +45,14 @@ public class SPacketAddTelepadToWorld implements IPacketBase {
     }
 
     @Override
-    public void encode(PacketBuffer buf)
+    public void encode(FriendlyByteBuf buf)
     {
 
         this.entry.writeToBuffer(buf);
     }
 
     @Override
-    public void decode(PacketBuffer buf)
+    public void decode(FriendlyByteBuf buf)
     {
 
         this.entry = new TelepadEntry(buf);
@@ -63,7 +63,7 @@ public class SPacketAddTelepadToWorld implements IPacketBase {
     {
 
         context.get().enqueueWork(() -> {
-            PlayerEntity player = context.get().getSender();
+            Player player = context.get().getSender();
 
             TelepadData.get(player).ifPresent(data -> {
                 WorldDataHandler wdh = WorldDataHandler.get(player.level);

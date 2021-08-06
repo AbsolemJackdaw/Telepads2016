@@ -3,18 +3,18 @@ package subaraki.telepads.item;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.level.Level;
 import subaraki.telepads.handler.ConfigData;
 import subaraki.telepads.handler.WorldDataHandler;
 import subaraki.telepads.mod.Telepads;
@@ -26,19 +26,19 @@ public class ItemEnderNecklace extends Item {
 
     public ItemEnderNecklace() {
 
-        super(PropertiesWrapper.getItemProperties().stacksTo(8).tab(ItemGroup.TAB_MATERIALS));
+        super(PropertiesWrapper.getItemProperties().stacksTo(8).tab(CreativeModeTab.TAB_MATERIALS));
 
         setRegistryName(Telepads.MODID, "ender_bead_necklace");
     }
 
     @Override
-    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand)
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand)
     {
 
         if (ConfigData.disableNecklaceUsage)
         {
             if (!world.isClientSide)
-                player.sendMessage(new StringTextComponent("This Functionality has been disabled by the server operator."), player.getUUID());
+                player.sendMessage(new TextComponent("This Functionality has been disabled by the server operator."), player.getUUID());
             return super.use(world, player, hand);
         }
 
@@ -53,7 +53,7 @@ public class ItemEnderNecklace extends Item {
             if (locations.isEmpty())
                 return super.use(world, player, hand); // pass
 
-            RegistryKey<World> dim = world.dimension();
+            ResourceKey<Level> dim = world.dimension();
 
             locations.stream().filter(filter -> filter.dimensionID.equals(dim) && filter.canUse(player.getUUID()) && !filter.isPowered)
                     .forEach(telepad -> thisDim.add(telepad));
@@ -84,11 +84,11 @@ public class ItemEnderNecklace extends Item {
                     player.inventory.add(new ItemStack(Items.STRING, world.random.nextInt(2) + 1));
                 Teleport.teleportEntityInsideSameDimension(player, closestEntry.position.south().west());
 
-                world.playSound((PlayerEntity) null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENDERMAN_TELEPORT, SoundCategory.NEUTRAL, 0.6F,
+                world.playSound((Player) null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.NEUTRAL, 0.6F,
                         0.4F / (random.nextFloat() * 0.4F + 0.8F));
-                world.playSound((PlayerEntity) null, player.getX(), player.getY(), player.getZ(), SoundEvents.GLASS_BREAK, SoundCategory.NEUTRAL, 0.1F,
+                world.playSound((Player) null, player.getX(), player.getY(), player.getZ(), SoundEvents.GLASS_BREAK, SoundSource.NEUTRAL, 0.1F,
                         0.4F / (random.nextFloat() * 0.4F + 0.8F));
-                world.playSound((PlayerEntity) null, player.getX(), player.getY(), player.getZ(), SoundEvents.WOOL_BREAK, SoundCategory.NEUTRAL, 1.0F,
+                world.playSound((Player) null, player.getX(), player.getY(), player.getZ(), SoundEvents.WOOL_BREAK, SoundSource.NEUTRAL, 1.0F,
                         0.4F / (random.nextFloat() * 0.4F + 0.8F));
             }
 

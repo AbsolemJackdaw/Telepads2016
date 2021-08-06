@@ -3,7 +3,7 @@ package subaraki.telepads.network.client;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
@@ -28,13 +28,13 @@ public class CPacketEditWhiteListEntry implements IPacketBase {
         this.add = add;
     }
 
-    public CPacketEditWhiteListEntry(PacketBuffer buf) {
+    public CPacketEditWhiteListEntry(FriendlyByteBuf buf) {
 
         this.decode(buf);
     }
 
     @Override
-    public void encode(PacketBuffer buf)
+    public void encode(FriendlyByteBuf buf)
     {
 
         buf.writeUtf(name, 16);
@@ -44,7 +44,7 @@ public class CPacketEditWhiteListEntry implements IPacketBase {
     }
 
     @Override
-    public void decode(PacketBuffer buf)
+    public void decode(FriendlyByteBuf buf)
     {
 
         this.name = buf.readUtf();

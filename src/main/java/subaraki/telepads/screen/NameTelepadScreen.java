@@ -2,17 +2,17 @@ package subaraki.telepads.screen;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import subaraki.telepads.capability.player.TelepadData;
 import subaraki.telepads.network.NetworkHandler;
 import subaraki.telepads.network.server.SPacketAddTelepadToWorld;
@@ -20,7 +20,7 @@ import subaraki.telepads.utility.TelepadEntry;
 
 public class NameTelepadScreen extends Screen {
 
-    private TextFieldWidget textField;
+    private EditBox textField;
     private int field_width = 150;
     private int field_height = 20;
     private int center_x, center_y;
@@ -39,12 +39,12 @@ public class NameTelepadScreen extends Screen {
 
     public NameTelepadScreen(BlockPos position) {
 
-        super(new TranslationTextComponent("name.pick.screen"));
+        super(new TranslatableComponent("name.pick.screen"));
 
-        text_share = new TranslationTextComponent("button.share").getString();
-        text_confirm_share = new TranslationTextComponent("confirm.share").getString();
-        text_negate_share = new TranslationTextComponent("negate.share").getString();
-        enter = new TranslationTextComponent("enter.to.confirm").getString();
+        text_share = new TranslatableComponent("button.share").getString();
+        text_confirm_share = new TranslatableComponent("confirm.share").getString();
+        text_negate_share = new TranslatableComponent("negate.share").getString();
+        enter = new TranslatableComponent("enter.to.confirm").getString();
 
         this.position = position;
     }
@@ -66,7 +66,7 @@ public class NameTelepadScreen extends Screen {
         center_y = this.height / 2;
 
         initTextField();
-        ITextComponent translation = new TranslationTextComponent("name.your.telepad").append(new StringTextComponent(" : "));
+        Component translation = new TranslatableComponent("name.your.telepad").append(new TextComponent(" : "));
         nameYourPad = translation.getString();
 
         initButtons();
@@ -80,7 +80,7 @@ public class NameTelepadScreen extends Screen {
             if (!data.getWhitelist().isEmpty())
             {
                 should_show_sharing = true;
-                addButton(new Button(center_x - 40, center_y + 20, 45, 20, new TranslationTextComponent(text_share), b -> {
+                addButton(new Button(center_x - 40, center_y + 20, 45, 20, new TranslatableComponent(text_share), b -> {
                     share = !share;
                 }));
 
@@ -91,7 +91,7 @@ public class NameTelepadScreen extends Screen {
     private void initTextField()
     {
 
-        textField = new TextFieldWidget(font, center_x - field_width / 2, center_y - 50, field_width, field_height, new StringTextComponent("field_name"));
+        textField = new EditBox(font, center_x - field_width / 2, center_y - 50, field_width, field_height, new TextComponent("field_name"));
         textField.setBordered(true);
         textField.setEditable(true);
         textField.setCanLoseFocus(false);
@@ -100,7 +100,7 @@ public class NameTelepadScreen extends Screen {
         ResourceLocation resLoc = this.minecraft.level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getKey(this.minecraft.level.getBiome(minecraft.player.blockPosition()));
         
         String biome_name = "biome."+resLoc.getNamespace()+"."+resLoc.getPath(); //biome names are present in lang files under biome.modname.biomename
-        TranslationTextComponent biome = new TranslationTextComponent(biome_name);
+        TranslatableComponent biome = new TranslatableComponent(biome_name);
         
         String format_name = biome.getString().substring(0, Math.min(15, biome.getString().length()));
        
@@ -109,7 +109,7 @@ public class NameTelepadScreen extends Screen {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
 
         this.renderBackground(matrixStack);

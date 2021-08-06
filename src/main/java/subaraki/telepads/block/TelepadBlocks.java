@@ -2,16 +2,16 @@ package subaraki.telepads.block;
 
 import java.util.List;
 
-import net.minecraft.block.Block;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.Level;
 import subaraki.telepads.mod.Telepads.ObjectHolders;
 import subaraki.telepads.utility.PropertiesWrapper;
 
@@ -28,10 +28,10 @@ public class TelepadBlocks {
     public static BlockItem[] registerBlockItems()
     {
 
-        BlockItem telepadItem = new BlockItem(ObjectHolders.TELEPAD_BLOCK, PropertiesWrapper.getItemProperties().tab(ItemGroup.TAB_TRANSPORTATION)) {
+        BlockItem telepadItem = new BlockItem(ObjectHolders.TELEPAD_BLOCK, PropertiesWrapper.getItemProperties().tab(CreativeModeTab.TAB_TRANSPORTATION)) {
 
             @Override
-            public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
+            public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn)
             {
 
                 super.appendHoverText(stack, worldIn, tooltip, flagIn);
@@ -60,9 +60,9 @@ public class TelepadBlocks {
                                 }
                             }
 
-                            TranslationTextComponent part_name = new TranslationTextComponent(translate_part_names[iteration]);
-                            TranslationTextComponent dye_name = new TranslationTextComponent(color_name);
-                            StringTextComponent text = new StringTextComponent(part_name.getString() + dye_name.getString());
+                            TranslatableComponent part_name = new TranslatableComponent(translate_part_names[iteration]);
+                            TranslatableComponent dye_name = new TranslatableComponent(color_name);
+                            TextComponent text = new TextComponent(part_name.getString() + dye_name.getString());
                             tooltip.add(text);
                         }
 

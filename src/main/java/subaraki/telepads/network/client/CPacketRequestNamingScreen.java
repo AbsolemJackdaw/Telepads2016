@@ -2,8 +2,8 @@ package subaraki.telepads.network.client;
 
 import java.util.function.Supplier;
 
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
@@ -24,20 +24,20 @@ public class CPacketRequestNamingScreen implements IPacketBase {
         this.pos = pos;
     }
 
-    public CPacketRequestNamingScreen(PacketBuffer buf) {
+    public CPacketRequestNamingScreen(FriendlyByteBuf buf) {
 
         this.decode(buf);
     }
 
     @Override
-    public void encode(PacketBuffer buf)
+    public void encode(FriendlyByteBuf buf)
     {
 
         buf.writeBlockPos(pos);
     }
 
     @Override
-    public void decode(PacketBuffer buf)
+    public void decode(FriendlyByteBuf buf)
     {
 
         pos = buf.readBlockPos();

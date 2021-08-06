@@ -2,54 +2,54 @@ package subaraki.telepads.block;
 
 import java.util.Random;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.IWaterLoggable;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.DyeItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.text.Color;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.Explosion;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.DyeItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fml.network.PacketDistributor;
 import subaraki.telepads.handler.ConfigData;
@@ -62,31 +62,33 @@ import subaraki.telepads.network.client.CPacketRequestNamingScreen;
 import subaraki.telepads.tileentity.TileEntityTelepad;
 import subaraki.telepads.utility.TelepadEntry;
 
-public class BlockTelepad extends Block implements IWaterLoggable {
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
-    protected static final AxisAlignedBB AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.20D, 1.0D);
-    protected static final VoxelShape VOX = VoxelShapes.create(AABB);
+public class BlockTelepad extends Block implements SimpleWaterloggedBlock {
 
-    private static final VoxelShape shape = VoxelShapes.create(new AxisAlignedBB(0.0D, 0D, 0.0D, 1.0D, 0.20D, 1.0D));
-    private static final VoxelShape shape_n = VoxelShapes.create(new AxisAlignedBB(0.32D, 0.0D, -.22D, .68D, 0.15D, 0D));
-    private static final VoxelShape shape_s = VoxelShapes.create(new AxisAlignedBB(0.32D, 0.0D, 1.00D, .68D, 0.15D, 1.22D));
-    private static final VoxelShape shape_e = VoxelShapes.create(new AxisAlignedBB(0D, 0.0D, 0.32D, 1.22D, 0.15D, .68D));
-    private static final VoxelShape shape_w = VoxelShapes.create(new AxisAlignedBB(0D, 0.0D, 0.32D, -.22D, 0.15D, .68D));
-    private static final VoxelShape SHAPE_VOX = VoxelShapes.or(shape_w, shape_e, shape_s, shape_n, shape);
+    protected static final AABB AABB = new AABB(0.0D, 0.0D, 0.0D, 1.0D, 0.20D, 1.0D);
+    protected static final VoxelShape VOX = Shapes.create(AABB);
+
+    private static final VoxelShape shape = Shapes.create(new AABB(0.0D, 0D, 0.0D, 1.0D, 0.20D, 1.0D));
+    private static final VoxelShape shape_n = Shapes.create(new AABB(0.32D, 0.0D, -.22D, .68D, 0.15D, 0D));
+    private static final VoxelShape shape_s = Shapes.create(new AABB(0.32D, 0.0D, 1.00D, .68D, 0.15D, 1.22D));
+    private static final VoxelShape shape_e = Shapes.create(new AABB(0D, 0.0D, 0.32D, 1.22D, 0.15D, .68D));
+    private static final VoxelShape shape_w = Shapes.create(new AABB(0D, 0.0D, 0.32D, -.22D, 0.15D, .68D));
+    private static final VoxelShape SHAPE_VOX = Shapes.or(shape_w, shape_e, shape_s, shape_n, shape);
 
     private static Properties block_properties = Properties.of(Material.GLASS).strength(5F, Float.MAX_VALUE).sound(SoundType.GLASS)
             .harvestTool(ToolType.PICKAXE).harvestLevel(1).noOcclusion();
 
-    private TranslationTextComponent text_public_rod;
-    private TranslationTextComponent text_public_rod_private;
-    private TranslationTextComponent text_public_rod_public;
+    private TranslatableComponent text_public_rod;
+    private TranslatableComponent text_public_rod_private;
+    private TranslatableComponent text_public_rod_public;
 
-    private TranslationTextComponent text__cycle_rod_normal;
-    private TranslationTextComponent text__cycle_rod;
+    private TranslatableComponent text__cycle_rod_normal;
+    private TranslatableComponent text__cycle_rod;
 
-    private TranslationTextComponent cycle_add_success;
-    private TranslationTextComponent cycle_add_remove;
-    private TranslationTextComponent cycle_add_fail;
+    private TranslatableComponent cycle_add_success;
+    private TranslatableComponent cycle_add_remove;
+    private TranslatableComponent cycle_add_fail;
 
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
@@ -95,27 +97,27 @@ public class BlockTelepad extends Block implements IWaterLoggable {
         super(block_properties);
         setRegistryName(Telepads.MODID, "telepad");
 
-        text_public_rod = new TranslationTextComponent("block.info.rod");
-        text_public_rod_private = new TranslationTextComponent("block.info.rod.private");
-        text_public_rod_public = new TranslationTextComponent("block.info.rod.public");
-        text__cycle_rod_normal = new TranslationTextComponent("block.info.cycle.normal");
-        text__cycle_rod = new TranslationTextComponent("block.info.cycle");
-        cycle_add_success = new TranslationTextComponent("block.info.add.succes");
-        cycle_add_remove = new TranslationTextComponent("block.info.add.fail");
-        cycle_add_fail = new TranslationTextComponent("block.info.add.remove");
+        text_public_rod = new TranslatableComponent("block.info.rod");
+        text_public_rod_private = new TranslatableComponent("block.info.rod.private");
+        text_public_rod_public = new TranslatableComponent("block.info.rod.public");
+        text__cycle_rod_normal = new TranslatableComponent("block.info.cycle.normal");
+        text__cycle_rod = new TranslatableComponent("block.info.cycle");
+        cycle_add_success = new TranslatableComponent("block.info.add.succes");
+        cycle_add_remove = new TranslatableComponent("block.info.add.fail");
+        cycle_add_fail = new TranslatableComponent("block.info.add.remove");
 
         this.registerDefaultState(defaultBlockState().setValue(WATERLOGGED, Boolean.valueOf(false)));
     }
 
     @Override
-    public int getLightValue(BlockState state, IBlockReader world, BlockPos pos)
+    public int getLightValue(BlockState state, BlockGetter world, BlockPos pos)
     {
     
         return 0;
     }
     
     @Override
-    public boolean propagatesSkylightDown(BlockState p_200123_1_, IBlockReader p_200123_2_, BlockPos p_200123_3_)
+    public boolean propagatesSkylightDown(BlockState p_200123_1_, BlockGetter p_200123_2_, BlockPos p_200123_3_)
     {
     
         return false;
@@ -123,7 +125,7 @@ public class BlockTelepad extends Block implements IWaterLoggable {
     
     ///////////////// waterlogged//////////////
 
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos)
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos)
     {
 
         if (stateIn.getValue(WATERLOGGED))
@@ -134,17 +136,17 @@ public class BlockTelepad extends Block implements IWaterLoggable {
         return stateIn;
     }
 
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder)
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
     {
 
         builder.add(WATERLOGGED);
     }
 
     @Override
-    public boolean placeLiquid(IWorld worldIn, BlockPos pos, BlockState state, FluidState fluidStateIn)
+    public boolean placeLiquid(LevelAccessor worldIn, BlockPos pos, BlockState state, FluidState fluidStateIn)
     {
 
-        return IWaterLoggable.super.placeLiquid(worldIn, pos, state, fluidStateIn);
+        return SimpleWaterloggedBlock.super.placeLiquid(worldIn, pos, state, fluidStateIn);
     }
 
     @Override
@@ -157,35 +159,35 @@ public class BlockTelepad extends Block implements IWaterLoggable {
     ///////////////// rendering//////////////
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context)
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context)
     {
 
         return SHAPE_VOX;
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context)
+    public VoxelShape getCollisionShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context)
     {
 
         return VOX;
     }
 
     @Override
-    public VoxelShape getOcclusionShape(BlockState state, IBlockReader worldIn, BlockPos pos)
+    public VoxelShape getOcclusionShape(BlockState state, BlockGetter worldIn, BlockPos pos)
     {
 
         return SHAPE_VOX;
     }
 
     @Override
-    public BlockRenderType getRenderShape(BlockState state)
+    public RenderShape getRenderShape(BlockState state)
     {
 
-        return BlockRenderType.ENTITYBLOCK_ANIMATED;
+        return RenderShape.ENTITYBLOCK_ANIMATED;
     }
 
     @Override
-    public int getLightBlock(BlockState state, IBlockReader worldIn, BlockPos pos)
+    public int getLightBlock(BlockState state, BlockGetter worldIn, BlockPos pos)
     {
 
         return 1;
@@ -200,7 +202,7 @@ public class BlockTelepad extends Block implements IWaterLoggable {
     }
 
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world)
+    public BlockEntity createTileEntity(BlockState state, BlockGetter world)
     {
 
         return new TileEntityTelepad();
@@ -209,18 +211,18 @@ public class BlockTelepad extends Block implements IWaterLoggable {
     ////////// Interaction///////
 
     @Override
-    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit)
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit)
     {
 
         ItemStack heldItem = player.getItemInHand(hand);
 
         if (world.isClientSide())
-            return ActionResultType.FAIL;
+            return InteractionResult.FAIL;
 
         if (!heldItem.isEmpty())
         {
             Item item = heldItem.getItem();
-            TileEntity tile_entity = world.getBlockEntity(pos);
+            BlockEntity tile_entity = world.getBlockEntity(pos);
 
             if (tile_entity instanceof TileEntityTelepad)
             {
@@ -260,10 +262,10 @@ public class BlockTelepad extends Block implements IWaterLoggable {
                     world.sendBlockUpdated(pos, world.getBlockState(pos), defaultBlockState(), 3);
                     entry.setPublic(telepad_tile_entity.isPublic());
 
-                    ITextComponent private_rod = text_public_rod.copy().append(" ").append(text_public_rod_private);
-                    ITextComponent public_rod = text_public_rod.copy().append(" ").append(text_public_rod_public);
+                    Component private_rod = text_public_rod.copy().append(" ").append(text_public_rod_private);
+                    Component public_rod = text_public_rod.copy().append(" ").append(text_public_rod_public);
 
-                    ITextComponent text = telepad_tile_entity.isPublic() ? public_rod : private_rod;
+                    Component text = telepad_tile_entity.isPublic() ? public_rod : private_rod;
 
                     player.sendMessage(text, player.getUUID());
                     WorldDataHandler.get(world).updateEntry(entry);
@@ -278,10 +280,10 @@ public class BlockTelepad extends Block implements IWaterLoggable {
                     if (index > -1)
                     {
                         String[] tpl = ConfigData.tp_locations;
-                        CoordinateHandler ch = new CoordinateHandler((ServerWorld) world, tpl[index]);
+                        CoordinateHandler ch = new CoordinateHandler((ServerLevel) world, tpl[index]);
                         String name = ch.getName();
 
-                        ITextComponent msg = text__cycle_rod.copy().append(name);
+                        Component msg = text__cycle_rod.copy().append(name);
                         player.sendMessage(msg, player.getUUID());
 
                         world.sendBlockUpdated(pos, world.getBlockState(pos), defaultBlockState(), 3);
@@ -333,11 +335,11 @@ public class BlockTelepad extends Block implements IWaterLoggable {
                     }
                     if (!player.isCreative() && hasWashed)
                     {
-                        world.playLocalSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.BUCKET_EMPTY, SoundCategory.BLOCKS, 1, 1, true);
+                        world.playLocalSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1, 1, true);
                         player.setItemInHand(hand, heldItem.getContainerItem());
                     }
 
-                    return ActionResultType.SUCCESS;
+                    return InteractionResult.SUCCESS;
                 }
             }
         }
@@ -350,37 +352,37 @@ public class BlockTelepad extends Block implements IWaterLoggable {
                     // check if the player has this pad
                     TelepadEntry entry = WorldDataHandler.get(world).getEntryForLocation(pos, world.dimension());
 
-                    if (entry != null && Hand.MAIN_HAND.equals(hand))
+                    if (entry != null && InteractionHand.MAIN_HAND.equals(hand))
                     {
                         // if the player cannot use this pad (is not registered to it), then add it
                         if (!entry.canUse(player.getUUID()))
                         {
-                            Style style = Style.EMPTY.withColor(Color.fromLegacyFormat(TextFormatting.GREEN));
+                            Style style = Style.EMPTY.withColor(TextColor.fromLegacyFormat(ChatFormatting.GREEN));
 
-                            IFormattableTextComponent msg = cycle_add_success.copy().append(entry.entryName);
+                            MutableComponent msg = cycle_add_success.copy().append(entry.entryName);
                             player.sendMessage(msg.setStyle(style), player.getUUID());
 
                             entry.addUser(player.getUUID());
-                            return ActionResultType.SUCCESS;
+                            return InteractionResult.SUCCESS;
                         }
 
                         // if the player is not registered to it and the pad is not public
                         else
                             if (!entry.isPublic)
                             {
-                                Style style = Style.EMPTY.withColor(Color.fromLegacyFormat(TextFormatting.GOLD));
+                                Style style = Style.EMPTY.withColor(TextColor.fromLegacyFormat(ChatFormatting.GOLD));
 
-                                IFormattableTextComponent msg = cycle_add_remove.copy().append(entry.entryName).setStyle(style);
+                                MutableComponent msg = cycle_add_remove.copy().append(entry.entryName).setStyle(style);
                                 player.sendMessage(msg, player.getUUID());
                                 entry.removeUser(player.getUUID());
-                                return ActionResultType.SUCCESS;
+                                return InteractionResult.SUCCESS;
                             }
                             else
                             {
-                                IFormattableTextComponent msg = cycle_add_fail.copy()
-                                        .setStyle(Style.EMPTY.withColor(Color.fromLegacyFormat(TextFormatting.RED)));
+                                MutableComponent msg = cycle_add_fail.copy()
+                                        .setStyle(Style.EMPTY.withColor(TextColor.fromLegacyFormat(ChatFormatting.RED)));
                                 player.sendMessage(msg, player.getUUID());
-                                return ActionResultType.SUCCESS;
+                                return InteractionResult.SUCCESS;
 
                             }
                     }
@@ -388,11 +390,11 @@ public class BlockTelepad extends Block implements IWaterLoggable {
             }
         }
 
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
 
     }
 
-    private void wash(int color, World world, BlockPos pos)
+    private void wash(int color, Level world, BlockPos pos)
     {
 
         DyeColor edc = DyeColor.WHITE;
@@ -410,10 +412,10 @@ public class BlockTelepad extends Block implements IWaterLoggable {
 
     ///////////////////////////// REDSTONE////////////////////////////////////////
     @Override
-    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving)
+    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving)
     {
 
-        TileEntity te = world.getBlockEntity(pos);
+        BlockEntity te = world.getBlockEntity(pos);
         TileEntityTelepad tet = null;
         if (te == null || !(te instanceof TileEntityTelepad))
             return;
@@ -451,7 +453,7 @@ public class BlockTelepad extends Block implements IWaterLoggable {
     }
 
     @Override
-    public void onNeighborChange(BlockState state, IWorldReader world, BlockPos pos, BlockPos neighbor)
+    public void onNeighborChange(BlockState state, LevelReader world, BlockPos pos, BlockPos neighbor)
     {
 
         super.onNeighborChange(state, world, pos, neighbor);
@@ -460,20 +462,20 @@ public class BlockTelepad extends Block implements IWaterLoggable {
     //////////////// Block Placed///////////////////////////////////
 
     @Override
-    public void setPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack)
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack)
     {
 
         if (world.isClientSide)
             return;
 
-        TileEntity tile_entity = world.getBlockEntity(pos);
+        BlockEntity tile_entity = world.getBlockEntity(pos);
         TileEntityTelepad tile_entity_telepad = null;
         if (tile_entity == null || !(tile_entity instanceof TileEntityTelepad))
             return;
 
         tile_entity_telepad = (TileEntityTelepad) tile_entity;
 
-        if (placer instanceof ServerPlayerEntity)
+        if (placer instanceof ServerPlayer)
         {
             tile_entity_telepad.setDimension(world.dimension());
             if (stack.hasTag())
@@ -487,15 +489,15 @@ public class BlockTelepad extends Block implements IWaterLoggable {
             world.sendBlockUpdated(pos, world.getBlockState(pos), world.getBlockState(pos), 3);
             world.setBlockEntity(pos, tile_entity);
 
-            NetworkHandler.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) placer), new CPacketRequestNamingScreen(pos));
+            NetworkHandler.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) placer), new CPacketRequestNamingScreen(pos));
         }
     }
 
     @Override
-    public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, FluidState fluid)
+    public boolean removedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid)
     {
 
-        TileEntity tile_entity = world.getBlockEntity(pos);
+        BlockEntity tile_entity = world.getBlockEntity(pos);
         TileEntityTelepad tile_entity_telepad = null;
         if (tile_entity == null || !(tile_entity instanceof TileEntityTelepad))
             return false;
@@ -522,14 +524,14 @@ public class BlockTelepad extends Block implements IWaterLoggable {
         return super.removedByPlayer(state, world, pos, player, willHarvest, fluid);
     }
 
-    private void dropPad(World world, TileEntityTelepad telepad, BlockPos pos)
+    private void dropPad(Level world, TileEntityTelepad telepad, BlockPos pos)
     {
 
         ItemEntity item_entity = new ItemEntity(EntityType.ITEM, world);
         item_entity.setPos(pos.getX(), pos.getY(), pos.getZ());
 
         ItemStack stack = new ItemStack(ObjectHolders.TELEPAD_BLOCK);
-        CompoundNBT nbt = new CompoundNBT();
+        CompoundTag nbt = new CompoundTag();
         nbt.putInt("colorBase", telepad.getColorArrow());
         nbt.putInt("colorFrame", telepad.getColorFeet());
         stack.setTag(nbt);
@@ -541,16 +543,16 @@ public class BlockTelepad extends Block implements IWaterLoggable {
     /////////////// inherited methods////////////////////
 
     @Override
-    public boolean canEntityDestroy(BlockState state, IBlockReader world, BlockPos pos, Entity entity)
+    public boolean canEntityDestroy(BlockState state, BlockGetter world, BlockPos pos, Entity entity)
     {
 
-        if (entity instanceof PlayerEntity)
+        if (entity instanceof Player)
             return true;
         return false;
     }
 
     @Override
-    public float getExplosionResistance(BlockState state, IBlockReader world, BlockPos pos, Explosion explosion)
+    public float getExplosionResistance(BlockState state, BlockGetter world, BlockPos pos, Explosion explosion)
     {
 
         return Float.MAX_VALUE;
@@ -564,10 +566,10 @@ public class BlockTelepad extends Block implements IWaterLoggable {
     }
 
     @Override
-    public void animateTick(BlockState state, World world, BlockPos pos, Random random)
+    public void animateTick(BlockState state, Level world, BlockPos pos, Random random)
     {
 
-        TileEntity te = world.getBlockEntity(pos);
+        BlockEntity te = world.getBlockEntity(pos);
 
         if (te == null || !(te instanceof TileEntityTelepad))
             return;
@@ -626,7 +628,7 @@ public class BlockTelepad extends Block implements IWaterLoggable {
     }
 
     @Override
-    public void playerWillDestroy(World worldIn, BlockPos pos, BlockState state, PlayerEntity player)
+    public void playerWillDestroy(Level worldIn, BlockPos pos, BlockState state, Player player)
     {
 
         super.playerWillDestroy(worldIn, pos, state, player);
@@ -641,7 +643,7 @@ public class BlockTelepad extends Block implements IWaterLoggable {
     }
 
     @Override
-    public void onBlockExploded(BlockState state, World world, BlockPos pos, Explosion explosion)
+    public void onBlockExploded(BlockState state, Level world, BlockPos pos, Explosion explosion)
     {
 
         super.onBlockExploded(state, world, pos, explosion);
