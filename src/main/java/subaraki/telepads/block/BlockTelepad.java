@@ -42,6 +42,7 @@ import subaraki.telepads.handler.CoordinateHandler;
 import subaraki.telepads.handler.WorldDataHandler;
 import subaraki.telepads.network.NetworkHandler;
 import subaraki.telepads.network.client.CPacketRequestNamingScreen;
+import subaraki.telepads.registry.TelepadBlockEntities;
 import subaraki.telepads.registry.TelepadBlocks;
 import subaraki.telepads.registry.TelepadItems;
 import subaraki.telepads.tileentity.TileEntityTelepad;
@@ -50,7 +51,7 @@ import subaraki.telepads.utility.TelepadEntry;
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBlock, BlockEntityTicker<TileEntityTelepad> {
+public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBlock{
 
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     protected static final AABB AABB = new AABB(0.0D, 0.0D, 0.0D, 1.0D, 0.20D, 1.0D);
@@ -555,14 +556,10 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
         }
     }
 
-    @Override
-    public void tick(Level level, BlockPos blockPos, BlockState blockState, TileEntityTelepad telepad) {
-        telepad.tick();
-    }
-
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_153212_, BlockState p_153213_, BlockEntityType<T> p_153214_) {
-        return getTicker();
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> be) {
+
+        return be == TelepadBlockEntities.TILE_ENTITY_TELEPAD.get() ? (BlockEntityTicker<T>) TileEntityTelepad.TICKER : super.getTicker(level,state,be);
     }
 }
