@@ -13,6 +13,8 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
@@ -81,9 +83,13 @@ public class TeleportScreen extends Screen {
             return;
 
         stack.pushPose();
-        this.renderCube(stack.last().pose(), minecraft.renderBuffers().bufferSource().getBuffer(RenderType.endPortal()));
+        RenderSystem.setShader(GameRenderer::getRendertypeEndPortalShader);
+        MultiBufferSource.BufferSource source = minecraft.renderBuffers().bufferSource();
+        this.renderCube(stack, source.getBuffer(RenderType.endPortal()));
+        //get buffer , draw in it, and END it. if you dont end the buffer, nothing gets drawn and the data gets wiped on next frame draw.
+        source.endBatch();
+        RenderSystem.disableTexture();
         stack.popPose();
-
 
         fill(stack, START_X, START_Y, width - START_X, height - START_Y, 0x0055444444);
 
@@ -304,14 +310,16 @@ public class TeleportScreen extends Screen {
         });
     }
 
-    private void renderCube(Matrix4f stack, VertexConsumer vertexConsumer) {
+    private void renderCube(PoseStack stack, VertexConsumer vertexConsumer) {
         float width = (float) Minecraft.getInstance().getWindow().getGuiScaledWidth();
         float height = (float) Minecraft.getInstance().getWindow().getGuiScaledHeight();
         float max = width > height ? width : height;
-        this.renderFace(stack, vertexConsumer, 0.0f, max, 0.0F, max, 0.0F, 0.0F, 0.0F, 0.0F);
+        this.renderFace(stack, vertexConsumer, 0.0f, max, max, 0.0f, 0.0F, 0.0F, 0.0F, 0.0F);
+
     }
 
-    private void renderFace(Matrix4f matrix4f, VertexConsumer vertexConsumer, float x0, float x1, float y0, float y1, float z1, float z2, float z3, float z4) {
+    private void renderFace(PoseStack stack, VertexConsumer vertexConsumer, float x0, float x1, float y0, float y1, float z1, float z2, float z3, float z4) {
+        Matrix4f matrix4f = stack.last().pose();
         vertexConsumer.vertex(matrix4f, x0, y0, z1).endVertex();
         vertexConsumer.vertex(matrix4f, x1, y0, z2).endVertex();
         vertexConsumer.vertex(matrix4f, x1, y1, z3).endVertex();
