@@ -16,6 +16,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.fmllegacy.network.PacketDistributor;
@@ -34,6 +35,8 @@ import java.util.List;
 import java.util.Random;
 
 public class TileEntityTelepad extends BlockEntity {
+
+    public static final BlockEntityTicker<TileEntityTelepad> TICKER = (level, pos, state, be) -> be.tick();
 
     public static final int COLOR_FEET_BASE = new java.awt.Color(26, 246, 172).getRGB();
     public static final int COLOR_ARROW_BASE = new java.awt.Color(243, 89, 233).getRGB();

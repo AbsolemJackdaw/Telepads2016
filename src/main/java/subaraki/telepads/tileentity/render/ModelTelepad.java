@@ -2,6 +2,7 @@ package subaraki.telepads.tileentity.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Quaternion;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -15,10 +16,8 @@ public class ModelTelepad extends Model {
 
     ModelPart frame;
     ModelPart arrows;
-    ModelPart legWestRight;
-    ModelPart legWestLeft;
-    ModelPart legEastRight;
-    ModelPart legEastLeft;
+    ModelPart legPartRight;
+    ModelPart legPartLeft;
     ModelPart antenna;
     ModelPart antennaPad;
 
@@ -26,10 +25,8 @@ public class ModelTelepad extends Model {
         super(RenderType::entityCutoutNoCull);
         frame = part.getChild("frame");
         arrows = part.getChild("arrows");
-        legWestLeft = part.getChild("leg_west_left");
-        legWestRight = part.getChild("leg_west_right");
-        legEastLeft = part.getChild("leg_east_left");
-        legEastRight = part.getChild("leg_east_right");
+        legPartLeft = part.getChild("leg_part_left");
+        legPartRight = part.getChild("leg_part_right");
         antenna = part.getChild("antenna");
         antennaPad = part.getChild("antenna_pad");
     }
@@ -47,23 +44,21 @@ public class ModelTelepad extends Model {
         partDefinition.addOrReplaceChild("arrows", CubeListBuilder.create().texOffs(0, 11).addBox(-5.0f, -0.5f, -5.0f, 10.0f, 1.0f, 10.0f),
                 PartPose.offsetAndRotation(0.0f, 23.0f, 0.0f, 0.0f, 0.785f, 0.0f));
 
-        CubeListBuilder cubeListBuilder = CubeListBuilder.create().texOffs(0, 0).addBox(-3.0f, 0.0f, 0.0f, 3.0f, 1.0f, 2.0f);
-        partDefinition.addOrReplaceChild("leg_west_right", cubeListBuilder, PartPose.offsetAndRotation(-5.0f, 22.0f, 0.0f, -0.2f, 0.0f, -0.4f));
-        partDefinition.addOrReplaceChild("leg_west_left", cubeListBuilder, PartPose.offsetAndRotation(-5.0f, 22.0f, -2.0f, 0.2f, 0.0f, -0.4f));
-
-        cubeListBuilder = CubeListBuilder.create().texOffs(0, 0).addBox(0.0f, 0.0f, 0.0f, 3.0f, 1.0f, 2.0f);
-        partDefinition.addOrReplaceChild("leg_east_left", cubeListBuilder, PartPose.offsetAndRotation(5.0f, 22.0f, 0.0f, -0.2f, 0.0f, 0.4f));
-        partDefinition.addOrReplaceChild("leg_east_right", cubeListBuilder, PartPose.offsetAndRotation(5.0f, 22.0f, -2.0f, 0.2f, 0.0f, 0.4f));
+        partDefinition.addOrReplaceChild("leg_part_left", CubeListBuilder.create().texOffs(0, 0).addBox(0.0f, 0.0f, 0.0f, 3.0f, 1.0f, 2.0f), PartPose.offsetAndRotation(5.0f, 22.0f, 0.0f, -0.2f, 0.0f, 0.4f));
+        partDefinition.addOrReplaceChild("leg_part_right", CubeListBuilder.create().texOffs(0, 0).addBox(0.0f, 0.0f, -2.0f, 3.0f, 1.0f, 2.0f), PartPose.offsetAndRotation(5.0f, 22.0f, 0.0f, 0.2f, 0.0f, 0.4f));
 
         return LayerDefinition.create(meshDef, 64, 32);
     }
 
     public void renderLegs(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, int packedOverlayIn, float r, float g, float b) {
 
-        legWestRight.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, r, g, b, 1.0F);
-        legWestLeft.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, r, g, b, 1.0F);
-        legEastRight.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, r, g, b, 1.0F);
-        legEastLeft.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, r, g, b, 1.0F);
+        for (int index = 1; index < 5; index++) {
+            matrixStackIn.pushPose();
+            matrixStackIn.mulPose(new Quaternion(0, 90 * index, 0, true));
+            legPartRight.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, r, g, b, 1.0F);
+            legPartLeft.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, r, g, b, 1.0F);
+            matrixStackIn.popPose();
+        }
     }
 
     public void renderUpgrade(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, int packedOverlayIn) {

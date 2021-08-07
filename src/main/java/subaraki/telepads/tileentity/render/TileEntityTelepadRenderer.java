@@ -144,13 +144,6 @@ public class TileEntityTelepadRenderer implements BlockEntityRenderer<TileEntity
         stack.pushPose();
         modeltelepad.renderLegs(stack, bufferIn.getBuffer(RenderType.entityCutoutNoCull(pads)), packedLightIn, packedOverlayIn,
                 ((float) colorFrame.getRed() / 255.0f), ((float) colorFrame.getGreen() / 255.0f), ((float) colorFrame.getBlue() / 255.0f));
-        // current fix : south and north legs are acting funky when rotated, so
-        // duplicate west and est and turn them around.
-        stack.mulPose(new Quaternion(0, 90, 0, true));
-        modeltelepad.renderLegs(stack, bufferIn.getBuffer(RenderType.entityCutoutNoCull(pads)), packedLightIn, packedOverlayIn,
-                ((float) colorFrame.getRed() / 255.0f), ((float) colorFrame.getGreen() / 255.0f), ((float) colorFrame.getBlue() / 255.0f));
-        // Reset normal
-        stack.mulPose(new Quaternion(0, -90, 0, true));
         stack.popPose();
 
         stack.pushPose();
@@ -160,7 +153,7 @@ public class TileEntityTelepadRenderer implements BlockEntityRenderer<TileEntity
     }
 
     private void renderCube(Matrix4f stack, VertexConsumer vertexConsumer) {
-        this.renderFace(stack, vertexConsumer, 0.0F, 1.0F, 0.75f, 0.75f, 1.0F, 1.0F, 0.0F, 0.0F);
+        this.renderFace(stack, vertexConsumer, 0.03F, 0.97F, 0.19f, 0.19f, 0.97F, 0.97F, 0.03F, 0.03F);
 
     }
 
