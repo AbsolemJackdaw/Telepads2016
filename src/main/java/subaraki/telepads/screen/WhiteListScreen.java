@@ -20,12 +20,11 @@ public class WhiteListScreen extends Screen {
 
     private final int tex_x = 142;
     private final int tex_y = 166;
+    private final String suggestion;
+    EditBox textfield;
     private int center_x;
     private int center_y;
-
     private boolean is_open = false;
-
-    private final String suggestion;
 
     public WhiteListScreen() {
 
@@ -33,18 +32,14 @@ public class WhiteListScreen extends Screen {
         suggestion = new TranslatableComponent("suggest.name").getContents();
     }
 
-    EditBox textfield;
-
     @Override
-    public boolean isPauseScreen()
-    {
+    public boolean isPauseScreen() {
 
         return false;
     }
 
     @Override
-    public void render(PoseStack stack, int x, int y, float partialTicks)
-    {
+    public void render(PoseStack stack, int x, int y, float partialTicks) {
 
         this.renderBackground(stack);
 
@@ -60,20 +55,17 @@ public class WhiteListScreen extends Screen {
         else
             textfield.setSuggestion(suggestion);
 
-        super.render(stack , x, y, partialTicks);
+        super.render(stack, x, y, partialTicks);
 
-        for (int i = 0; i < 9; i++)
-        {
+        for (int i = 0; i < 9; i++) {
             font.drawShadow(stack, "-", center_x - 62, center_y - 47 + (i * 13), 0x888888);
 
         }
         TelepadData.get(minecraft.player).ifPresent(data -> {
 
-            if (!data.getWhitelist().isEmpty())
-            {
+            if (!data.getWhitelist().isEmpty()) {
                 int index = 0;
-                for (String name : data.getWhitelist().keySet())
-                {
+                for (String name : data.getWhitelist().keySet()) {
                     font.drawShadow(stack, name, center_x - 54, center_y - 48 + (index++ * 10), 0xeeeeee);
                 }
 
@@ -87,12 +79,10 @@ public class WhiteListScreen extends Screen {
     }
 
     @Override
-    public boolean charTyped(char keyCode, int scanCode)
-    {
+    public boolean charTyped(char keyCode, int scanCode) {
         if (!is_open)
             is_open = true;
-        else
-        {
+        else {
             textfield.charTyped(keyCode, scanCode);
             return true;
         }
@@ -100,21 +90,18 @@ public class WhiteListScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int p_keyPressed_3_)
-    {
+    public boolean keyPressed(int keyCode, int scanCode, int p_keyPressed_3_) {
 
-       
-        if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER)
-        {
+
+        if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
             String command = textfield.getValue();
             textfield.setValue("");
 
             NetworkHandler.NETWORK.sendToServer(new SPacketAddWhiteListEntry(command));
             return super.keyPressed(keyCode, scanCode, p_keyPressed_3_);
         }
-        
-        if (is_open && !super.keyPressed(keyCode, scanCode, p_keyPressed_3_))
-        {
+
+        if (is_open && !super.keyPressed(keyCode, scanCode, p_keyPressed_3_)) {
             textfield.keyPressed(keyCode, scanCode, p_keyPressed_3_);
             return true;
         }
@@ -122,8 +109,7 @@ public class WhiteListScreen extends Screen {
     }
 
     @Override
-    protected void init()
-    {
+    protected void init() {
 
         super.init();
         center_x = minecraft.getWindow().getGuiScaledWidth() / 2;

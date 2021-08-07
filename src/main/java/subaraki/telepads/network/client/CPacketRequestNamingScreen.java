@@ -13,11 +13,11 @@ import java.util.function.Supplier;
 
 public class CPacketRequestNamingScreen implements IPacketBase {
 
+    private BlockPos pos;
+
     public CPacketRequestNamingScreen() {
 
     }
-
-    private BlockPos pos;
 
     public CPacketRequestNamingScreen(BlockPos pos) {
 
@@ -30,22 +30,19 @@ public class CPacketRequestNamingScreen implements IPacketBase {
     }
 
     @Override
-    public void encode(FriendlyByteBuf buf)
-    {
+    public void encode(FriendlyByteBuf buf) {
 
         buf.writeBlockPos(pos);
     }
 
     @Override
-    public void decode(FriendlyByteBuf buf)
-    {
+    public void decode(FriendlyByteBuf buf) {
 
         pos = buf.readBlockPos();
     }
 
     @Override
-    public void handle(Supplier<NetworkEvent.Context> context)
-    {
+    public void handle(Supplier<NetworkEvent.Context> context) {
 
         context.get().enqueueWork(() -> {
             // use a layer of indirection when subscribing client events to avoid
@@ -57,8 +54,7 @@ public class CPacketRequestNamingScreen implements IPacketBase {
     }
 
     @Override
-    public void register(int id)
-    {
+    public void register(int id) {
 
         NetworkHandler.NETWORK.registerMessage(id, CPacketRequestNamingScreen.class, CPacketRequestNamingScreen::encode, CPacketRequestNamingScreen::new,
                 CPacketRequestNamingScreen::handle);

@@ -34,8 +34,7 @@ public class CPacketEditWhiteListEntry implements IPacketBase {
     }
 
     @Override
-    public void encode(FriendlyByteBuf buf)
-    {
+    public void encode(FriendlyByteBuf buf) {
 
         buf.writeUtf(name, 16);
         buf.writeBoolean(add);
@@ -44,8 +43,7 @@ public class CPacketEditWhiteListEntry implements IPacketBase {
     }
 
     @Override
-    public void decode(FriendlyByteBuf buf)
-    {
+    public void decode(FriendlyByteBuf buf) {
 
         this.name = buf.readUtf();
         this.add = buf.readBoolean();
@@ -53,8 +51,7 @@ public class CPacketEditWhiteListEntry implements IPacketBase {
     }
 
     @Override
-    public void handle(Supplier<NetworkEvent.Context> context)
-    {
+    public void handle(Supplier<NetworkEvent.Context> context) {
 
         context.get().enqueueWork(() -> {
             if (FMLEnvironment.dist == Dist.CLIENT)
@@ -65,8 +62,7 @@ public class CPacketEditWhiteListEntry implements IPacketBase {
     }
 
     @Override
-    public void register(int id)
-    {
+    public void register(int id) {
 
         NetworkHandler.NETWORK.registerMessage(id, CPacketEditWhiteListEntry.class, CPacketEditWhiteListEntry::encode, CPacketEditWhiteListEntry::new,
                 CPacketEditWhiteListEntry::handle);

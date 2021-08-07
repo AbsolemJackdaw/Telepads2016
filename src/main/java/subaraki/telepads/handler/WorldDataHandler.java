@@ -31,6 +31,20 @@ public class WorldDataHandler extends SavedData {
         load(nbt);
     }
 
+    public static WorldDataHandler get(LevelAccessor world) {
+
+        ServerLevel overworld = ((ServerLevel) world).getServer().getLevel(Level.OVERWORLD);
+        if (overworld != null)
+            return overworld.getDataStorage().computeIfAbsent(WorldDataHandler::new, WorldDataHandler::new, TELEPADS_WORLD_SAVE_DATA);
+        else {
+            Telepads.log.warn("**************");
+            Telepads.log.warn("WordSave Wasn't found ! This may be an error.");
+            Telepads.log.warn("**************");
+
+            return new WorldDataHandler();
+        }
+    }
+
     public WorldDataHandler load(CompoundTag nbt) {
 
         List<TelepadEntry> entryList = new ArrayList<TelepadEntry>();
@@ -55,20 +69,6 @@ public class WorldDataHandler extends SavedData {
         nbt.put("entries", taglist);
 
         return nbt;
-    }
-
-    public static WorldDataHandler get(LevelAccessor world) {
-
-        ServerLevel overworld = ((ServerLevel) world).getServer().getLevel(Level.OVERWORLD);
-        if (overworld != null)
-            return overworld.getDataStorage().computeIfAbsent(WorldDataHandler::new, WorldDataHandler::new, TELEPADS_WORLD_SAVE_DATA);
-        else {
-            Telepads.log.warn("**************");
-            Telepads.log.warn("WordSave Wasn't found ! This may be an error.");
-            Telepads.log.warn("**************");
-
-            return new WorldDataHandler();
-        }
     }
 
     /////////////////////////////////////////////////////////////////////////////

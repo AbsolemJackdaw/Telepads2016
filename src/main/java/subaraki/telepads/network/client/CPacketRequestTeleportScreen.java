@@ -27,18 +27,18 @@ public class CPacketRequestTeleportScreen implements IPacketBase {
      */
     public Collection<UUID> whiteList;
 
-    /** wether the pad we came from has a transmitter or not */
+    /**
+     * wether the pad we came from has a transmitter or not
+     */
     public boolean has_transmitter;
 
     /**
      * A packet to sync entries to a player, on the client side. This packet must
      * only be sent from a server thread. The entries on the client side will be
      * overridden with the provided list of entries.
-     * 
-     * @param playerUUID
-     *            : The unique identifier of the player sync this data to.
-     * @param entries
-     *            : The list of entries to sync to the player.
+     *
+     * @param playerUUID : The unique identifier of the player sync this data to.
+     * @param entries    : The list of entries to sync to the player.
      */
     public CPacketRequestTeleportScreen(List<TelepadEntry> entries, Collection<UUID> whiteList, boolean has_transmitter) {
 
@@ -57,8 +57,7 @@ public class CPacketRequestTeleportScreen implements IPacketBase {
     }
 
     @Override
-    public void encode(FriendlyByteBuf buf)
-    {
+    public void encode(FriendlyByteBuf buf) {
 
         buf.writeInt(this.entries.size());
 
@@ -74,8 +73,7 @@ public class CPacketRequestTeleportScreen implements IPacketBase {
     }
 
     @Override
-    public void decode(FriendlyByteBuf buf)
-    {
+    public void decode(FriendlyByteBuf buf) {
 
         int size = buf.readInt();
         if (!(size > 0))
@@ -96,8 +94,7 @@ public class CPacketRequestTeleportScreen implements IPacketBase {
     }
 
     @Override
-    public void handle(Supplier<NetworkEvent.Context> context)
-    {
+    public void handle(Supplier<NetworkEvent.Context> context) {
 
         context.get().enqueueWork(() -> {
             if (FMLEnvironment.dist == Dist.CLIENT)
@@ -109,8 +106,7 @@ public class CPacketRequestTeleportScreen implements IPacketBase {
     }
 
     @Override
-    public void register(int id)
-    {
+    public void register(int id) {
 
         NetworkHandler.NETWORK.registerMessage(id, CPacketRequestTeleportScreen.class, CPacketRequestTeleportScreen::encode, CPacketRequestTeleportScreen::new,
                 CPacketRequestTeleportScreen::handle);

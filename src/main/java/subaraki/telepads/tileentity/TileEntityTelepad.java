@@ -34,9 +34,9 @@ import java.util.Random;
 
 public class TileEntityTelepad extends BlockEntity {
 
-    private ResourceKey<Level> dimension;
     public static final int COLOR_FEET_BASE = new java.awt.Color(26, 246, 172).getRGB();
     public static final int COLOR_ARROW_BASE = new java.awt.Color(243, 89, 233).getRGB();
+    private ResourceKey<Level> dimension;
     private int colorFrame = COLOR_FEET_BASE;
     private int colorBase = COLOR_ARROW_BASE;
 
@@ -227,7 +227,7 @@ public class TileEntityTelepad extends BlockEntity {
      */
     public void setPlatform(boolean onPlatform) {
 
-        if(level == null)
+        if (level == null)
             return;
         isStandingOnPlatform = onPlatform;
         level.sendBlockUpdated(worldPosition, level.getBlockState(getBlockPos()), Telepads.TELEPAD_BLOCK.get().defaultBlockState(), 3);
@@ -309,14 +309,14 @@ public class TileEntityTelepad extends BlockEntity {
         hasRedstoneUpgrade = true;
     }
 
-    public void setPowered(boolean flag) {
-
-        isPowered = flag;
-    }
-
     public boolean isPowered() {
 
         return isPowered;
+    }
+
+    public void setPowered(boolean flag) {
+
+        isPowered = flag;
     }
 
 //    public void setCoordinateHandlerIndex(int index) {

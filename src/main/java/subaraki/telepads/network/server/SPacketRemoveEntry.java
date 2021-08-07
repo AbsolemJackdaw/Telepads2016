@@ -28,29 +28,25 @@ public class SPacketRemoveEntry implements IPacketBase {
     }
 
     @Override
-    public void encode(FriendlyByteBuf buf)
-    {
+    public void encode(FriendlyByteBuf buf) {
 
         entry.writeToBuffer(buf);
     }
 
     @Override
-    public void decode(FriendlyByteBuf buf)
-    {
+    public void decode(FriendlyByteBuf buf) {
 
         this.entry = new TelepadEntry(buf);
     }
 
     @Override
-    public void handle(Supplier<NetworkEvent.Context> context)
-    {
+    public void handle(Supplier<NetworkEvent.Context> context) {
 
         context.get().enqueueWork(() -> {
 
             WorldDataHandler wdh = WorldDataHandler.get(context.get().getSender().level);
 
-            if (wdh.contains(entry))
-            {
+            if (wdh.contains(entry)) {
                 wdh.removeEntry(entry);
             }
         });
@@ -59,8 +55,7 @@ public class SPacketRemoveEntry implements IPacketBase {
     }
 
     @Override
-    public void register(int id)
-    {
+    public void register(int id) {
 
         NetworkHandler.NETWORK.registerMessage(id, SPacketRemoveEntry.class, SPacketRemoveEntry::encode, SPacketRemoveEntry::new, SPacketRemoveEntry::handle);
 

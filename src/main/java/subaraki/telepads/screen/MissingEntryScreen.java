@@ -11,13 +11,13 @@ import subaraki.telepads.utility.TelepadEntry;
 
 public class MissingEntryScreen extends Screen {
 
-    private TelepadEntry missing_entry;
+    private final TelepadEntry missing_entry;
 
     private int center_x = 0;
     private int center_y = 0;
-    private String information;
-    private String teleport_anyway;
-    private String forget;
+    private final String information;
+    private final String teleport_anyway;
+    private final String forget;
 
     public MissingEntryScreen(TelepadEntry missing_entry) {
 
@@ -31,15 +31,13 @@ public class MissingEntryScreen extends Screen {
     }
 
     @Override
-    public boolean isPauseScreen()
-    {
+    public boolean isPauseScreen() {
 
         return false;
     }
 
     @Override
-    protected void init()
-    {
+    protected void init() {
 
         super.init();
 
@@ -63,8 +61,7 @@ public class MissingEntryScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack stack, int mouse_x, int mouse_y, float partialTicks)
-    {
+    public void render(PoseStack stack, int mouse_x, int mouse_y, float partialTicks) {
 
         this.renderBackground(stack);
 

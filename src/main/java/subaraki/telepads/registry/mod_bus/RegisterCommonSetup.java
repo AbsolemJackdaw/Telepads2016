@@ -12,8 +12,7 @@ import subaraki.telepads.network.NetworkHandler;
 public class RegisterCommonSetup {
 
     @SubscribeEvent
-    public static void register(final FMLCommonSetupEvent event)
-    {
+    public static void register(final FMLCommonSetupEvent event) {
         new TelePadDataCapability().register();
         new NetworkHandler();
     }

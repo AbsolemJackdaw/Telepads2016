@@ -32,25 +32,19 @@ import java.util.List;
 
 public class TeleportScreen extends Screen {
 
-    // show entries from current worl, or if selected, from another dimension
-    // array only contains entries from selected dimension
-    private final LinkedList<TelepadEntry> entries = new LinkedList<>();
-
-    private ResourceKey<Level> lookup_dim_id = Level.OVERWORLD;
-
-    private int scrollbarscroll = 0;
-
-    EditBox dimension_indicator;
-
     protected final List<AbstractWidget> unscrollables = Lists.newArrayList();
-
-    protected List<ResourceKey<Level>> dimensions_visited = Lists.newArrayList();
-
-    private final boolean is_transmitter_pad;
-
     final int START_X = 10;
     final int START_Y = 30;
     final int GAP = 5;
+    // show entries from current worl, or if selected, from another dimension
+    // array only contains entries from selected dimension
+    private final LinkedList<TelepadEntry> entries = new LinkedList<>();
+    private final boolean is_transmitter_pad;
+    protected List<ResourceKey<Level>> dimensions_visited = Lists.newArrayList();
+    EditBox dimension_indicator;
+    private ResourceKey<Level> lookup_dim_id = Level.OVERWORLD;
+    private int scrollbarscroll = 0;
+    private int tuner_counter = 0;
 
     public TeleportScreen(boolean is_transmitter_pad) {
 
@@ -155,7 +149,7 @@ public class TeleportScreen extends Screen {
             float containerSize = height - START_Y * 2;
 
             // relative % of the scale between the buttons drawn and the screen size
-            float percent = (((float) containerSize / (float) totalSize) * 100f);
+            float percent = ((containerSize / totalSize) * 100f);
 
             if (percent < 100) {
 
@@ -234,8 +228,6 @@ public class TeleportScreen extends Screen {
         }
 
     }
-
-    private int tuner_counter = 0;
 
     private void add_paging_buttons() {
 

@@ -13,15 +13,13 @@ import subaraki.telepads.mod.Telepads;
 public class AnvilEvent {
 
     @SubscribeEvent
-    public static void anvil(AnvilUpdateEvent event)
-    {
+    public static void anvil(AnvilUpdateEvent event) {
 
         ItemStack input = event.getLeft();
         ItemStack ingredient = event.getRight();
 
         if (ConfigData.allowAnvilPearls)
-            if (input.getItem().equals(Items.ENDER_PEARL) && input.getItem().equals(ingredient.getItem()))
-            {
+            if (input.getItem().equals(Items.ENDER_PEARL) && input.getItem().equals(ingredient.getItem())) {
                 int amount = input.getCount() + ingredient.getCount();
                 if (amount > 8)
                     return;

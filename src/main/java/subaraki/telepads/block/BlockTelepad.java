@@ -49,31 +49,25 @@ import java.util.Random;
 
 public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBlock, BlockEntityTicker<TileEntityTelepad> {
 
+    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     protected static final AABB AABB = new AABB(0.0D, 0.0D, 0.0D, 1.0D, 0.20D, 1.0D);
     protected static final VoxelShape VOX = Shapes.create(AABB);
-
     private static final VoxelShape shape = Shapes.create(new AABB(0.0D, 0D, 0.0D, 1.0D, 0.20D, 1.0D));
     private static final VoxelShape shape_n = Shapes.create(new AABB(0.32D, 0.0D, -.22D, .68D, 0.15D, 0D));
     private static final VoxelShape shape_s = Shapes.create(new AABB(0.32D, 0.0D, 1.00D, .68D, 0.15D, 1.22D));
     private static final VoxelShape shape_e = Shapes.create(new AABB(0D, 0.0D, 0.32D, 1.22D, 0.15D, .68D));
     private static final VoxelShape shape_w = Shapes.create(new AABB(0D, 0.0D, 0.32D, -.22D, 0.15D, .68D));
     private static final VoxelShape SHAPE_VOX = Shapes.or(shape_w, shape_e, shape_s, shape_n, shape);
-
     private static final Properties block_properties = Properties.of(Material.GLASS).strength(5F, Float.MAX_VALUE).sound(SoundType.GLASS)
             .harvestTool(ToolType.PICKAXE).harvestLevel(1).noOcclusion();
-
     private final TranslatableComponent text_public_rod;
     private final TranslatableComponent text_public_rod_private;
     private final TranslatableComponent text_public_rod_public;
-
     private final TranslatableComponent text__cycle_rod_normal;
     private final TranslatableComponent text__cycle_rod;
-
     private final TranslatableComponent cycle_add_success;
     private final TranslatableComponent cycle_add_remove;
     private final TranslatableComponent cycle_add_fail;
-
-    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
     public BlockTelepad() {
 

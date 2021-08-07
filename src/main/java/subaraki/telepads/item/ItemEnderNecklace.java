@@ -24,7 +24,7 @@ import java.util.Random;
 
 public class ItemEnderNecklace extends Item {
 
-    private Random random = new Random();
+    private final Random random = new Random();
 
     public ItemEnderNecklace() {
 
@@ -79,11 +79,11 @@ public class ItemEnderNecklace extends Item {
                     player.getInventory().add(new ItemStack(Items.STRING, world.random.nextInt(2) + 1));
                 Teleport.teleportEntityInsideSameDimension(player, closestEntry.position.south().west());
 
-                world.playSound((Player) null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.NEUTRAL, 0.6F,
+                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.NEUTRAL, 0.6F,
                         0.4F / (random.nextFloat() * 0.4F + 0.8F));
-                world.playSound((Player) null, player.getX(), player.getY(), player.getZ(), SoundEvents.GLASS_BREAK, SoundSource.NEUTRAL, 0.1F,
+                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.GLASS_BREAK, SoundSource.NEUTRAL, 0.1F,
                         0.4F / (random.nextFloat() * 0.4F + 0.8F));
-                world.playSound((Player) null, player.getX(), player.getY(), player.getZ(), SoundEvents.WOOL_BREAK, SoundSource.NEUTRAL, 1.0F,
+                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.WOOL_BREAK, SoundSource.NEUTRAL, 1.0F,
                         0.4F / (random.nextFloat() * 0.4F + 0.8F));
             }
 

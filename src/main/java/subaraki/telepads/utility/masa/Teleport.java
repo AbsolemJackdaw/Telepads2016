@@ -9,8 +9,7 @@ import net.minecraft.world.level.Level;
 
 public class Teleport {
 
-    public static Entity teleportEntityInsideSameDimension(Entity entity, BlockPos pos)
-    {
+    public static Entity teleportEntityInsideSameDimension(Entity entity, BlockPos pos) {
 
         double x = pos.getX();
         double y = pos.getY();
@@ -24,8 +23,7 @@ public class Teleport {
         return entity;
     }
 
-    public static Entity teleportEntityToDimension(ServerPlayer player, BlockPos pos, ResourceKey<Level> dimension)
-    {
+    public static Entity teleportEntityToDimension(ServerPlayer player, BlockPos pos, ResourceKey<Level> dimension) {
 
         if (!net.minecraftforge.common.ForgeHooks.onTravelToDimension(player, dimension))
             return null;

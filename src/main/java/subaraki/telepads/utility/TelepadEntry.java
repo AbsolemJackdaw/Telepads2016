@@ -35,14 +35,13 @@ public class TelepadEntry {
     public boolean isPublic;
     public boolean isMissingFromLocation = false;
 
-    private ArrayList<UUID> users = Lists.newArrayList();
+    private final ArrayList<UUID> users = Lists.newArrayList();
 
     /**
      * Creates a TelepadEntry from a PacketBuffer. This is useful for reading from
      * networking.
-     * 
-     * @param buf
-     *            : A ByteBuf containing the data needed to create a TelepadEntry.
+     *
+     * @param buf : A ByteBuf containing the data needed to create a TelepadEntry.
      */
     public TelepadEntry(FriendlyByteBuf buf) {
 
@@ -59,22 +58,18 @@ public class TelepadEntry {
     /**
      * Creates a TelepadEntry from a CompoundNBT. This is used for reading from
      * CompoundNBT.
-     * 
-     * @param tag
-     *            : An NBTTagCompound to read the required data from.
+     *
+     * @param tag : An NBTTagCompound to read the required data from.
      */
     public TelepadEntry(CompoundTag tag) {
-        
-        
+
 
         this(tag.getString("entryName"), ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(tag.getString("dimensionID"))), new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")));
         addDetails(tag.getBoolean("power"), tag.getBoolean("transmitter"), tag.getBoolean("public"), tag.getBoolean("missing"));
 
         int size = tag.getInt("size");
-        if (size > 0)
-        {
-            for (int i = 0; i < size; i++)
-            {
+        if (size > 0) {
+            for (int i = 0; i < size; i++) {
                 users.add(UUID.fromString(tag.getString("id_" + i)));
             }
         }
@@ -83,13 +78,10 @@ public class TelepadEntry {
     /**
      * Creates a new TelepadEntry. This is used to represent an entry that a player
      * can teleport to.
-     * 
-     * @param name
-     *            : A display name to use for the entry.
-     * @param dimension
-     *            : The id of the dimension that this entry is within.
-     * @param pos
-     *            : The BlockPos of this TelepadEntry.
+     *
+     * @param name      : A display name to use for the entry.
+     * @param dimension : The id of the dimension that this entry is within.
+     * @param pos       : The BlockPos of this TelepadEntry.
      */
     public TelepadEntry(String name, ResourceKey<Level> dimension, BlockPos pos) {
 
@@ -99,8 +91,7 @@ public class TelepadEntry {
     }
 
     // mainly used for reconstructing telepads
-    private TelepadEntry addDetails(boolean isPowered, boolean hasTransmitter, boolean isPublic, boolean isMissing)
-    {
+    private TelepadEntry addDetails(boolean isPowered, boolean hasTransmitter, boolean isPublic, boolean isMissing) {
 
         this.isPowered = isPowered;
         this.hasTransmitter = hasTransmitter;
@@ -111,13 +102,11 @@ public class TelepadEntry {
 
     /**
      * Writes the TelepadEntry to a CompoundNBT.
-     * 
-     * @param tag
-     *            : The tag to write the TelepadEntry to.
+     *
+     * @param tag : The tag to write the TelepadEntry to.
      * @return CompoundNBT: An CompoundNBT containing all of the TelepadEntry data.
      */
-    public CompoundTag writeToNBT(CompoundTag tag)
-    {
+    public CompoundTag writeToNBT(CompoundTag tag) {
 
         tag.putString("entryName", this.entryName);
         tag.putString("dimensionID", this.dimensionID.location().toString());
@@ -132,8 +121,7 @@ public class TelepadEntry {
         tag.putBoolean("missing", isMissingFromLocation);
 
         tag.putInt("size", users.size());
-        if (users.size() > 0)
-        {
+        if (users.size() > 0) {
             for (int i = 0; i < users.size(); i++)
                 tag.putString("id_" + i, users.get(i).toString());
         }
@@ -142,12 +130,10 @@ public class TelepadEntry {
 
     /**
      * Write the TelepadEntry to a ByteBuf.
-     * 
-     * @param buf
-     *            : The ByteBuf to write the TelepadEntry to.
+     *
+     * @param buf : The ByteBuf to write the TelepadEntry to.
      */
-    public void writeToBuffer(FriendlyByteBuf buf)
-    {
+    public void writeToBuffer(FriendlyByteBuf buf) {
 
         buf.writeUtf(this.entryName);
         buf.writeUtf(this.dimensionID.location().toString());
@@ -165,16 +151,14 @@ public class TelepadEntry {
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
 
         return "Entry Name: " + this.entryName + " DimensionID: " + this.dimensionID + " " + this.position.toString() + " Public Pad:" + this.isPublic
                 + " transmitter: " + this.hasTransmitter + " is powered: " + this.isPowered + " is missing: " + this.isMissingFromLocation + " Users : " + this.users;
     }
 
     @Override
-    public boolean equals(Object compared)
-    {
+    public boolean equals(Object compared) {
 
         if (!(compared instanceof TelepadEntry))
             return false;
@@ -183,39 +167,33 @@ public class TelepadEntry {
         return this.entryName.equals(entry.entryName) && this.dimensionID == entry.dimensionID && this.position.equals(entry.position);
     }
 
-    public void setPowered(boolean flag)
-    {
+    public void setPowered(boolean flag) {
 
         isPowered = flag;
     }
 
-    public void setTransmitter(boolean flag)
-    {
+    public void setTransmitter(boolean flag) {
 
         hasTransmitter = flag;
     }
 
-    public void setPublic(boolean isPublic)
-    {
+    public void setPublic(boolean isPublic) {
 
         this.isPublic = isPublic;
     }
 
-    public boolean canUse(UUID player_id)
-    {
+    public boolean canUse(UUID player_id) {
 
-        return isPublic ? true : users.contains(player_id);
+        return isPublic || users.contains(player_id);
     }
 
-    public TelepadEntry addUser(UUID player_id)
-    {
+    public TelepadEntry addUser(UUID player_id) {
 
         users.add(player_id);
         return this;
     }
 
-    public void removeUser(UUID player_id)
-    {
+    public void removeUser(UUID player_id) {
 
         users.remove(player_id);
     }

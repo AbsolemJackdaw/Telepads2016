@@ -27,22 +27,19 @@ public class SPacketAddWhiteListEntry implements IPacketBase {
     }
 
     @Override
-    public void encode(FriendlyByteBuf buf)
-    {
+    public void encode(FriendlyByteBuf buf) {
 
         buf.writeUtf(command, 23);
     }
 
     @Override
-    public void decode(FriendlyByteBuf buf)
-    {
+    public void decode(FriendlyByteBuf buf) {
 
         this.command = buf.readUtf(23);
     }
 
     @Override
-    public void handle(Supplier<NetworkEvent.Context> context)
-    {
+    public void handle(Supplier<NetworkEvent.Context> context) {
 
         context.get().enqueueWork(() -> {
             TelepadData.get(context.get().getSender()).ifPresent(data -> {
@@ -53,8 +50,7 @@ public class SPacketAddWhiteListEntry implements IPacketBase {
     }
 
     @Override
-    public void register(int id)
-    {
+    public void register(int id) {
 
         NetworkHandler.NETWORK.registerMessage(id, SPacketAddWhiteListEntry.class, SPacketAddWhiteListEntry::encode, SPacketAddWhiteListEntry::new,
                 SPacketAddWhiteListEntry::handle);

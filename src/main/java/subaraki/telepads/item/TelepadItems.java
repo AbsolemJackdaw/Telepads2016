@@ -14,8 +14,7 @@ import java.util.List;
 
 public class TelepadItems {
 
-    public static Item[] register()
-    {
+    public static Item[] register() {
 
         Item bead = new ItemEnderBead();
         Item necklace = new ItemEnderNecklace();
@@ -26,8 +25,7 @@ public class TelepadItems {
         Item creative_rod = new Item(PropertiesWrapper.getItemProperties().tab(CreativeModeTab.TAB_REDSTONE)) {
 
             @Override
-            public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn)
-            {
+            public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 
                 tooltip.add(
                         new TextComponent("can be used by people with creative acces to enable telepads to teleport to a location defined in config"));
@@ -37,13 +35,12 @@ public class TelepadItems {
         Item creative_rod_2 = new Item(PropertiesWrapper.getItemProperties().tab(CreativeModeTab.TAB_REDSTONE)) {
 
             @Override
-            public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn)
-            {
+            public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 
                 tooltip.add(new TextComponent("can be used by people with creative acces to toggle public acces to a telepad"));
             }
         }.setRegistryName(Telepads.MODID, "tp_upgrade_public");
 
-        return new Item[] { bead, necklace, toggler, transmitter, creative_rod, creative_rod_2 };
+        return new Item[]{bead, necklace, toggler, transmitter, creative_rod, creative_rod_2};
     }
 }

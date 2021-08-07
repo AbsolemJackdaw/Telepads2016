@@ -14,44 +14,37 @@ import subaraki.telepads.screen.TeleportScreen;
 
 public class ClientReferences {
 
-    public static Player getClientPlayer()
-    {
+    public static Player getClientPlayer() {
 
         return Minecraft.getInstance().player;
     }
 
-    public static void openNamingScreen(BlockPos pos)
-    {
+    public static void openNamingScreen(BlockPos pos) {
 
         Minecraft.getInstance().setScreen(new NameTelepadScreen(pos));
     }
 
-    public static void openMissingScreen(TelepadEntry entry)
-    {
+    public static void openMissingScreen(TelepadEntry entry) {
 
         Minecraft.getInstance().setScreen(new MissingEntryScreen(entry));
     }
 
-    public static Level getClientWorld()
-    {
+    public static Level getClientWorld() {
 
         return Minecraft.getInstance().level;
     }
 
-    public static void displayScreen(Screen screen)
-    {
+    public static void displayScreen(Screen screen) {
 
         Minecraft.getInstance().setScreen(screen);
     }
 
-    public static void displayTeleportScreen(boolean has_transmitter)
-    {
+    public static void displayTeleportScreen(boolean has_transmitter) {
 
         Minecraft.getInstance().setScreen(new TeleportScreen(has_transmitter));
     }
 
-    public static void handlePacket(CPacketRequestTeleportScreen packet)
-    {
+    public static void handlePacket(CPacketRequestTeleportScreen packet) {
 
         TelepadData.get(ClientReferences.getClientPlayer()).ifPresent(data -> {
 
@@ -69,8 +62,7 @@ public class ClientReferences {
         });
     }
 
-    public static void handlePacket(CPacketEditWhiteListEntry packet)
-    {
+    public static void handlePacket(CPacketEditWhiteListEntry packet) {
 
         TelepadData.get(getClientPlayer()).ifPresent(data -> {
             if (packet.add)

@@ -18,22 +18,19 @@ import subaraki.telepads.utility.TelepadEntry;
 
 public class NameTelepadScreen extends Screen {
 
-    private EditBox textField;
-    private int field_width = 150;
-    private int field_height = 20;
-    private int center_x, center_y;
-
-    private String text_share;
-    private String text_confirm_share;
-    private String text_negate_share;
-    private String enter;
-    private String nameYourPad;
-
-    private boolean share = false;
     String sharing = "";
-
+    private EditBox textField;
+    private final int field_width = 150;
+    private final int field_height = 20;
+    private int center_x, center_y;
+    private final String text_share;
+    private final String text_confirm_share;
+    private final String text_negate_share;
+    private final String enter;
+    private String nameYourPad;
+    private boolean share = false;
     private boolean should_show_sharing;
-    private BlockPos position;
+    private final BlockPos position;
 
     public NameTelepadScreen(BlockPos position) {
 
@@ -48,15 +45,13 @@ public class NameTelepadScreen extends Screen {
     }
 
     @Override
-    public boolean isPauseScreen()
-    {
+    public boolean isPauseScreen() {
 
         return false;
     }
 
     @Override
-    protected void init()
-    {
+    protected void init() {
 
         super.init();
 
@@ -71,12 +66,10 @@ public class NameTelepadScreen extends Screen {
 
     }
 
-    private void initButtons()
-    {
+    private void initButtons() {
 
         TelepadData.get(minecraft.player).ifPresent(data -> {
-            if (!data.getWhitelist().isEmpty())
-            {
+            if (!data.getWhitelist().isEmpty()) {
                 should_show_sharing = true;
                 this.addRenderableWidget(new Button(center_x - 40, center_y + 20, 45, 20, new TranslatableComponent(text_share), b -> {
                     share = !share;
@@ -86,8 +79,7 @@ public class NameTelepadScreen extends Screen {
         });
     }
 
-    private void initTextField()
-    {
+    private void initTextField() {
 
         textField = new EditBox(font, center_x - field_width / 2, center_y - 50, field_width, field_height, new TextComponent("field_name"));
         textField.setBordered(true);
@@ -96,19 +88,18 @@ public class NameTelepadScreen extends Screen {
         textField.setFocus(true);
 
         ResourceLocation resLoc = this.minecraft.level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getKey(this.minecraft.level.getBiome(minecraft.player.blockPosition()));
-        
-        String biome_name = "biome."+resLoc.getNamespace()+"."+resLoc.getPath(); //biome names are present in lang files under biome.modname.biomename
+
+        String biome_name = "biome." + resLoc.getNamespace() + "." + resLoc.getPath(); //biome names are present in lang files under biome.modname.biomename
         TranslatableComponent biome = new TranslatableComponent(biome_name);
-        
+
         String format_name = biome.getString().substring(0, Math.min(15, biome.getString().length()));
-       
+
         textField.setValue(format_name);
         textField.setMaxLength(16);
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
-    {
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 
         this.renderBackground(matrixStack);
 
@@ -126,13 +117,11 @@ public class NameTelepadScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int p_keyPressed_3_)
-    {
+    public boolean keyPressed(int keyCode, int scanCode, int p_keyPressed_3_) {
 
         textField.keyPressed(keyCode, scanCode, p_keyPressed_3_);
 
-        if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER || keyCode == GLFW.GLFW_KEY_ESCAPE)
-        {
+        if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER || keyCode == GLFW.GLFW_KEY_ESCAPE) {
 
             TelepadData.get(minecraft.player).ifPresent(data -> {
 
@@ -155,8 +144,7 @@ public class NameTelepadScreen extends Screen {
     }
 
     @Override
-    public boolean charTyped(char car, int index)
-    {
+    public boolean charTyped(char car, int index) {
 
         textField.charTyped(car, index);
 

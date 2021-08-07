@@ -18,15 +18,12 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.client.model.data.EmptyModelData;
-import org.lwjgl.opengl.GL11;
 import subaraki.telepads.registry.mod_bus.RegisterClientSetup;
 import subaraki.telepads.tileentity.TileEntityTelepad;
 
 import java.awt.*;
 
 public class TileEntityTelepadRenderer implements BlockEntityRenderer<TileEntityTelepad> {
-
-    private static ModelTelepad modeltelepad;
 
     private static final String resourcePath = "telepads:textures/entity/tile/";
     private static final ResourceLocation base = new ResourceLocation(resourcePath + "telepad_base.png");
@@ -36,7 +33,7 @@ public class TileEntityTelepadRenderer implements BlockEntityRenderer<TileEntity
     private static final ResourceLocation frame_upgrade_2 = new ResourceLocation(resourcePath + "telepad_dimension_upgrade_2.png");
     private static final ResourceLocation frame_upgrade_3 = new ResourceLocation(resourcePath + "telepad_dimension_upgrade_3.png");
     private static final ResourceLocation frame_upgrade_4 = new ResourceLocation(resourcePath + "telepad_dimension_upgrade_4.png");
-
+    private static ModelTelepad modeltelepad;
     private static int animation_counter;
 
     public TileEntityTelepadRenderer(BlockEntityRendererProvider.Context c) {

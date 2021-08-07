@@ -67,6 +67,60 @@ public class SPacketTeleport implements IPacketBase {
 
     }
 
+    /**
+     * Teleport Penalty is removed here if any is given in the config file
+     */
+    private static boolean teleportPenalty(Player player) {
+
+        // lessons learned from fiddling with experience stuff :
+        // 1 : don't use the experienceTotal to calculate whatever. its inconsistent and
+        // can be messed up by manually adding levels
+        // 2 : don't set levels manually, use addExperienceLevel, it does all the
+        // needed stuff for you
+        // 3 : experience is only the representing of the bar, and is calculated from
+        // 0.0 to 1.0 to draw the green bar,
+        // it is some amount of experience devided by the level cap
+        int expConsuming = ConfigData.expConsume;
+        int lvlConsuming = ConfigData.lvlConsume;
+
+        if (expConsuming == 0 && lvlConsuming == 0)
+            return true;
+
+        if (lvlConsuming > 0) {
+            if (player.experienceLevel >= lvlConsuming) {
+                player.giveExperienceLevels(-lvlConsuming);
+                return true;
+            }
+            return false;
+        } else {
+
+            float actualExpInBar = player.experienceProgress * (float) player.getXpNeededForNextLevel();
+
+            if (actualExpInBar < expConsuming)// less exp then penalty
+            {
+                // if the player does not have enough experience
+                if (player.experienceLevel == 0) {
+                    return false;
+                }
+
+                expConsuming -= actualExpInBar; // remove resting exp from penalty
+                player.giveExperienceLevels(-1); // down a level
+                actualExpInBar = (float) player.getXpNeededForNextLevel(); // exp bar is considered full here when going down a level
+                float total = actualExpInBar - expConsuming; // the total refund is one level of exp minus the penalty left
+                player.experienceProgress = 0.0f; // reset the 'exp bar' to 0
+                if (total < 0)
+                    total = 0;
+                player.giveExperiencePoints((int) total); // give exp back to set to correct level
+                return true;
+            } else {
+                float total = actualExpInBar - (float) expConsuming;
+                player.experienceProgress = 0.0f;
+                player.giveExperiencePoints((int) total);
+                return true;
+            }
+        }
+    }
+
     @Override
     public void encode(FriendlyByteBuf buf) {
 
@@ -147,60 +201,6 @@ public class SPacketTeleport implements IPacketBase {
             });
         });
         context.get().setPacketHandled(true);
-    }
-
-    /**
-     * Teleport Penalty is removed here if any is given in the config file
-     */
-    private static boolean teleportPenalty(Player player) {
-
-        // lessons learned from fiddling with experience stuff :
-        // 1 : don't use the experienceTotal to calculate whatever. its inconsistent and
-        // can be messed up by manually adding levels
-        // 2 : don't set levels manually, use addExperienceLevel, it does all the
-        // needed stuff for you
-        // 3 : experience is only the representing of the bar, and is calculated from
-        // 0.0 to 1.0 to draw the green bar,
-        // it is some amount of experience devided by the level cap
-        int expConsuming = ConfigData.expConsume;
-        int lvlConsuming = ConfigData.lvlConsume;
-
-        if (expConsuming == 0 && lvlConsuming == 0)
-            return true;
-
-        if (lvlConsuming > 0) {
-            if (player.experienceLevel >= lvlConsuming) {
-                player.giveExperienceLevels(-lvlConsuming);
-                return true;
-            }
-            return false;
-        } else {
-
-            float actualExpInBar = player.experienceProgress * (float) player.getXpNeededForNextLevel();
-
-            if (actualExpInBar < expConsuming)// less exp then penalty
-            {
-                // if the player does not have enough experience
-                if (player.experienceLevel == 0) {
-                    return false;
-                }
-
-                expConsuming -= actualExpInBar; // remove resting exp from penalty
-                player.giveExperienceLevels(-1); // down a level
-                actualExpInBar = (float) player.getXpNeededForNextLevel(); // exp bar is considered full here when going down a level
-                float total = actualExpInBar - expConsuming; // the total refund is one level of exp minus the penalty left
-                player.experienceProgress = 0.0f; // reset the 'exp bar' to 0
-                if (total < 0)
-                    total = 0;
-                player.giveExperiencePoints((int) total); // give exp back to set to correct level
-                return true;
-            } else {
-                float total = actualExpInBar - (float) expConsuming;
-                player.experienceProgress = 0.0f;
-                player.giveExperiencePoints((int) total);
-                return true;
-            }
-        }
     }
 
     @Override

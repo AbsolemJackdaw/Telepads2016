@@ -11,41 +11,47 @@ public class ConfigData {
 
     public static final ServerConfig SERVER;
     public static final ForgeConfigSpec SERVER_SPEC;
+    public static final ClientConfig CLIENT;
+    public static final ForgeConfigSpec CLIENT_SPEC;
+    // SERVER
+    public static boolean allowDragonBlocking = true;
+    public static boolean allowAnvilPearls = true;
+    public static boolean disableBeadsUsage = false;
+    public static boolean disableNecklaceUsage = false;
+    public static String[] tp_locations = new String[]{};
+    public static int teleport_seconds = 3;
+    public static int expConsume;
+    public static int lvlConsume;
+    // CLIENT
+    public static boolean allowParticles = true;
 
-    static
-    {
+    static {
         final Pair<ServerConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(ServerConfig::new);
         SERVER_SPEC = specPair.getRight();
         SERVER = specPair.getLeft();
     }
 
-    public static final ClientConfig CLIENT;
-    public static final ForgeConfigSpec CLIENT_SPEC;
-
-    static
-    {
+    static {
         final Pair<ClientConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(ClientConfig::new);
         CLIENT_SPEC = specPair.getRight();
         CLIENT = specPair.getLeft();
     }
 
-    // SERVER
-    public static boolean allowDragonBlocking = true;
+    public static void refreshServer() {
 
-    public static boolean allowAnvilPearls = true;
+        allowDragonBlocking = SERVER.allowDragonBlocking.get();
+        allowAnvilPearls = SERVER.allowAnvilPearls.get();
+        disableBeadsUsage = SERVER.disableBeadsUsage.get();
+        disableNecklaceUsage = SERVER.disableNecklaceUsage.get();
+        expConsume = SERVER.exp.get();
+        lvlConsume = SERVER.lvl.get();
+        teleport_seconds = SERVER.teleport_delay.get();
+        tp_locations = (String[]) SERVER.val.get().toArray();
+    }
 
-    public static boolean disableBeadsUsage = false;
-    public static boolean disableNecklaceUsage = false;
-
-    public static String[] tp_locations = new String[] {};
-
-    public static int teleport_seconds = 3;
-
-    public static int expConsume;
-    public static int lvlConsume;
-
-    // CLIENT
-    public static boolean allowParticles = true;
+    public static void refreshClient() {
+        allowParticles = CLIENT.allowParticles.get();
+    }
 
     public static class ServerConfig {
 
@@ -78,7 +84,7 @@ public class ConfigData {
 
             builder.push("Teleportation Details");
             exp = builder.comment(
-                    "Penalty cost for teleportation, if set to 0, there will be no exp loss. Set level to 0 if you only want to consume an amount of exp.")
+                            "Penalty cost for teleportation, if set to 0, there will be no exp loss. Set level to 0 if you only want to consume an amount of exp.")
                     .translation("config.consume.exp").defineInRange("Experience Consumation", 0, 0, 10000);
             lvl = builder.comment("Penalty cost for teleportation, if set to 0, there will be no exp loss. set experience to 0 if you want to consume levels.")
                     .translation("config.consume.level").defineInRange("Level Consumation", 0, 0, 32);
@@ -108,23 +114,5 @@ public class ConfigData {
             builder.pop();
 
         }
-    }
-
-    public static void refreshServer()
-    {
-
-        allowDragonBlocking = SERVER.allowDragonBlocking.get();
-        allowAnvilPearls = SERVER.allowAnvilPearls.get();
-        disableBeadsUsage = SERVER.disableBeadsUsage.get();
-        disableNecklaceUsage = SERVER.disableNecklaceUsage.get();
-        expConsume = SERVER.exp.get();
-        lvlConsume = SERVER.lvl.get();
-        teleport_seconds = SERVER.teleport_delay.get();
-        tp_locations = (String[]) SERVER.val.get().toArray();
-    }
-
-    public static void refreshClient()
-    {
-        allowParticles = CLIENT.allowParticles.get();
     }
 }

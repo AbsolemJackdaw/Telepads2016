@@ -22,7 +22,7 @@ public class CoordinateHandler {
 
     String name = "default";
 
-    public CoordinateHandler(ServerLevel server , String args) {
+    public CoordinateHandler(ServerLevel server, String args) {
 
         String[] s = args.split("/");
 
@@ -30,151 +30,125 @@ public class CoordinateHandler {
         yi = s[1];
         zi = define(s[2]);
 
-        defineDim(server , s[3]);
+        defineDim(server, s[3]);
 
         this.name = s[4];
     }
 
-    public String getName()
-    {
+    public String getName() {
 
         return name;
     }
 
-    private int define(String definer)
-    {
+    private int define(String definer) {
 
-        if (definer.toLowerCase().equals("random"))
-        {
+        if (definer.equalsIgnoreCase("random")) {
             int random = rand.nextInt(worldsize * 2) - worldsize;
             return random;
-        }
+        } else if (definer.contains("#")) {
+            String[] vals = definer.split("#");
+            int min = Integer.valueOf(vals[0]);
+            int max = Integer.valueOf(vals[1]);
 
-        else
-            if (definer.contains("#"))
-            {
-                String[] vals = definer.split("#");
-                int min = Integer.valueOf(vals[0]);
-                int max = Integer.valueOf(vals[1]);
-
-                if (max < min) { throw new IllegalArgumentException(
-                        min + "cannot be more then " + max + "! this is an error from the end user in the Telepads configuration file!"); }
-
-                int total = 0;
-
-                if (min < 0 && max >= 0)
-                {
-                    total = max + (-1 * min);
-                }
-                else
-                    total = max + min;
-
-                int result = rand.nextInt(total);
-
-                if (min < 0 && max >= 0)
-                    result += min;
-
-                return result;
-
+            if (max < min) {
+                throw new IllegalArgumentException(
+                        min + "cannot be more then " + max + "! this is an error from the end user in the Telepads configuration file!");
             }
-            else
-                return Integer.valueOf(definer);
+
+            int total = 0;
+
+            if (min < 0 && max >= 0) {
+                total = max + (-1 * min);
+            } else
+                total = max + min;
+
+            int result = rand.nextInt(total);
+
+            if (min < 0 && max >= 0)
+                result += min;
+
+            return result;
+
+        } else
+            return Integer.valueOf(definer);
     }
 
-    private void defineDim(ServerLevel world, String dimension)
-    {
+    private void defineDim(ServerLevel world, String dimension) {
 
-        if (dimension.toLowerCase().equals("random"))
-        {
+        if (dimension.equalsIgnoreCase("random")) {
             ArrayList<ResourceLocation> list = Lists.newArrayList();
             // get a random dimension from existing dimensions
-            for (ServerLevel dim : world.getServer().getAllLevels())
-            {
+            for (ServerLevel dim : world.getServer().getAllLevels()) {
                 list.add(dim.dimension().location());
             }
 
             ResourceLocation resLoc = list.get(rand.nextInt(list.size()));
             dim = resLoc;
 
-        }
-
-        else
+        } else
             dim = new ResourceLocation(dimension);
     }
 
-    private int defineY(String definer, Level world)
-    {
+    private int defineY(String definer, Level world) {
 
-        if (definer.toLowerCase().equals("random"))
-        {
+        if (definer.equalsIgnoreCase("random")) {
             // load chunk ?
             world.getChunk(new BlockPos(xi, 0, zi));
-            if (world.getHeight(Types.WORLD_SURFACE, xi, zi) > 0)
-            {
+            if (world.getHeight(Types.WORLD_SURFACE, xi, zi) > 0) {
                 return world.getHeight(Types.WORLD_SURFACE, xi, zi);
             }
 
             return 0;
-        }
+        } else if (definer.contains("#")) {
+            String[] vals = definer.split("#");
+            int min = Integer.valueOf(vals[0]);
+            int max = Integer.valueOf(vals[1]);
 
-        else
-            if (definer.contains("#"))
-            {
-                String[] vals = definer.split("#");
-                int min = Integer.valueOf(vals[0]);
-                int max = Integer.valueOf(vals[1]);
-
-                if (max < min) { throw new IllegalArgumentException(
-                        min + "cannot be more then " + max + "! this is an error from the end user in the Telepads configuration file!"); }
-
-                BlockPos pos = new BlockPos(xi, min, zi);
-
-                int counter = min;
-
-                while (counter < max)
-                {
-                    counter++;
-
-                    if ((world.getBlockState(pos).isRedstoneConductor(world, pos) && world.isEmptyBlock(pos.above())))
-                    {
-                        break;
-                    }
-
-                    pos = new BlockPos(xi, counter, zi);
-                }
-
-                int result = counter;
-
-                // if it reached higher then max, meaning no suitable position was found, get an
-                // average of the given height
-                if (counter >= max)
-                {
-                    if (min < 0 && max >= 0)
-                    {
-                        result = max + (-1 * min);
-                    }
-                    else
-                        result = max + min;
-
-                    result = result / 2 + min;
-                }
-
-                return result;
-
+            if (max < min) {
+                throw new IllegalArgumentException(
+                        min + "cannot be more then " + max + "! this is an error from the end user in the Telepads configuration file!");
             }
-            else
-                return Integer.valueOf(definer);
+
+            BlockPos pos = new BlockPos(xi, min, zi);
+
+            int counter = min;
+
+            while (counter < max) {
+                counter++;
+
+                if ((world.getBlockState(pos).isRedstoneConductor(world, pos) && world.isEmptyBlock(pos.above()))) {
+                    break;
+                }
+
+                pos = new BlockPos(xi, counter, zi);
+            }
+
+            int result = counter;
+
+            // if it reached higher then max, meaning no suitable position was found, get an
+            // average of the given height
+            if (counter >= max) {
+                if (min < 0 && max >= 0) {
+                    result = max + (-1 * min);
+                } else
+                    result = max + min;
+
+                result = result / 2 + min;
+            }
+
+            return result;
+
+        } else
+            return Integer.valueOf(definer);
     }
 
-    public BlockPos getPosition(Level world)
-    {
+    public BlockPos getPosition(Level world) {
 
         int y = defineY(yi, world);
         return new BlockPos(xi, y, zi);
     }
 
-    public ResourceLocation getDimension()
-    {
+    public ResourceLocation getDimension() {
 
         return dim;
     }

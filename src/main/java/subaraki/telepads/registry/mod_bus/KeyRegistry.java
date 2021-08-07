@@ -17,19 +17,16 @@ public class KeyRegistry {
 
     public static KeyMapping keyWhiteList;
 
-    public static void registerKey()
-    {
+    public static void registerKey() {
 
         keyWhiteList = new KeyMapping("Friend Whitelist", GLFW.GLFW_KEY_PERIOD, "Telepad Friend List");
         ClientRegistry.registerKeyBinding(keyWhiteList);
     }
 
     @SubscribeEvent
-    public static void keys(KeyInputEvent evt)
-    {
+    public static void keys(KeyInputEvent evt) {
 
-        if (keyWhiteList.consumeClick())
-        {
+        if (keyWhiteList.consumeClick()) {
             Minecraft.getInstance().setScreen(new WhiteListScreen());
         }
     }

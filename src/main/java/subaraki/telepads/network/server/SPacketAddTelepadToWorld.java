@@ -25,10 +25,8 @@ public class SPacketAddTelepadToWorld implements IPacketBase {
      * sync packet with automatically be sent back to the client to ensure
      * everything is consistent.
      *
-     * @param playerUUID
-     *            : The UUID of the player to add the new TelepadEntry to.
-     * @param entry
-     *            : The TelepadEntry to be added to the player's list of locations.
+     * @param playerUUID : The UUID of the player to add the new TelepadEntry to.
+     * @param entry      : The TelepadEntry to be added to the player's list of locations.
      */
     public SPacketAddTelepadToWorld(TelepadEntry entry) {
 
@@ -45,22 +43,19 @@ public class SPacketAddTelepadToWorld implements IPacketBase {
     }
 
     @Override
-    public void encode(FriendlyByteBuf buf)
-    {
+    public void encode(FriendlyByteBuf buf) {
 
         this.entry.writeToBuffer(buf);
     }
 
     @Override
-    public void decode(FriendlyByteBuf buf)
-    {
+    public void decode(FriendlyByteBuf buf) {
 
         this.entry = new TelepadEntry(buf);
     }
 
     @Override
-    public void handle(Supplier<NetworkEvent.Context> context)
-    {
+    public void handle(Supplier<NetworkEvent.Context> context) {
 
         context.get().enqueueWork(() -> {
             Player player = context.get().getSender();
@@ -71,20 +66,17 @@ public class SPacketAddTelepadToWorld implements IPacketBase {
                 TelepadEntry old_entry = wdh.getEntryForLocation(entry.position, entry.dimensionID);
 
                 // if there is no matching entry already in the world save
-                if (old_entry == null)
-                {
+                if (old_entry == null) {
                     // add to world save
                     wdh.addEntry(entry);
                 }
 
                 // if the entry existed before and had it's tag set to 'missing', replace that
                 // entry
-                else
-                    if (old_entry != null && old_entry.isMissingFromLocation)
-                    {
-                        old_entry.isMissingFromLocation = false;
-                        old_entry.entryName = entry.entryName;
-                    }
+                else if (old_entry != null && old_entry.isMissingFromLocation) {
+                    old_entry.isMissingFromLocation = false;
+                    old_entry.entryName = entry.entryName;
+                }
 
             });
         });
@@ -93,8 +85,7 @@ public class SPacketAddTelepadToWorld implements IPacketBase {
     }
 
     @Override
-    public void register(int id)
-    {
+    public void register(int id) {
 
         NetworkHandler.NETWORK.registerMessage(id, SPacketAddTelepadToWorld.class, SPacketAddTelepadToWorld::encode, SPacketAddTelepadToWorld::new,
                 SPacketAddTelepadToWorld::handle);

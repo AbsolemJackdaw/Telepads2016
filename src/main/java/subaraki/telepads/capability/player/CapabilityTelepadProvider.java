@@ -51,7 +51,7 @@ public class CapabilityTelepadProvider implements ICapabilitySerializable<Compou
 
         return LazyOptional.empty();
     }
-    
+
     private TelepadData getImpl() {
 
         if (data != null) {

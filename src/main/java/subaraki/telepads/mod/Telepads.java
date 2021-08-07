@@ -35,15 +35,9 @@ public class Telepads {
     public static final String NAME = "Telepads";
     public static final String VERSION = "$version";
     public static final String DEPENDENCY = "required-after:subcommonlib";
-
-    public static Logger log = LogManager.getLogger(MODID);
-
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
-    private static final DeferredRegister<BlockEntityType<?>> TILEENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, MODID);
-
     public static final RegistryObject<Block> TELEPAD_BLOCK = BLOCKS.register("telepad", BlockTelepad::new);
-
+    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
     public static final RegistryObject<Item> TELEPAD_ITEM = ITEMS.register("telepad", () ->
             new BlockItem(TELEPAD_BLOCK.get(), PropertiesWrapper.getItemProperties().tab(CreativeModeTab.TAB_TRANSPORTATION)) {
 
@@ -84,13 +78,10 @@ public class Telepads {
                     }
                 }
             });
-
-
     public static final RegistryObject<Item> BEAD = ITEMS.register("ender_bead", ItemEnderBead::new);
     public static final RegistryObject<Item> NECKLACE = ITEMS.register("ender_bead_necklace", ItemEnderNecklace::new);
     public static final RegistryObject<Item> TOGGLER = ITEMS.register("toggler", () -> new Item(PropertiesWrapper.getItemProperties().tab(CreativeModeTab.TAB_REDSTONE)));
     public static final RegistryObject<Item> TRANSMITTER = ITEMS.register("transmitter", () -> new Item(PropertiesWrapper.getItemProperties().tab(CreativeModeTab.TAB_REDSTONE)));
-
     public static final RegistryObject<Item> CREATIVE_ROD = ITEMS.register("creative_rod", () -> new Item(PropertiesWrapper.getItemProperties().tab(CreativeModeTab.TAB_REDSTONE)) {
 
         @Override
@@ -100,7 +91,6 @@ public class Telepads {
                     new TextComponent("can be used by people with creative access to enable telepads to teleport to a location defined in config"));
         }
     });
-
     public static final RegistryObject<Item> CREATIVE_ROD_PUBLIC = ITEMS.register("creative_rod_public", () -> new Item(PropertiesWrapper.getItemProperties().tab(CreativeModeTab.TAB_REDSTONE)) {
         @Override
         public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
@@ -108,9 +98,8 @@ public class Telepads {
             tooltip.add(new TextComponent("can be used by people with creative access to toggle public acces to a telepad"));
         }
     });
-
-    public static final RegistryObject<BlockEntityType<TileEntityTelepad>> TILE_ENTITY_TELEPAD = TILEENTITIES.register("telepadtileentity", () ->
-            BlockEntityType.Builder.of(TileEntityTelepad::new, TELEPAD_BLOCK.get()).build(null));
+    private static final DeferredRegister<BlockEntityType<?>> TILEENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, MODID);
+    public static Logger log = LogManager.getLogger(MODID);
 
     public Telepads() {
 
@@ -122,5 +111,8 @@ public class Telepads {
         BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
         ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
         TILEENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
-    }
+    }    public static final RegistryObject<BlockEntityType<TileEntityTelepad>> TILE_ENTITY_TELEPAD = TILEENTITIES.register("telepadtileentity", () ->
+            BlockEntityType.Builder.of(TileEntityTelepad::new, TELEPAD_BLOCK.get()).build(null));
+
+
 }

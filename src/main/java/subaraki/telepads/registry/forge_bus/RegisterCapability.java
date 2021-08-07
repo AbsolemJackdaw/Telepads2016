@@ -13,8 +13,7 @@ import subaraki.telepads.mod.Telepads;
 public class RegisterCapability {
 
     @SubscribeEvent
-    public static void onAttachEventEntity(AttachCapabilitiesEvent<Entity> event)
-    {
+    public static void onAttachEventEntity(AttachCapabilitiesEvent<Entity> event) {
 
         final Object entity = event.getObject();
 
