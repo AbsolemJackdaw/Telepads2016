@@ -22,6 +22,7 @@ import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -39,12 +40,14 @@ import net.minecraftforge.fmllegacy.network.PacketDistributor;
 import subaraki.telepads.handler.ConfigData;
 import subaraki.telepads.handler.CoordinateHandler;
 import subaraki.telepads.handler.WorldDataHandler;
-import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.network.NetworkHandler;
 import subaraki.telepads.network.client.CPacketRequestNamingScreen;
+import subaraki.telepads.registry.TelepadBlocks;
+import subaraki.telepads.registry.TelepadItems;
 import subaraki.telepads.tileentity.TileEntityTelepad;
 import subaraki.telepads.utility.TelepadEntry;
 
+import javax.annotation.Nullable;
 import java.util.Random;
 
 public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBlock, BlockEntityTicker<TileEntityTelepad> {
@@ -189,7 +192,7 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
 
                 TelepadEntry entry = WorldDataHandler.get(world).getEntryForLocation(pos, world.dimension());
 
-                if (item.equals(Telepads.TRANSMITTER.get())) {
+                if (item.equals(TelepadItems.TRANSMITTER.get())) {
                     // check for server only. syncs automatically with client. if doing both sides,
                     // client setter will make it look jumpy
                     if (!entry.hasTransmitter) {
@@ -202,7 +205,7 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
                 }
                 // check for server only. syncs automatically with client. if doing both sides,
                 // client setter will make it look jumpy
-                if (item.equals(Telepads.TOGGLER.get())) {
+                if (item.equals(TelepadItems.TOGGLER.get())) {
                     if (!telepad_tile_entity.hasRedstoneUpgrade()) {
                         telepad_tile_entity.addRedstoneUpgrade();
                         world.sendBlockUpdated(pos, world.getBlockState(pos), defaultBlockState(), 3);
@@ -211,7 +214,7 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
                     }
                 }
 
-                if (item.equals(Telepads.CREATIVE_ROD_PUBLIC.get())) {
+                if (item.equals(TelepadItems.CREATIVE_ROD_PUBLIC.get())) {
                     telepad_tile_entity.toggleAcces();
                     world.sendBlockUpdated(pos, world.getBlockState(pos), defaultBlockState(), 3);
                     entry.setPublic(telepad_tile_entity.isPublic());
@@ -226,7 +229,7 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
 
                 }
                 // check server sideo nly, so server side config is read
-                if (item.equals(Telepads.CREATIVE_ROD.get())) {
+                if (item.equals(TelepadItems.CREATIVE_ROD.get())) {
                     telepad_tile_entity.rotateCoordinateHandlerIndex();
 
                     int index = telepad_tile_entity.getCoordinateHandlerIndex();
@@ -435,9 +438,9 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
             entry.isMissingFromLocation = true;
             dropPad(world, tile_entity_telepad, pos);
             if (tile_entity_telepad.hasDimensionUpgrade())
-                world.addFreshEntity(new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(Telepads.TRANSMITTER.get(), 1)));
+                world.addFreshEntity(new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(TelepadItems.TRANSMITTER.get(), 1)));
             if (tile_entity_telepad.hasRedstoneUpgrade())
-                world.addFreshEntity(new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(Telepads.TOGGLER.get(), 1)));
+                world.addFreshEntity(new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(TelepadItems.TOGGLER.get(), 1)));
 
             return world.removeBlock(pos, false);
         }
@@ -450,7 +453,7 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
         ItemEntity item_entity = new ItemEntity(EntityType.ITEM, world);
         item_entity.setPos(pos.getX(), pos.getY(), pos.getZ());
 
-        ItemStack stack = new ItemStack(Telepads.TELEPAD_BLOCK.get());
+        ItemStack stack = new ItemStack(TelepadBlocks.TELEPAD_BLOCK.get());
         CompoundTag nbt = new CompoundTag();
         nbt.putInt("colorBase", telepad.getColorArrow());
         nbt.putInt("colorFrame", telepad.getColorFeet());
@@ -555,5 +558,11 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
     @Override
     public void tick(Level level, BlockPos blockPos, BlockState blockState, TileEntityTelepad telepad) {
         telepad.tick();
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_153212_, BlockState p_153213_, BlockEntityType<T> p_153214_) {
+        return getTicker();
     }
 }

@@ -9,6 +9,7 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import subaraki.telepads.mod.Telepads;
+import subaraki.telepads.registry.TelepadBlockEntities;
 import subaraki.telepads.tileentity.render.ModelTelepad;
 import subaraki.telepads.tileentity.render.TileEntityTelepadRenderer;
 
@@ -24,7 +25,7 @@ public class RegisterClientSetup {
 
     @SubscribeEvent
     public static void registerRenderer(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerBlockEntityRenderer(Telepads.TILE_ENTITY_TELEPAD.get(), TileEntityTelepadRenderer::new);
+        event.registerBlockEntityRenderer(TelepadBlockEntities.TILE_ENTITY_TELEPAD.get(), TileEntityTelepadRenderer::new);
     }
 
     @SubscribeEvent

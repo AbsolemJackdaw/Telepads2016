@@ -23,9 +23,10 @@ import subaraki.telepads.capability.player.TelepadData;
 import subaraki.telepads.handler.ConfigData;
 import subaraki.telepads.handler.CoordinateHandler;
 import subaraki.telepads.handler.WorldDataHandler;
-import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.network.NetworkHandler;
 import subaraki.telepads.network.client.CPacketRequestTeleportScreen;
+import subaraki.telepads.registry.TelepadBlockEntities;
+import subaraki.telepads.registry.TelepadBlocks;
 import subaraki.telepads.utility.TelepadEntry;
 import subaraki.telepads.utility.masa.Teleport;
 
@@ -58,7 +59,7 @@ public class TileEntityTelepad extends BlockEntity {
     // private AxisAlignedBB aabb;
 
     public TileEntityTelepad(BlockPos pos, BlockState state) {
-        super(Telepads.TILE_ENTITY_TELEPAD.get(), pos, state);
+        super(TelepadBlockEntities.TILE_ENTITY_TELEPAD.get(), pos, state);
     }
 
     ///////////////// 3 METHODS ABSOLUTELY NEEDED FOR CLIENT/SERVER
@@ -230,7 +231,7 @@ public class TileEntityTelepad extends BlockEntity {
         if (level == null)
             return;
         isStandingOnPlatform = onPlatform;
-        level.sendBlockUpdated(worldPosition, level.getBlockState(getBlockPos()), Telepads.TELEPAD_BLOCK.get().defaultBlockState(), 3);
+        level.sendBlockUpdated(worldPosition, level.getBlockState(getBlockPos()), TelepadBlocks.TELEPAD_BLOCK.get().defaultBlockState(), 3);
     }
 
     // called server side only in tick
