@@ -84,6 +84,7 @@ public class TeleportScreen extends Screen {
         this.renderCube(stack.last().pose(), minecraft.renderBuffers().bufferSource().getBuffer(RenderType.endPortal()));
         stack.popPose();
 
+
         fill(stack, START_X, START_Y, width - START_X, height - START_Y, 0x0055444444);
 
         Window window = minecraft.getWindow();
@@ -149,7 +150,7 @@ public class TeleportScreen extends Screen {
             float containerSize = height - START_Y * 2;
 
             // relative % of the scale between the buttons drawn and the screen size
-            float percent = ((containerSize / totalSize) * 100f);
+            float percent = (((float) containerSize / (float) totalSize) * 100f);
 
             if (percent < 100) {
 
@@ -307,13 +308,13 @@ public class TeleportScreen extends Screen {
         float width = (float) Minecraft.getInstance().getWindow().getGuiScaledWidth();
         float height = (float) Minecraft.getInstance().getWindow().getGuiScaledHeight();
         float max = width > height ? width : height;
-        this.renderFace(stack, vertexConsumer, max, max, 0.75f, 0.75f, 1.0F, 1.0F, 0.0F, 0.0F);
+        this.renderFace(stack, vertexConsumer, 0.0f, max, 0.0F, max, 0.0F, 0.0F, 0.0F, 0.0F);
     }
 
-    private void renderFace(Matrix4f matrix4f, VertexConsumer vertexConsumer, float x0, float x1, float y0, float y1, float normalA, float normalB, float normalC, float normalD) {
-        vertexConsumer.vertex(matrix4f, x0, y0, normalA).endVertex();
-        vertexConsumer.vertex(matrix4f, x1, y0, normalB).endVertex();
-        vertexConsumer.vertex(matrix4f, x1, y1, normalC).endVertex();
-        vertexConsumer.vertex(matrix4f, x0, y1, normalD).endVertex();
+    private void renderFace(Matrix4f matrix4f, VertexConsumer vertexConsumer, float x0, float x1, float y0, float y1, float z1, float z2, float z3, float z4) {
+        vertexConsumer.vertex(matrix4f, x0, y0, z1).endVertex();
+        vertexConsumer.vertex(matrix4f, x1, y0, z2).endVertex();
+        vertexConsumer.vertex(matrix4f, x1, y1, z3).endVertex();
+        vertexConsumer.vertex(matrix4f, x0, y1, z4).endVertex();
     }
 }
