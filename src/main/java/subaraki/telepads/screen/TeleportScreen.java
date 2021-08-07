@@ -2,7 +2,10 @@ package subaraki.telepads.screen;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -10,6 +13,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.TextComponent;
@@ -17,11 +21,9 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import org.lwjgl.opengl.GL11;
 import subaraki.telepads.capability.player.TelepadData;
 import subaraki.telepads.network.NetworkHandler;
 import subaraki.telepads.network.server.SPacketTeleport;
-import subaraki.telepads.tileentity.render.RenderEndPortalFrame;
 import subaraki.telepads.utility.ClientReferences;
 import subaraki.telepads.utility.TelepadEntry;
 
@@ -32,11 +34,9 @@ public class TeleportScreen extends Screen {
 
     // show entries from current worl, or if selected, from another dimension
     // array only contains entries from selected dimension
-    private LinkedList<TelepadEntry> entries = new LinkedList<>();
+    private final LinkedList<TelepadEntry> entries = new LinkedList<>();
 
     private ResourceKey<Level> lookup_dim_id = Level.OVERWORLD;
-
-    private RenderEndPortalFrame endPortalFrame;
 
     private int scrollbarscroll = 0;
 
@@ -56,7 +56,6 @@ public class TeleportScreen extends Screen {
 
         super(new TranslatableComponent("telepad.gui"));
         this.is_transmitter_pad = is_transmitter_pad;
-        endPortalFrame = new RenderEndPortalFrame();
 
     }
 
@@ -84,27 +83,24 @@ public class TeleportScreen extends Screen {
 
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+        if (minecraft == null)
+            return;
 
-        endPortalFrame.renderEndPortalSurfaceGUI(stack, Minecraft.getInstance().renderBuffers().bufferSource(), mouseX, mouseY);
+        stack.pushPose();
+        this.renderCube(stack.last().pose(), minecraft.renderBuffers().bufferSource().getBuffer(RenderType.endPortal()));
+        stack.popPose();
 
         fill(stack, START_X, START_Y, width - START_X, height - START_Y, 0x0055444444);
 
-        GL11.glColor4f(1, 1, 1, 1);
-
         Window window = minecraft.getWindow();
         int scale = (int) window.getGuiScale();
-        GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        GL11.glScissor(START_X * scale, START_Y * scale, width * scale, (height - (START_Y * 2)) * scale);
-
+        RenderSystem.enableScissor(START_X * scale, START_Y * scale, width * scale, (height - (START_Y * 2)) * scale);
         super.render(stack, mouseX, mouseY, partialTicks);
-
-        GL11.glDisable(GL11.GL_SCISSOR_TEST);
+        RenderSystem.disableScissor();
 
         if (!this.renderables.isEmpty()) {
             drawFakeScrollBar(stack);
         }
-
-        GL11.glColor4f(1, 1, 1, 1);
 
         dimension_indicator.render(stack, mouseX, mouseY, partialTicks);
 
@@ -313,5 +309,19 @@ public class TeleportScreen extends Screen {
                     dimensions_visited.add(entry.dimensionID);
             });
         });
+    }
+
+    private void renderCube(Matrix4f stack, VertexConsumer vertexConsumer) {
+        float width = (float) Minecraft.getInstance().getWindow().getGuiScaledWidth();
+        float height = (float) Minecraft.getInstance().getWindow().getGuiScaledHeight();
+        float max = width > height ? width : height;
+        this.renderFace(stack, vertexConsumer, max, max, 0.75f, 0.75f, 1.0F, 1.0F, 0.0F, 0.0F);
+    }
+
+    private void renderFace(Matrix4f matrix4f, VertexConsumer vertexConsumer, float x0, float x1, float y0, float y1, float normalA, float normalB, float normalC, float normalD) {
+        vertexConsumer.vertex(matrix4f, x0, y0, normalA).endVertex();
+        vertexConsumer.vertex(matrix4f, x1, y0, normalB).endVertex();
+        vertexConsumer.vertex(matrix4f, x1, y1, normalC).endVertex();
+        vertexConsumer.vertex(matrix4f, x0, y1, normalD).endVertex();
     }
 }

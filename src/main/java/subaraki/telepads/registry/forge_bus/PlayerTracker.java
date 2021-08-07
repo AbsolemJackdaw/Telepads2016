@@ -17,16 +17,14 @@ import subaraki.telepads.tileentity.TileEntityTelepad;
 public class PlayerTracker {
 
     @SubscribeEvent
-    public static void updateEntity(LivingUpdateEvent event)
-    {
+    public static void updateEntity(LivingUpdateEvent event) {
 
         if (!(event.getEntityLiving() instanceof Player))
             return;
 
         TelepadData.get((Player) event.getEntityLiving()).ifPresent(data -> {
             BlockEntity te = event.getEntityLiving().level.getBlockEntity(event.getEntityLiving().blockPosition());
-            if (te == null || !(te instanceof TileEntityTelepad))
-            {
+            if (!(te instanceof TileEntityTelepad)) {
                 if (data.getCounter() != TelepadData.getMaxTime())
                     data.setCounter(TelepadData.getMaxTime());
                 if (data.isInTeleportGui())
@@ -37,8 +35,7 @@ public class PlayerTracker {
     }
 
     @SubscribeEvent
-    public static void onPlayerClone(PlayerEvent.Clone event)
-    {
+    public static void onPlayerClone(PlayerEvent.Clone event) {
 
         TelepadData.get(event.getOriginal()).ifPresent(data -> {
             TelepadData.get(event.getPlayer()).ifPresent(newdata -> {
@@ -49,22 +46,18 @@ public class PlayerTracker {
     }
 
     @SubscribeEvent
-    public static void onEntityJoinWorld(PlayerLoggedInEvent event)
-    {
+    public static void onEntityJoinWorld(PlayerLoggedInEvent event) {
 
-        if (!event.getPlayer().level.isClientSide)
-        {
+        if (!event.getPlayer().level.isClientSide) {
             TelepadData.get(event.getPlayer()).ifPresent(data -> {
             });
         }
     }
 
     @SubscribeEvent
-    public static void onDimensionChange(PlayerChangedDimensionEvent event)
-    {
+    public static void onDimensionChange(PlayerChangedDimensionEvent event) {
 
-        if (!event.getPlayer().level.isClientSide)
-        {
+        if (!event.getPlayer().level.isClientSide) {
             TelepadData.get(event.getPlayer()).ifPresent(data -> {
             });
         }

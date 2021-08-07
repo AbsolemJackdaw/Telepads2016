@@ -2,12 +2,14 @@ package subaraki.telepads.tileentity.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
 import com.mojang.math.Quaternion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
@@ -17,6 +19,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import org.lwjgl.opengl.GL11;
+import subaraki.telepads.registry.mod_bus.RegisterClientSetup;
 import subaraki.telepads.tileentity.TileEntityTelepad;
 
 import java.awt.*;
@@ -35,36 +38,34 @@ public class TileEntityTelepadRenderer implements BlockEntityRenderer<TileEntity
     private static final ResourceLocation frame_upgrade_4 = new ResourceLocation(resourcePath + "telepad_dimension_upgrade_4.png");
 
     private static int animation_counter;
-    private final RenderEndPortalFrame endPortalFrame;
 
-    public TileEntityTelepadRenderer() {
-        modeltelepad = new ModelTelepad(RenderType::entityCutoutNoCull);
-        endPortalFrame = new RenderEndPortalFrame();
+    public TileEntityTelepadRenderer(BlockEntityRendererProvider.Context c) {
+        modeltelepad = new ModelTelepad(Minecraft.getInstance().getEntityModels().bakeLayer(RegisterClientSetup.TELEPAD_BLOCK_MODEL_LAYER));
     }
 
     @Override
-    public void render(TileEntityTelepad te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void render(TileEntityTelepad te, float partialTicks, PoseStack stack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
 
         animation_counter++;
 
         if (!te.hasRedstoneUpgrade() || te.hasRedstoneUpgrade() && !te.isPowered()) {
-            matrixStackIn.pushPose();
-            endPortalFrame.render(te, Minecraft.getInstance().getBlockEntityRenderDispatcher(), partialTicks, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
-            matrixStackIn.popPose();
+            stack.pushPose();
+            this.renderCube(stack.last().pose(), bufferIn.getBuffer(RenderType.endPortal()));
+            stack.popPose();
         }
 
-        matrixStackIn.pushPose();
+        stack.pushPose();
         // set normal
-        matrixStackIn.translate(0.5F, 2.25F, 0.5F);
-        matrixStackIn.scale(1.0F, -1F, 1F);
+        stack.translate(0.5F, 2.25F, 0.5F);
+        stack.scale(1.0F, -1F, 1F);
 
         Color colorBase = new Color(te.getColorArrow());
         Color colorFrame = new Color(te.getColorFeet());
 
-        renderPad(matrixStackIn, colorFrame, colorBase, bufferIn, combinedLightIn, combinedOverlayIn);
+        renderPad(stack, colorFrame, colorBase, bufferIn, combinedLightIn, combinedOverlayIn);
 
         if (te.hasDimensionUpgrade()) {
-            matrixStackIn.pushPose();
+            stack.pushPose();
 
             ResourceLocation resLocAnimation;
             if (animation_counter < 25)
@@ -79,43 +80,42 @@ public class TileEntityTelepadRenderer implements BlockEntityRenderer<TileEntity
                 animation_counter = 0;
                 resLocAnimation = frame_upgrade_4;
             }
-            GL11.glColor3f(1, 1, 1);
-            matrixStackIn.scale(0.75f, 0.75f, 0.75f);
-            matrixStackIn.translate(-0.1f, 0.45f, 0.1f);
+            stack.scale(0.75f, 0.75f, 0.75f);
+            stack.translate(-0.1f, 0.45f, 0.1f);
 
             switch (te.getUpgradeRotation()) {
                 case 0 -> {
-                    matrixStackIn.mulPose(new Quaternion(0, 0, 0, true));
-                    matrixStackIn.translate(0f, 0, 0f);
+                    stack.mulPose(new Quaternion(0, 0, 0, true));
+                    stack.translate(0f, 0, 0f);
                 }
                 case 1 -> {
-                    matrixStackIn.mulPose(new Quaternion(0, -90, 0, true));
-                    matrixStackIn.translate(-0.1f, 0, 0f);
+                    stack.mulPose(new Quaternion(0, -90, 0, true));
+                    stack.translate(-0.1f, 0, 0f);
                 }
                 case 2 -> {
-                    matrixStackIn.mulPose(new Quaternion(0, 180, 0, true));
-                    matrixStackIn.translate(-0.2f, 0, 0.2f);
+                    stack.mulPose(new Quaternion(0, 180, 0, true));
+                    stack.translate(-0.2f, 0, 0.2f);
                 }
                 default -> {// also case 3
-                    matrixStackIn.mulPose(new Quaternion(0, 90, 0, true));
-                    matrixStackIn.translate(0f, 0, 0.2f);
+                    stack.mulPose(new Quaternion(0, 90, 0, true));
+                    stack.translate(0f, 0, 0.2f);
                 }
             }
 
-            modeltelepad.renderUpgrade(matrixStackIn, bufferIn.getBuffer(RenderType.entityCutoutNoCull(resLocAnimation)), combinedLightIn,
+            modeltelepad.renderUpgrade(stack, bufferIn.getBuffer(RenderType.entityCutoutNoCull(resLocAnimation)), combinedLightIn,
                     combinedOverlayIn);
-            matrixStackIn.popPose();
+            stack.popPose();
         }
-        matrixStackIn.popPose();
+        stack.popPose();
 
         if (te.hasRedstoneUpgrade()) {
-            renderTorch(te, matrixStackIn, bufferIn.getBuffer(RenderType.entityCutoutNoCull(InventoryMenu.BLOCK_ATLAS)), combinedOverlayIn,
+            renderTorch(te, stack, bufferIn.getBuffer(RenderType.entityCutoutNoCull(InventoryMenu.BLOCK_ATLAS)), combinedOverlayIn,
                     -(0.0625 * 7), -(0.0625 * 4), (0.0625 * 7));
-            renderTorch(te, matrixStackIn, bufferIn.getBuffer(RenderType.entityCutoutNoCull(InventoryMenu.BLOCK_ATLAS)), combinedOverlayIn,
+            renderTorch(te, stack, bufferIn.getBuffer(RenderType.entityCutoutNoCull(InventoryMenu.BLOCK_ATLAS)), combinedOverlayIn,
                     -(0.0625 * 7), -(0.0625 * 4), -(0.0625 * 7));
-            renderTorch(te, matrixStackIn, bufferIn.getBuffer(RenderType.entityCutoutNoCull(InventoryMenu.BLOCK_ATLAS)), combinedOverlayIn,
+            renderTorch(te, stack, bufferIn.getBuffer(RenderType.entityCutoutNoCull(InventoryMenu.BLOCK_ATLAS)), combinedOverlayIn,
                     (0.0625 * 7), -(0.0625 * 4), (0.0625 * 7));
-            renderTorch(te, matrixStackIn, bufferIn.getBuffer(RenderType.entityCutoutNoCull(InventoryMenu.BLOCK_ATLAS)), combinedOverlayIn,
+            renderTorch(te, stack, bufferIn.getBuffer(RenderType.entityCutoutNoCull(InventoryMenu.BLOCK_ATLAS)), combinedOverlayIn,
                     (0.0625 * 7), -(0.0625 * 4), -(0.0625 * 7));
         }
     }
@@ -141,17 +141,17 @@ public class TileEntityTelepadRenderer implements BlockEntityRenderer<TileEntity
         stack.scale(f2, f2, f2);
         stack.pushPose();
         modeltelepad.renderArrows(stack, bufferIn.getBuffer(RenderType.entityCutoutNoCull(base)), packedLightIn, packedOverlayIn,
-                ((float)colorBase.getRed() / 255.0f), ((float)colorBase.getGreen() / 255.0f), ((float)colorBase.getBlue() / 255.0f));
+                ((float) colorBase.getRed() / 255.0f), ((float) colorBase.getGreen() / 255.0f), ((float) colorBase.getBlue() / 255.0f));
         stack.popPose();
 
         stack.pushPose();
         modeltelepad.renderLegs(stack, bufferIn.getBuffer(RenderType.entityCutoutNoCull(pads)), packedLightIn, packedOverlayIn,
-                ((float)colorFrame.getRed() / 255.0f), ((float)colorFrame.getGreen() / 255.0f), ((float)colorFrame.getBlue() / 255.0f));
+                ((float) colorFrame.getRed() / 255.0f), ((float) colorFrame.getGreen() / 255.0f), ((float) colorFrame.getBlue() / 255.0f));
         // current fix : south and north legs are acting funky when rotated, so
         // duplicate west and est and turn them around.
         stack.mulPose(new Quaternion(0, 90, 0, true));
         modeltelepad.renderLegs(stack, bufferIn.getBuffer(RenderType.entityCutoutNoCull(pads)), packedLightIn, packedOverlayIn,
-                ((float)colorFrame.getRed() / 255.0f), ((float)colorFrame.getGreen() / 255.0f), ((float)colorFrame.getBlue() / 255.0f));
+                ((float) colorFrame.getRed() / 255.0f), ((float) colorFrame.getGreen() / 255.0f), ((float) colorFrame.getBlue() / 255.0f));
         // Reset normal
         stack.mulPose(new Quaternion(0, -90, 0, true));
         stack.popPose();
@@ -160,6 +160,18 @@ public class TileEntityTelepadRenderer implements BlockEntityRenderer<TileEntity
         modeltelepad.renderFrame(stack, bufferIn.getBuffer(RenderType.entityCutoutNoCull(frame)), packedLightIn, packedOverlayIn, 1F, 1F, 1F);
         stack.popPose();
 
+    }
+
+    private void renderCube(Matrix4f stack, VertexConsumer vertexConsumer) {
+        this.renderFace(stack, vertexConsumer, 0.0F, 1.0F, 0.75f, 0.75f, 1.0F, 1.0F, 0.0F, 0.0F);
+
+    }
+
+    private void renderFace(Matrix4f matrix4f, VertexConsumer vertexConsumer, float x0, float x1, float y0, float y1, float normalA, float normalB, float normalC, float normalD) {
+        vertexConsumer.vertex(matrix4f, x0, y0, normalA).endVertex();
+        vertexConsumer.vertex(matrix4f, x1, y0, normalB).endVertex();
+        vertexConsumer.vertex(matrix4f, x1, y1, normalC).endVertex();
+        vertexConsumer.vertex(matrix4f, x0, y1, normalD).endVertex();
     }
 
 }
