@@ -20,7 +20,6 @@ public class Telepads {
     public static final String MODID = "telepads";
     public static final String NAME = "Telepads";
     public static final String VERSION = "$version";
-    public static final String DEPENDENCY = "required-after:subcommonlib";
 
     public static Logger log = LogManager.getLogger(MODID);
 

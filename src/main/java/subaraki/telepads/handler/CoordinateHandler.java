@@ -43,12 +43,11 @@ public class CoordinateHandler {
     private int define(String definer) {
 
         if (definer.equalsIgnoreCase("random")) {
-            int random = rand.nextInt(worldsize * 2) - worldsize;
-            return random;
+            return rand.nextInt(worldsize * 2) - worldsize;
         } else if (definer.contains("#")) {
             String[] vals = definer.split("#");
-            int min = Integer.valueOf(vals[0]);
-            int max = Integer.valueOf(vals[1]);
+            int min = Integer.parseInt(vals[0]);
+            int max = Integer.parseInt(vals[1]);
 
             if (max < min) {
                 throw new IllegalArgumentException(
@@ -70,7 +69,7 @@ public class CoordinateHandler {
             return result;
 
         } else
-            return Integer.valueOf(definer);
+            return Integer.parseInt(definer);
     }
 
     private void defineDim(ServerLevel world, String dimension) {
@@ -82,8 +81,7 @@ public class CoordinateHandler {
                 list.add(dim.dimension().location());
             }
 
-            ResourceLocation resLoc = list.get(rand.nextInt(list.size()));
-            dim = resLoc;
+            dim = list.get(rand.nextInt(list.size()));
 
         } else
             dim = new ResourceLocation(dimension);

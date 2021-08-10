@@ -46,18 +46,18 @@ public class ClientReferences {
 
     public static void handlePacket(CPacketRequestTeleportScreen packet) {
 
-        TelepadData.get(ClientReferences.getClientPlayer()).ifPresent(data -> {
+        TelepadData.get(getClientPlayer()).ifPresent(data -> {
 
             data.getEntries().clear();
             if (packet.entries != null && !packet.entries.isEmpty())
-                packet.entries.stream().forEach(entry -> data.getEntries().add(entry));
+                packet.entries.forEach(data.getEntries()::add);
 
             data.setCounter(TelepadData.getMaxTime());
             data.setInTeleportGui(false);
             // use a layer of indirection when subscribing client events to avoid
             // classloading client classes on server
             if (!data.getEntries().isEmpty())
-                ClientReferences.displayTeleportScreen(packet.has_transmitter);
+                displayTeleportScreen(packet.has_transmitter);
 
         });
     }

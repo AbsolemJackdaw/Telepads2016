@@ -155,7 +155,7 @@ public class TeleportScreen extends Screen {
             float containerSize = height - START_Y * 2;
 
             // relative % of the scale between the buttons drawn and the screen size
-            float percent = (((float) containerSize / (float) totalSize) * 100f);
+            float percent = ((containerSize / totalSize) * 100f);
 
             if (percent < 100) {
 

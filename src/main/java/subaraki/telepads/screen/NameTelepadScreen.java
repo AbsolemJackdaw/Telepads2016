@@ -1,6 +1,7 @@
 package subaraki.telepads.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -88,7 +89,7 @@ public class NameTelepadScreen extends Screen {
         textField.setCanLoseFocus(false);
         textField.setFocus(true);
 
-        ResourceLocation resLoc = this.minecraft.level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getKey(this.minecraft.level.getBiome(minecraft.player.blockPosition()));
+        ResourceLocation resLoc = Minecraft.getInstance().level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getKey(Minecraft.getInstance().level.getBiome(Minecraft.getInstance().player.blockPosition()));
 
         String biome_name = "biome." + resLoc.getNamespace() + "." + resLoc.getPath(); //biome names are present in lang files under biome.modname.biomename
         TranslatableComponent biome = new TranslatableComponent(biome_name);
@@ -126,7 +127,7 @@ public class NameTelepadScreen extends Screen {
 
             TelepadData.get(ClientReferences.getClientPlayer()).ifPresent(data -> {
 
-                TelepadEntry telepad_entry = new TelepadEntry(textField.getValue(), minecraft.level.dimension(), position);
+                TelepadEntry telepad_entry = new TelepadEntry(textField.getValue(), Minecraft.getInstance().level.dimension(), position);
                 telepad_entry.addUser(ClientReferences.getClientPlayer().getUUID());
 
                 if (share)

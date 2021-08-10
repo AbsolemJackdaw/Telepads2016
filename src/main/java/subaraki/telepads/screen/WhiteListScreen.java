@@ -13,6 +13,7 @@ import subaraki.telepads.capability.player.TelepadData;
 import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.network.NetworkHandler;
 import subaraki.telepads.network.server.SPacketAddWhiteListEntry;
+import subaraki.telepads.utility.ClientReferences;
 
 public class WhiteListScreen extends Screen {
 
@@ -61,7 +62,7 @@ public class WhiteListScreen extends Screen {
             font.drawShadow(stack, "-", center_x - 62, center_y - 47 + (i * 13), 0x888888);
 
         }
-        TelepadData.get(minecraft.player).ifPresent(data -> {
+        TelepadData.get(ClientReferences.getClientPlayer()).ifPresent(data -> {
 
             if (!data.getWhitelist().isEmpty()) {
                 int index = 0;

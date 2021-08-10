@@ -54,7 +54,6 @@ public class WorldDataHandler extends SavedData {
             entryList.add(new TelepadEntry(taglist.getCompound(entryTag)));
 
         this.allTelepads = entryList;
-        Telepads.log.warn("LOADED DATA WORLD SAVE");
     }
 
     @Override

@@ -54,9 +54,10 @@ public class CPacketEditWhiteListEntry implements IPacketBase {
     public void handle(Supplier<NetworkEvent.Context> context) {
 
         context.get().enqueueWork(() -> {
+            // use a layer of indirection when subscribing client events to avoid
+            // classloading client classes on server
             if (FMLEnvironment.dist == Dist.CLIENT)
                 ClientReferences.handlePacket(this);
-
         });
         context.get().setPacketHandled(true);
     }

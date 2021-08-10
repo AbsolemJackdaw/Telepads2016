@@ -71,10 +71,7 @@ public class TileEntityTelepad extends BlockEntity {
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
 
-        CompoundTag nbt = new CompoundTag();
-        this.save(nbt);
-
-        return new ClientboundBlockEntityDataPacket(getBlockPos(), 0, nbt);
+        return new ClientboundBlockEntityDataPacket(getBlockPos(), 0, this.save(new CompoundTag()));
 
     }
 
@@ -87,9 +84,7 @@ public class TileEntityTelepad extends BlockEntity {
     @Override
     public CompoundTag getUpdateTag() {
 
-        CompoundTag nbt = super.getUpdateTag();
-        save(nbt);
-        return nbt;
+        return save(new CompoundTag());
     }
 
     // calls readFromNbt by default. no need to add anything in here
@@ -150,35 +145,35 @@ public class TileEntityTelepad extends BlockEntity {
 
                 setPlatform(true);
 
-                for (ServerPlayer player_standing_on_pad : list) {
-                    TelepadData.get(player_standing_on_pad).ifPresent(player_data -> {
+                for (ServerPlayer playerOnPad : list) {
+                    TelepadData.get(playerOnPad).ifPresent(data -> {
 
                         // if in the previous tick, all data has been transfered to the player, then it
                         // will request a teleport screen
-                        if (player_data.getRequestTeleportScreen()) {
-                            player_data.setRequestTeleportScreen(false);
+                        if (data.getRequestTeleportScreen()) {
+                            data.setRequestTeleportScreen(false);
                             TelepadEntry telepad = WorldDataHandler.get(getLevel()).getEntryForLocation(getBlockPos(), dimension);
                             boolean is_transmitter = telepad != null && telepad.hasTransmitter;
 
-                            NetworkHandler.NETWORK.send(PacketDistributor.PLAYER.with(() -> player_standing_on_pad),
-                                    new CPacketRequestTeleportScreen(player_data.getEntries(), player_data.getWhitelist().values(), is_transmitter));
+                            NetworkHandler.NETWORK.send(PacketDistributor.PLAYER.with(() -> playerOnPad),
+                                    new CPacketRequestTeleportScreen(data.getEntries(), data.getWhitelist().values(), is_transmitter));
 
                             // break out of it, he's teleporting away !
                             return;
                         }
 
                         // if no screen request has been set , do the regular logic to get a request
-                        if (player_data.getCounter() > 0 && !player_data.isInTeleportGui()) {
-                            player_data.counter--;
-                        } else if (player_data.getCounter() == 0 && !player_data.isInTeleportGui()) {
+                        if (data.getCounter() > 0 && !data.isInTeleportGui()) {
+                            data.counter--;
+                        } else if (data.getCounter() == 0 && !data.isInTeleportGui()) {
                             if (level.dimension().equals(Level.END) && ConfigData.allowDragonBlocking) {
                                 if (level instanceof ServerLevel) {
                                     if (!((ServerLevel) level).getDragons().isEmpty()) {
-                                        player_data.setCounter(TelepadData.getMaxTime());
+                                        data.setCounter(TelepadData.getMaxTime());
 
-                                        player_standing_on_pad.sendMessage(new TranslatableComponent("dragon.obstructs").setStyle(Style.EMPTY
+                                        playerOnPad.sendMessage(new TranslatableComponent("dragon.obstructs").setStyle(Style.EMPTY
                                                         .withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_PURPLE)).withItalic(true)),
-                                                player_standing_on_pad.getUUID());
+                                                playerOnPad.getUUID());
                                         return;
                                     }
                                 }
@@ -191,8 +186,8 @@ public class TileEntityTelepad extends BlockEntity {
 
                                 ResourceLocation dimension = coords.getDimension();
 
-                                if (!player_standing_on_pad.level.dimension().location().equals(dimension)) {
-                                    MinecraftServer server = player_standing_on_pad.getServer();
+                                if (!playerOnPad.level.dimension().location().equals(dimension)) {
+                                    MinecraftServer server = playerOnPad.getServer();
 
                                     ResourceKey<Level> dim_key = null;
                                     if (server != null)
@@ -205,16 +200,16 @@ public class TileEntityTelepad extends BlockEntity {
 
                                     ServerLevel worldDestination = server.getLevel(level.dimension());
                                     BlockPos pos = coords.getPosition(worldDestination);
-                                    Teleport.teleportEntityToDimension(player_standing_on_pad, pos, dim_key);
+                                    Teleport.teleportEntityToDimension(playerOnPad, pos, dim_key);
                                 } else {
                                     BlockPos pos = coords.getPosition(getLevel());
-                                    Teleport.teleportEntityInsideSameDimension(player_standing_on_pad, pos);
+                                    Teleport.teleportEntityInsideSameDimension(playerOnPad, pos);
                                 }
                             } else {
                                 // if no dragon is found, or dimension != the end, you end up here
-                                player_data.setInTeleportGui(true);
-                                player_data.setCounter(TelepadData.getMaxTime());
-                                activateTelepadGui(player_standing_on_pad);
+                                data.setInTeleportGui(true);
+                                data.setCounter(TelepadData.getMaxTime());
+                                activateTelepadGui(playerOnPad);
                             }
                         }
                     });
@@ -231,10 +226,10 @@ public class TileEntityTelepad extends BlockEntity {
      */
     public void setPlatform(boolean onPlatform) {
 
-        if (level == null)
-            return;
-        isStandingOnPlatform = onPlatform;
-        level.sendBlockUpdated(worldPosition, level.getBlockState(getBlockPos()), TelepadBlocks.TELEPAD_BLOCK.get().defaultBlockState(), 3);
+        if (level != null) {
+            isStandingOnPlatform = onPlatform;
+            level.sendBlockUpdated(worldPosition, level.getBlockState(getBlockPos()), TelepadBlocks.TELEPAD_BLOCK.get().defaultBlockState(), 3);
+        }
     }
 
     // called server side only in tick
@@ -245,11 +240,11 @@ public class TileEntityTelepad extends BlockEntity {
             ServerLevel world = player.getLevel();
             WorldDataHandler save = WorldDataHandler.get(world);
 
-            List<TelepadEntry> world_save_entries = save.getEntries();
+            List<TelepadEntry> allTelepads = save.getEntries();
 
             // copy all user entries to the player
             data.getEntries().clear();
-            world_save_entries.stream().filter(entry -> entry.canUse(player.getUUID())).forEach(data::addEntry);
+            allTelepads.stream().filter(entry -> entry.canUse(player.getUUID())).forEach(data::addEntry);
 
             data.setRequestTeleportScreen(true);
         });
@@ -357,8 +352,7 @@ public class TileEntityTelepad extends BlockEntity {
 
         boolean flag = !isPublic;
 
-        WorldDataHandler wdh = WorldDataHandler.get(getLevel());
-        TelepadEntry tpe = wdh.getEntryForLocation(getBlockPos(), getDimension());
+        TelepadEntry tpe = WorldDataHandler.get(getLevel()).getEntryForLocation(getBlockPos(), getDimension());
         tpe.setPublic(flag); // set opposite of current value for public.
         this.isPublic = flag;
     }

@@ -1,7 +1,6 @@
 package subaraki.telepads.registry.forge_bus;
 
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -21,8 +20,7 @@ public class PlayerTracker {
 
             TelepadData.get(player).ifPresent(data -> {
 
-                BlockEntity te = event.getEntityLiving().level.getBlockEntity(event.getEntityLiving().blockPosition());
-                if (!(te instanceof TileEntityTelepad)) {
+                if (!(event.getEntityLiving().level.getBlockEntity(event.getEntityLiving().blockPosition()) instanceof TileEntityTelepad te)) {
                     if (data.getCounter() != TelepadData.getMaxTime())
                         data.setCounter(TelepadData.getMaxTime());
                     if (data.isInTeleportGui())

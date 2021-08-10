@@ -68,7 +68,7 @@ public class TelepadData {
 
         ListTag friends = new ListTag();
 
-        whitelist.keySet().stream().forEach(name -> {
+        whitelist.keySet().forEach(name -> {
             CompoundTag nbt = new CompoundTag();
             nbt.putUUID(name, whitelist.get(name));
             friends.add(nbt);
@@ -91,7 +91,7 @@ public class TelepadData {
         this.entries = entryList;
 
         ListTag friendList = tag.getList("list", 10);
-        friendList.stream().forEach(entry -> ((CompoundTag) entry).getAllKeys().forEach(key -> whitelist.put(key, ((CompoundTag) entry).getUUID(key))));
+        friendList.forEach(entry -> ((CompoundTag) entry).getAllKeys().forEach(key -> whitelist.put(key, ((CompoundTag) entry).getUUID(key))));
 
     }
 
@@ -152,17 +152,12 @@ public class TelepadData {
 
     public void removeWhiteListEntryClient(String name) {
 
-        System.out.println(name);
         whitelist.remove(name);
     }
 
     public void removeWhiteListEntryServer(String name) {
 
-        System.out.println(whitelist);
-        System.out.println(name);
-        System.out.println(whitelist.containsKey(name));
         if (whitelist.containsKey(name)) {
-            System.out.println(name);
             whitelist.remove(name);
             NetworkHandler.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
                     new CPacketEditWhiteListEntry(name, UUID.randomUUID(), false));
@@ -171,7 +166,7 @@ public class TelepadData {
 
     public void addWhiteListEntryServer(ServerPlayer player) {
 
-        if (!isWhiteListFull()) {
+        if (isWhiteListNotFull()) {
             GameProfile profile = player.getGameProfile();
             if (!whitelist.containsKey(profile.getName())) {
                 whitelist.put(player.getGameProfile().getName(), player.getGameProfile().getId());
@@ -183,7 +178,7 @@ public class TelepadData {
 
     public void addWhiteListEntryClient(String name, UUID id) {
 
-        if (!isWhiteListFull())
+        if (isWhiteListNotFull())
             if (!whitelist.containsKey(name))
                 whitelist.put(name, id);
     }
@@ -199,7 +194,7 @@ public class TelepadData {
         MinecraftServer serverWorld = player.level.getServer();
 
         // player names are minimum 3 characters
-        if (!command.isEmpty() && command.length() > 2) {
+        if (command.length() > 2) {
             //TODO
             //command = command.toLowerCase();
             // didnt add clear command because I was to lazy to add another client packet to
@@ -217,16 +212,14 @@ public class TelepadData {
                 String playername = command_split[1];
 
                 switch (command_split[0]) {
-                    case "add":
+                    case "add" -> {
                         ServerPlayer player = serverWorld.getPlayerList().getPlayerByName(playername);
-                        if (player == null)
-                            return;
-                        addWhiteListEntryServer(player);
-                        break;
-                    case "remove":
-                        System.out.println(playername);
+                        if (player != null)
+                            addWhiteListEntryServer(player);
+                    }
+                    case "remove" -> {
                         removeWhiteListEntryServer(playername);
-                        break;
+                    }
                 }
             }
         }
@@ -237,9 +230,9 @@ public class TelepadData {
         return whitelist;
     }
 
-    public boolean isWhiteListFull() {
+    public boolean isWhiteListNotFull() {
 
-        return whitelist.size() >= 9;
+        return whitelist.size() < 9;
     }
 
     public boolean getRequestTeleportScreen() {

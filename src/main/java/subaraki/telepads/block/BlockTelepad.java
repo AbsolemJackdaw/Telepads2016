@@ -386,7 +386,7 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
 
         WorldDataHandler wdh = WorldDataHandler.get(world);
         TelepadEntry entry = wdh.getEntryForLocation(pos, world.dimension());
-        entry.isPowered = isPowered;
+        entry.setPowered(isPowered);
         wdh.updateEntry(entry);
         wdh.setDirty();
     }

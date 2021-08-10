@@ -37,8 +37,7 @@ public class CPacketRequestTeleportScreen implements IPacketBase {
      * only be sent from a server thread. The entries on the client side will be
      * overridden with the provided list of entries.
      *
-     * @param playerUUID : The unique identifier of the player sync this data to.
-     * @param entries    : The list of entries to sync to the player.
+     * @param entries : The list of entries to sync to the player.
      */
     public CPacketRequestTeleportScreen(List<TelepadEntry> entries, Collection<UUID> whiteList, boolean has_transmitter) {
 
@@ -97,6 +96,8 @@ public class CPacketRequestTeleportScreen implements IPacketBase {
     public void handle(Supplier<NetworkEvent.Context> context) {
 
         context.get().enqueueWork(() -> {
+            // use a layer of indirection when subscribing client events to avoid
+            // classloading client classes on server
             if (FMLEnvironment.dist == Dist.CLIENT)
                 ClientReferences.handlePacket(this);
         });

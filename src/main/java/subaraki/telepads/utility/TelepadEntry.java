@@ -147,7 +147,7 @@ public class TelepadEntry {
 
         buf.writeInt(users.size());
         if (!users.isEmpty())
-            users.stream().forEach(entry -> buf.writeUUID(entry));
+            users.forEach(buf::writeUUID);
     }
 
     @Override
@@ -185,10 +185,9 @@ public class TelepadEntry {
         return isPublic || users.contains(player_id);
     }
 
-    public TelepadEntry addUser(UUID player_id) {
+    public void addUser(UUID player_id) {
 
         users.add(player_id);
-        return this;
     }
 
     public void removeUser(UUID player_id) {

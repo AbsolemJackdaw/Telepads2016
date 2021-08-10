@@ -54,10 +54,7 @@ public class CapabilityTelepadProvider implements ICapabilitySerializable<Compou
 
     private TelepadData getImpl() {
 
-        if (data != null) {
-            return data;
-        }
-        return new TelepadData();
+        return data;
     }
 
 }
