@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -106,25 +105,25 @@ public class TileEntityTelepadRenderer implements BlockEntityRenderer<TileEntity
         stack.popPose();
 
         if (te.hasRedstoneUpgrade()) {
-            renderTorch(te, stack, bufferIn.getBuffer(RenderType.entityCutoutNoCull(InventoryMenu.BLOCK_ATLAS)), combinedOverlayIn,
+            renderTorch(te, stack, bufferIn.getBuffer(RenderType.entityCutoutNoCull(InventoryMenu.BLOCK_ATLAS)), combinedLightIn, combinedOverlayIn,
                     -(0.0625 * 7), -(0.0625 * 4), (0.0625 * 7));
-            renderTorch(te, stack, bufferIn.getBuffer(RenderType.entityCutoutNoCull(InventoryMenu.BLOCK_ATLAS)), combinedOverlayIn,
+            renderTorch(te, stack, bufferIn.getBuffer(RenderType.entityCutoutNoCull(InventoryMenu.BLOCK_ATLAS)), combinedLightIn, combinedOverlayIn,
                     -(0.0625 * 7), -(0.0625 * 4), -(0.0625 * 7));
-            renderTorch(te, stack, bufferIn.getBuffer(RenderType.entityCutoutNoCull(InventoryMenu.BLOCK_ATLAS)), combinedOverlayIn,
+            renderTorch(te, stack, bufferIn.getBuffer(RenderType.entityCutoutNoCull(InventoryMenu.BLOCK_ATLAS)), combinedLightIn, combinedOverlayIn,
                     (0.0625 * 7), -(0.0625 * 4), (0.0625 * 7));
-            renderTorch(te, stack, bufferIn.getBuffer(RenderType.entityCutoutNoCull(InventoryMenu.BLOCK_ATLAS)), combinedOverlayIn,
+            renderTorch(te, stack, bufferIn.getBuffer(RenderType.entityCutoutNoCull(InventoryMenu.BLOCK_ATLAS)), combinedLightIn, combinedOverlayIn,
                     (0.0625 * 7), -(0.0625 * 4), -(0.0625 * 7));
         }
     }
 
-    private void renderTorch(TileEntityTelepad te, PoseStack stack, VertexConsumer builder, int combinedOverlay, double offsetX, double offsetY, double offsetZ) {
+    private void renderTorch(TileEntityTelepad te, PoseStack stack, VertexConsumer builder, int combinedLight, int combinedOverlay, double offsetX, double offsetY, double offsetZ) {
 
         stack.pushPose();
         BlockRenderDispatcher blockrendererdispatcher = Minecraft.getInstance().getBlockRenderer();
         BlockState state = Blocks.REDSTONE_TORCH.defaultBlockState().setValue(BlockStateProperties.LIT, te.isPowered());
         stack.translate(offsetX, offsetY, offsetZ);
         BakedModel model = blockrendererdispatcher.getBlockModel(state);
-        blockrendererdispatcher.getModelRenderer().renderModel(stack.last(), builder, te.getBlockState(), model, 0, 0, 0, OverlayTexture.NO_OVERLAY, combinedOverlay, EmptyModelData.INSTANCE);
+        blockrendererdispatcher.getModelRenderer().renderModel(stack.last(), builder, te.getBlockState(), model, 0, 0, 0, combinedLight, combinedOverlay, EmptyModelData.INSTANCE);
         stack.popPose();
     }
 
