@@ -17,8 +17,8 @@
 	"tile.telepads.telepad" : "Telepad", 
 	"item.telepads.ender_bead" : "Ender Bead", 
 	"item.telepads.ender_bead_necklace" : "Ender Bead Necklace", 
-	"item.telepads.tp_upgrade" : "Location Cycler", 
-	"item.telepads.tp_upgrade_public" : "Public-O-Matic", 
+	"item.telepads.creative_rod" : "Location Cycler",
+	"item.telepads.creative_rod_public" : "Public-O-Matic",
 	"block.telepads.telepad" : "Telepad",
 	"feet.name" : "Feet : " ,
 	"arrow.name" : "Arrow : " ,
@@ -28,8 +28,8 @@
 	"block.info.rod.public" : "public", 
 	"block.info.cycle.normal" : "Telepad now teleports to : ", 
 	"block.info.cycle" : "Telepad is now normal", 
-	"block.info.add.succes" : "Succesfully added %s", 
-	"block.info.add.fail" : "Succesfully removed ", 
+	"block.info.add.succes" : "Successfully added %s",
+	"block.info.add.fail" : "Successfully removed ",
 	"block.info.add.remove" : "Cannot add/remove a Public Telepad",
 	
 	"suggest.name" : "A friend's name"
