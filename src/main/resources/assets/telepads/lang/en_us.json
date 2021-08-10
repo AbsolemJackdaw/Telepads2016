@@ -32,5 +32,7 @@
 	"block.info.add.fail" : "Successfully removed ",
 	"block.info.add.remove" : "Cannot add/remove a Public Telepad",
 	
-	"suggest.name" : "A friend's name"
+	"suggest.name" : "A friend's name",
+	"pearl.bounce" : "The Pearl Bounces... no telepads are found nearby",
+	"pearl.inactive" : "This Functionality has been disabled by the server operator."
 }

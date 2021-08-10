@@ -1,6 +1,6 @@
 package subaraki.telepads.item;
 
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -37,7 +37,7 @@ public class ItemEnderNecklace extends Item {
 
         if (ConfigData.disableNecklaceUsage) {
             if (!world.isClientSide)
-                player.sendMessage(new TextComponent("This Functionality has been disabled by the server operator."), player.getUUID());
+                player.sendMessage(new TranslatableComponent("pearl.inactive"), player.getUUID());
             return super.use(world, player, hand);
         }
 
@@ -54,7 +54,7 @@ public class ItemEnderNecklace extends Item {
             ResourceKey<Level> dim = world.dimension();
 
             locations.stream().filter(filter -> filter.dimensionID.equals(dim) && filter.canUse(player.getUUID()) && !filter.isPowered)
-                    .forEach(telepad -> thisDim.add(telepad));
+                    .forEach(thisDim::add);
 
             if (thisDim.isEmpty())
                 return super.use(world, player, hand);// pass

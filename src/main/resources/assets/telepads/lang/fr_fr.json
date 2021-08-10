@@ -32,5 +32,7 @@
 	"block.info.add.fail" : "a été enlevé avec Succes ",
 	"block.info.add.remove" : "Vous ne pouvez pas ajouter ou enlever un Télépad publique",
 	
-	"suggest.name" : "Un nom d'ami"
+	"suggest.name" : "Un nom d'ami",
+	"pearl.bounce" : "La perle rebondit... aucun Télépad n'as été trouvé.",
+	"pearl.inactive" : "Cette fonctionalité a été désactivé par l'opeateur du serveur."
 }
