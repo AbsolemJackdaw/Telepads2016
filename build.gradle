@@ -65,19 +65,19 @@ minecraft {
 
 dependencies {
 
-    minecraft 'net.minecraftforge:forge:1.17.1-37.0.25'
+    minecraft 'net.minecraftforge:forge:1.17.1-37.0.29'
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
     manifest {
         attributes([
-            "Specification-Title": "examplemod",
-            "Specification-Vendor": "examplemodsareus",
+            "Specification-Title": "telepads",
+            "Specification-Vendor": "subaraki",
             "Specification-Version": "1", // We are version 1 of ourselves
             "Implementation-Title": project.name,
             "Implementation-Version": "${version}",
-            "Implementation-Vendor" :"examplemodsareus",
+            "Implementation-Vendor" :"subaraki",
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
