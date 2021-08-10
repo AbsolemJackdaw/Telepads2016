@@ -29,9 +29,10 @@ public class Teleport {
             return null;
 
         ServerLevel nextWorld = player.getServer().getLevel(dimension);
-        nextWorld.getChunk(pos); // make sure the chunk is loaded
-        player.teleportTo(nextWorld, pos.getX(), pos.getY(), pos.getZ(), player.getYRot(), player.getXRot());
-
+        if (nextWorld != null) {
+            nextWorld.getChunk(pos); // make sure the chunk is loaded
+            player.teleportTo(nextWorld, pos.getX(), pos.getY(), pos.getZ(), player.getYRot(), player.getXRot());
+        }
         return player;
     }
 }

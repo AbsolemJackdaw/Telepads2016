@@ -15,9 +15,7 @@ public class RegisterCapability {
     @SubscribeEvent
     public static void onAttachEventEntity(AttachCapabilitiesEvent<Entity> event) {
 
-        final Object entity = event.getObject();
-
-        if (entity instanceof Player)
-            event.addCapability(CapabilityTelepadProvider.KEY, new CapabilityTelepadProvider((Player) entity));
+        if (event.getObject() instanceof Player player)
+            event.addCapability(CapabilityTelepadProvider.KEY, new CapabilityTelepadProvider(player));
     }
 }

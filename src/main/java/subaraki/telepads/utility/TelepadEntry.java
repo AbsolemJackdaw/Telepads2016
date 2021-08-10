@@ -160,11 +160,9 @@ public class TelepadEntry {
     @Override
     public boolean equals(Object compared) {
 
-        if (!(compared instanceof TelepadEntry))
-            return false;
-
-        TelepadEntry entry = (TelepadEntry) compared;
-        return this.entryName.equals(entry.entryName) && this.dimensionID == entry.dimensionID && this.position.equals(entry.position);
+        if (compared instanceof TelepadEntry entry)
+            return this.entryName.equals(entry.entryName) && this.dimensionID == entry.dimensionID && this.position.equals(entry.position);
+        return false;
     }
 
     public void setPowered(boolean flag) {

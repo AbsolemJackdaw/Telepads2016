@@ -14,6 +14,7 @@ import org.lwjgl.glfw.GLFW;
 import subaraki.telepads.capability.player.TelepadData;
 import subaraki.telepads.network.NetworkHandler;
 import subaraki.telepads.network.server.SPacketAddTelepadToWorld;
+import subaraki.telepads.utility.ClientReferences;
 import subaraki.telepads.utility.TelepadEntry;
 
 public class NameTelepadScreen extends Screen {
@@ -123,13 +124,13 @@ public class NameTelepadScreen extends Screen {
 
         if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER || keyCode == GLFW.GLFW_KEY_ESCAPE) {
 
-            TelepadData.get(minecraft.player).ifPresent(data -> {
+            TelepadData.get(ClientReferences.getClientPlayer()).ifPresent(data -> {
 
                 TelepadEntry telepad_entry = new TelepadEntry(textField.getValue(), minecraft.level.dimension(), position);
-                telepad_entry.addUser(minecraft.player.getUUID());
+                telepad_entry.addUser(ClientReferences.getClientPlayer().getUUID());
 
                 if (share)
-                    data.getWhitelist().values().forEach(entry -> telepad_entry.addUser(entry));
+                    data.getWhitelist().values().forEach(telepad_entry::addUser);
 
                 NetworkHandler.NETWORK.sendToServer(new SPacketAddTelepadToWorld(telepad_entry));
 

@@ -94,15 +94,12 @@ public class CoordinateHandler {
         if (definer.equalsIgnoreCase("random")) {
             // load chunk ?
             world.getChunk(new BlockPos(xi, 0, zi));
-            if (world.getHeight(Types.WORLD_SURFACE, xi, zi) > 0) {
-                return world.getHeight(Types.WORLD_SURFACE, xi, zi);
-            }
+            return Math.max(world.getHeight(Types.WORLD_SURFACE, xi, zi), 0);
 
-            return 0;
         } else if (definer.contains("#")) {
             String[] vals = definer.split("#");
-            int min = Integer.valueOf(vals[0]);
-            int max = Integer.valueOf(vals[1]);
+            int min = Integer.parseInt(vals[0]);
+            int max = Integer.parseInt(vals[1]);
 
             if (max < min) {
                 throw new IllegalArgumentException(
@@ -139,7 +136,7 @@ public class CoordinateHandler {
             return result;
 
         } else
-            return Integer.valueOf(definer);
+            return Integer.parseInt(definer);
     }
 
     public BlockPos getPosition(Level world) {
