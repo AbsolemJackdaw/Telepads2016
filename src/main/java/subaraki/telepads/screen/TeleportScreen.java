@@ -21,7 +21,6 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import subaraki.telepads.capability.player.TelepadData;
 import subaraki.telepads.network.NetworkHandler;
@@ -195,8 +194,7 @@ public class TeleportScreen extends Screen {
 
         // initialize page for selected dimension
 
-        Player player = minecraft.player;
-        TelepadData.get(player).ifPresent((data) -> {
+        TelepadData.get(ClientReferences.getClientPlayer()).ifPresent((data) -> {
 
             for (TelepadEntry entry : data.getEntries()) {
                 if (entry.dimensionID.equals(lookup_dim_id))
@@ -204,27 +202,30 @@ public class TeleportScreen extends Screen {
             }
         });
 
-        int max_collumns = minecraft.getWindow().getGuiScaledWidth() / 130;
+        int max_collumns = Minecraft.getInstance().getWindow().getGuiScaledWidth() / 130;
         int increment = max_collumns;
-        int central_offset = (minecraft.getWindow().getGuiScaledWidth() / 2) - ((max_collumns * 120) / 2);
+        int central_offset = (Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2) - ((max_collumns * 120) / 2);
 
         for (TelepadEntry entry : entries) {
 
             int extra_y = increment / max_collumns;
             int extra_x = increment % max_collumns;
-            ChatFormatting color = entry.isMissingFromLocation ? ChatFormatting.GRAY
-                    : entry.isPowered ? ChatFormatting.DARK_RED
-                    : entry.hasTransmitter ? ChatFormatting.GREEN : entry.isPublic ? ChatFormatting.LIGHT_PURPLE : ChatFormatting.WHITE;
-
+            ChatFormatting color =
+                    entry.isMissingFromLocation ? ChatFormatting.GRAY
+                            : entry.isPowered ? ChatFormatting.DARK_RED
+                            : entry.isPublic ? ChatFormatting.LIGHT_PURPLE
+                            : entry.hasTransmitter ? ChatFormatting.GREEN
+                            : ChatFormatting.WHITE;
             addRenderableWidget(new Button(central_offset + 5 + (extra_x * 120), 15 + (extra_y * 25), 110, 20,
-                    new TextComponent(entry.entryName).setStyle(Style.EMPTY.withColor(TextColor.fromLegacyFormat(color))), (button) -> {
+                    new TextComponent(entry.entryName).setStyle(Style.EMPTY.withColor(TextColor.fromLegacyFormat(color)).
+                            withBold(entry.position.equals(ClientReferences.getClientPlayer().blockPosition()))), (button) -> {
 
                 if (entry.isMissingFromLocation) {
                     this.removed();
                     this.onClose();
                     ClientReferences.openMissingScreen(entry);
                 } else {
-                    NetworkHandler.NETWORK.sendToServer(new SPacketTeleport(minecraft.player.blockPosition(), entry, false));
+                    NetworkHandler.NETWORK.sendToServer(new SPacketTeleport(ClientReferences.getClientPlayer().blockPosition(), entry, false));
                     this.removed();
                     this.onClose();
                 }
@@ -242,7 +243,7 @@ public class TeleportScreen extends Screen {
         while (dimensions_visited.get(tuner_counter) != lookup_dim_id)
             tuner_counter++;
 
-        int centerx = minecraft.getWindow().getGuiScaledWidth() / 2;
+        int centerx = Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2;
         AbstractWidget button_left = new Button(centerx - 75 - 25, 5, 20, 20, new TextComponent("<"), (button) -> {
             if (dimensions_visited.size() > 1) {
                 tuner_counter--;
@@ -285,7 +286,7 @@ public class TeleportScreen extends Screen {
 
     private void initialize_pages() {
 
-        renderables.clear();
+        this.clearWidgets();
         entries.clear();
         unscrollables.clear();
         dimensions_visited.clear();
@@ -301,8 +302,7 @@ public class TeleportScreen extends Screen {
 
     private void setup_dimension_list() {
 
-        Player player = minecraft.player;
-        TelepadData.get(player).ifPresent((data) -> {
+        TelepadData.get(ClientReferences.getClientPlayer()).ifPresent((data) -> {
             data.getEntries().forEach(entry -> {
                 if (!dimensions_visited.contains(entry.dimensionID))
                     dimensions_visited.add(entry.dimensionID);
@@ -313,7 +313,7 @@ public class TeleportScreen extends Screen {
     private void renderCube(PoseStack stack, VertexConsumer vertexConsumer) {
         float width = (float) Minecraft.getInstance().getWindow().getGuiScaledWidth();
         float height = (float) Minecraft.getInstance().getWindow().getGuiScaledHeight();
-        float max = width > height ? width : height;
+        float max = Math.max(width, height);
         this.renderFace(stack, vertexConsumer, 0.0f, max, max, 0.0f, 0.0F, 0.0F, 0.0F, 0.0F);
 
     }
