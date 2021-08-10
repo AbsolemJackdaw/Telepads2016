@@ -12,12 +12,11 @@ import subaraki.telepads.utility.TelepadEntry;
 public class MissingEntryScreen extends Screen {
 
     private final TelepadEntry missing_entry;
-
-    private int center_x = 0;
-    private int center_y = 0;
     private final String information;
     private final String teleport_anyway;
     private final String forget;
+    private int center_x = 0;
+    private int center_y = 0;
 
     public MissingEntryScreen(TelepadEntry missing_entry) {
 

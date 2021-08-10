@@ -17,7 +17,7 @@ import java.util.List;
 
 public class TelepadItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Telepads.MODID);
-    
+
     public static final RegistryObject<Item> TELEPAD_ITEM = ITEMS.register("telepad", () ->
             new BlockItem(TelepadBlocks.TELEPAD_BLOCK.get(), PropertiesWrapper.getItemProperties().tab(CreativeModeTab.TAB_TRANSPORTATION)) {
 

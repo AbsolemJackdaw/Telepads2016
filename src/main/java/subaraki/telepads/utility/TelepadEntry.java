@@ -14,28 +14,24 @@ import java.util.UUID;
 
 public class TelepadEntry {
 
+    private final ArrayList<UUID> users = Lists.newArrayList();
     /**
      * The user defined name for the TelePad entry.
      */
     public String entryName;
-
     /**
      * The dimension that the TelePad entry is located in.
      */
     public ResourceKey<Level> dimensionID;
-
     /**
      * The coordinates of the TelePad entry.
      */
     public BlockPos position;
-
     /***/
     public boolean isPowered;
     public boolean hasTransmitter;
     public boolean isPublic;
     public boolean isMissingFromLocation = false;
-
-    private final ArrayList<UUID> users = Lists.newArrayList();
 
     /**
      * Creates a TelepadEntry from a PacketBuffer. This is useful for reading from

@@ -23,6 +23,12 @@ import java.util.UUID;
 public class TelepadData {
 
     private static final int MAX_TIME = ConfigData.teleport_seconds * 20;
+    /**
+     * A list of uuid's a player can whitelist, to share coordinates of a placed
+     * pad.
+     */
+    // private List<UUID> whitelist = Lists.newArrayList();
+    private final LinkedHashMap<String, UUID> whitelist = new LinkedHashMap<>();
     public int counter = MAX_TIME;
     private Player player;
     /**
@@ -30,12 +36,6 @@ public class TelepadData {
      */
     // initialize to prevent null crashes caused by external sources
     private List<TelepadEntry> entries = new ArrayList<TelepadEntry>();
-    /**
-     * A list of uuid's a player can whitelist, to share coordinates of a placed
-     * pad.
-     */
-    // private List<UUID> whitelist = Lists.newArrayList();
-    private final LinkedHashMap<String, UUID> whitelist = new LinkedHashMap<>();
     private boolean isInTeleportGui;
     private boolean request_teleport = false;
 

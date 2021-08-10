@@ -20,19 +20,19 @@ import subaraki.telepads.utility.TelepadEntry;
 
 public class NameTelepadScreen extends Screen {
 
-    String sharing = "";
-    private EditBox textField;
     private final int field_width = 150;
     private final int field_height = 20;
-    private int center_x, center_y;
     private final String text_share;
     private final String text_confirm_share;
     private final String text_negate_share;
     private final String enter;
+    private final BlockPos position;
+    String sharing = "";
+    private EditBox textField;
+    private int center_x, center_y;
     private String nameYourPad;
     private boolean share = false;
     private boolean should_show_sharing;
-    private final BlockPos position;
 
     public NameTelepadScreen(BlockPos position) {
 
