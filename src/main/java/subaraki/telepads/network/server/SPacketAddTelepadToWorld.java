@@ -3,7 +3,6 @@ package subaraki.telepads.network.server;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.fmllegacy.network.NetworkEvent;
-import subaraki.telepads.capability.player.TelepadData;
 import subaraki.telepads.handler.WorldDataHandler;
 import subaraki.telepads.network.IPacketBase;
 import subaraki.telepads.network.NetworkHandler;
@@ -25,8 +24,7 @@ public class SPacketAddTelepadToWorld implements IPacketBase {
      * sync packet with automatically be sent back to the client to ensure
      * everything is consistent.
      *
-     * @param playerUUID : The UUID of the player to add the new TelepadEntry to.
-     * @param entry      : The TelepadEntry to be added to the player's list of locations.
+     * @param entry : The TelepadEntry to be added to the player's list of locations.
      */
     public SPacketAddTelepadToWorld(TelepadEntry entry) {
 
@@ -59,8 +57,8 @@ public class SPacketAddTelepadToWorld implements IPacketBase {
 
         context.get().enqueueWork(() -> {
             Player player = context.get().getSender();
+            if (player != null) {
 
-            TelepadData.get(player).ifPresent(data -> {
                 WorldDataHandler wdh = WorldDataHandler.get(player.level);
 
                 TelepadEntry old_entry = wdh.getEntryForLocation(entry.position, entry.dimensionID);
@@ -73,12 +71,12 @@ public class SPacketAddTelepadToWorld implements IPacketBase {
 
                 // if the entry existed before and had it's tag set to 'missing', replace that
                 // entry
-                else if (old_entry != null && old_entry.isMissingFromLocation) {
-                    old_entry.isMissingFromLocation = false;
-                    old_entry.entryName = entry.entryName;
+                else if (old_entry.isMissingFromLocation) {
+                    wdh.updateEntry(old_entry, entry);
                 }
 
-            });
+                wdh.setDirty(true);
+            }
         });
 
         context.get().setPacketHandled(true);

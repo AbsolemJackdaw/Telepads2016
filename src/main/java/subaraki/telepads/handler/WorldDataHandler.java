@@ -22,7 +22,7 @@ public class WorldDataHandler extends SavedData {
 
     private static final String TELEPADS_WORLD_SAVE_DATA = "telepads_world_save_data";
 
-    private List<TelepadEntry> allTelepads = new ArrayList<TelepadEntry>();
+    private ArrayList<TelepadEntry> allTelepads = new ArrayList<TelepadEntry>();
 
     public WorldDataHandler() {
     }
@@ -34,9 +34,9 @@ public class WorldDataHandler extends SavedData {
     public static WorldDataHandler get(LevelAccessor world) {
 
         ServerLevel overworld = ((ServerLevel) world).getServer().getLevel(Level.OVERWORLD);
-        if (overworld != null)
+        if (overworld != null) {
             return overworld.getDataStorage().computeIfAbsent(WorldDataHandler::new, WorldDataHandler::new, TELEPADS_WORLD_SAVE_DATA);
-        else {
+        } else {
             Telepads.log.warn("**************");
             Telepads.log.warn("WordSave Wasn't found ! This may be an error.");
             Telepads.log.warn("**************");
@@ -45,16 +45,16 @@ public class WorldDataHandler extends SavedData {
         }
     }
 
-    public WorldDataHandler load(CompoundTag nbt) {
+    public void load(CompoundTag nbt) {
 
-        List<TelepadEntry> entryList = new ArrayList<TelepadEntry>();
+        ArrayList<TelepadEntry> entryList = new ArrayList<TelepadEntry>();
         ListTag taglist = nbt.getList("entries", 10);
 
         for (int entryTag = 0; entryTag < taglist.size(); entryTag++)
             entryList.add(new TelepadEntry(taglist.getCompound(entryTag)));
 
         this.allTelepads = entryList;
-        return this;
+        Telepads.log.warn("LOADED DATA WORLD SAVE");
     }
 
     @Override
@@ -127,6 +127,18 @@ public class WorldDataHandler extends SavedData {
             }
     }
 
+    /**
+     * Finds out the index of the given entry and replaces it with the new entry.
+     */
+    public void updateEntry(TelepadEntry old, TelepadEntry entry) {
+        for (int i = 0; i < allTelepads.size(); i++) {
+            if (old.equals(allTelepads.get(i))) {
+                allTelepads.set(i, entry);
+                break;
+            }
+        }
+    }
+
     public boolean isEntryPowered(TelepadEntry entry) {
 
         return contains(entry) && getEntryForLocation(entry.position, entry.dimensionID).isPowered;
@@ -140,7 +152,7 @@ public class WorldDataHandler extends SavedData {
     /**
      * used only to sync server's data to the client
      */
-    public void copyOverEntries(List<TelepadEntry> allTelepads) {
+    public void copyOverEntries(ArrayList<TelepadEntry> allTelepads) {
 
         this.allTelepads = allTelepads;
     }
