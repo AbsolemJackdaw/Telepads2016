@@ -35,7 +35,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fmllegacy.network.PacketDistributor;
 import subaraki.telepads.handler.ConfigData;
 import subaraki.telepads.handler.CoordinateHandler;
@@ -62,8 +61,7 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
     private static final VoxelShape shape_e = Shapes.create(new AABB(0D, 0.0D, 0.32D, 1.22D, 0.15D, .68D));
     private static final VoxelShape shape_w = Shapes.create(new AABB(0D, 0.0D, 0.32D, -.22D, 0.15D, .68D));
     private static final VoxelShape SHAPE_VOX = Shapes.or(shape_w, shape_e, shape_s, shape_n, shape);
-    private static final Properties block_properties = Properties.of(Material.GLASS).strength(5F, Float.MAX_VALUE).sound(SoundType.GLASS)
-            .harvestTool(ToolType.PICKAXE).harvestLevel(1).noOcclusion();
+    private static final Properties block_properties = Properties.of(Material.GLASS).strength(5F, Float.MAX_VALUE).sound(SoundType.GLASS).requiresCorrectToolForDrops().noOcclusion();
     private final TranslatableComponent text_public_rod;
     private final TranslatableComponent text_public_rod_private;
     private final TranslatableComponent text_public_rod_public;

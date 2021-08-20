@@ -5,6 +5,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,5 +34,16 @@ public class Telepads {
         TelepadBlocks.BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
         TelepadItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
         TelepadBlockEntities.TILEENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
+
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::modConfig);
+    }
+
+    public void modConfig(ModConfigEvent event) {
+
+        ModConfig config = event.getConfig();
+        if (config.getSpec() == ConfigData.CLIENT_SPEC)
+            ConfigData.refreshClient();
+        else if (config.getSpec() == ConfigData.SERVER_SPEC)
+            ConfigData.refreshServer();
     }
 }
