@@ -1,8 +1,8 @@
 package subaraki.telepads.network;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fmllegacy.network.NetworkRegistry;
-import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.network.client.CPacketEditWhiteListEntry;
 import subaraki.telepads.network.client.CPacketRequestNamingScreen;
@@ -19,7 +19,7 @@ public class NetworkHandler {
     public static final SimpleChannel NETWORK = NetworkRegistry.newSimpleChannel(new ResourceLocation(Telepads.MODID, "telepadchannel"), () -> PROTOCOL_VERSION,
             PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals);
 
-    public NetworkHandler() {
+    public static void register() {
 
         int id = 0;
 

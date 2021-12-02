@@ -8,6 +8,8 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -19,7 +21,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.fmllegacy.network.PacketDistributor;
+import net.minecraftforge.network.PacketDistributor;
+import org.jetbrains.annotations.Nullable;
 import subaraki.telepads.capability.player.TelepadData;
 import subaraki.telepads.handler.ConfigData;
 import subaraki.telepads.handler.CoordinateHandler;
@@ -68,11 +71,11 @@ public class TileEntityTelepad extends BlockEntity {
     ///////////////// 3 METHODS ABSOLUTELY NEEDED FOR CLIENT/SERVER
     ///////////////// SYNCING/////////////////////
 
+
+    @Nullable
     @Override
-    public ClientboundBlockEntityDataPacket getUpdatePacket() {
-
-        return new ClientboundBlockEntityDataPacket(getBlockPos(), 0, this.save(new CompoundTag()));
-
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
@@ -237,7 +240,7 @@ public class TileEntityTelepad extends BlockEntity {
 
         TelepadData.get(player).ifPresent(data -> {
 
-            ServerLevel world = player.getLevel();
+            ServerLevel world = (ServerLevel) player.level;
             WorldDataHandler save = WorldDataHandler.get(world);
 
             List<TelepadEntry> allTelepads = save.getEntries();

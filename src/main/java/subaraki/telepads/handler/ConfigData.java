@@ -46,7 +46,12 @@ public class ConfigData {
         expConsume = SERVER.exp.get();
         lvlConsume = SERVER.lvl.get();
         teleport_seconds = SERVER.teleport_delay.get();
-        tp_locations = (String[]) SERVER.val.get().toArray();
+
+
+        tp_locations = new String[SERVER.val.get().size()];
+        for (int i = 0; i < SERVER.val.get().size(); i++) {
+            tp_locations[i] = SERVER.val.get().get(i);
+        }
     }
 
     public static void refreshClient() {

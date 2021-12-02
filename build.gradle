@@ -14,15 +14,15 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply from: 'https://raw.githubusercontent.com/SizableShrimp/Forge-Class-Remapper/main/classremapper.gradle'
 
-version = '1.17.1-4.0.0.1'
+version = '1.18-5.0.0.0'
 group = 'subaraki' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'telepads'
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '16' // Need this here so eclipse task generates correctly.
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
   
-    mappings channel: 'official', version: '1.17.1'
+    mappings channel: 'official', version: '1.18'
       
 
     runs {
@@ -65,7 +65,7 @@ minecraft {
 
 dependencies {
 
-    minecraft 'net.minecraftforge:forge:1.17.1-37.0.40'
+    minecraft 'net.minecraftforge:forge:1.18-38.0.10'
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

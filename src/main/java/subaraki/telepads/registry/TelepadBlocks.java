@@ -1,9 +1,9 @@
 package subaraki.telepads.registry;
 
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 import subaraki.telepads.block.BlockTelepad;
 import subaraki.telepads.mod.Telepads;
 

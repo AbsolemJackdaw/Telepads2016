@@ -35,7 +35,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.fmllegacy.network.PacketDistributor;
+import net.minecraftforge.network.PacketDistributor;
 import subaraki.telepads.handler.ConfigData;
 import subaraki.telepads.handler.CoordinateHandler;
 import subaraki.telepads.handler.WorldDataHandler;
@@ -105,7 +105,7 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
     public BlockState updateShape(BlockState state, Direction direciton, BlockState toState, LevelAccessor levelAccessor, BlockPos pos, BlockPos newPos) {
 
         if (asBlock().defaultBlockState().getValue(WATERLOGGED)) {
-            levelAccessor.getLiquidTicks().scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(levelAccessor));
+            levelAccessor.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(levelAccessor));
         }
 
         return asBlock().defaultBlockState();
@@ -418,8 +418,9 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
         }
     }
 
+
     @Override
-    public boolean removedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+    public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
 
         if (world.getBlockEntity(pos) instanceof TileEntityTelepad tileEntityTelepad && !world.isClientSide) {
             TelepadEntry entry = WorldDataHandler.get(world).getEntryForLocation(pos, world.dimension());
@@ -435,7 +436,7 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
             }
         }
 
-        return super.removedByPlayer(state, world, pos, player, willHarvest, fluid);
+        return super.onDestroyedByPlayer(state, world, pos, player, willHarvest, fluid);
     }
 
     private void dropPad(Level world, TileEntityTelepad telepad, BlockPos pos) {
