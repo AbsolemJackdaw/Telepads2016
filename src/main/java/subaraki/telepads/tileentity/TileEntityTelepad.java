@@ -65,7 +65,7 @@ public class TileEntityTelepad extends BlockEntity {
         super(TelepadBlockEntities.TILE_ENTITY_TELEPAD.get(), pos, state);
     }
 
-    ///////////////// 3 METHODS ABSOLUTELY NEEDED FOR CLIENT/SERVER
+    ///////////////// 4 METHODS ABSOLUTELY NEEDED FOR CLIENT/SERVER
     ///////////////// SYNCING/////////////////////
 
     @Override
@@ -166,7 +166,7 @@ public class TileEntityTelepad extends BlockEntity {
                         if (data.getCounter() > 0 && !data.isInTeleportGui()) {
                             data.counter--;
                         } else if (data.getCounter() == 0 && !data.isInTeleportGui()) {
-                            if (level.dimension().equals(Level.END) && ConfigData.allowDragonBlocking) {
+                            if (level.dimension().equals(Level.END) && ConfigData.dragonIsBlocking) {
                                 if (level instanceof ServerLevel) {
                                     if (!((ServerLevel) level).getDragons().isEmpty()) {
                                         data.setCounter(TelepadData.getMaxTime());
@@ -181,29 +181,28 @@ public class TileEntityTelepad extends BlockEntity {
 
                             if (getCoordinateHandlerIndex() > -1) {
                                 int index = getCoordinateHandlerIndex();
-                                String[] tpl = ConfigData.tp_locations;
-                                CoordinateHandler coords = new CoordinateHandler((ServerLevel) level, tpl[index]);
+                                if (ConfigData.tp_locations instanceof String[] tpl) {
+                                    CoordinateHandler coords = new CoordinateHandler((ServerLevel) level, tpl[index]);
+                                    ResourceLocation dimension = coords.getDimension();
+                                    if (!playerOnPad.level.dimension().location().equals(dimension)) {
+                                        MinecraftServer server = playerOnPad.getServer();
 
-                                ResourceLocation dimension = coords.getDimension();
+                                        ResourceKey<Level> dim_key = null;
+                                        if (server != null)
+                                            for (ServerLevel dim : server.getAllLevels()) {
+                                                if (dim.dimension().location().equals(dimension))
+                                                    dim_key = dim.dimension();
+                                            }
+                                        if (dim_key == null)
+                                            return;
 
-                                if (!playerOnPad.level.dimension().location().equals(dimension)) {
-                                    MinecraftServer server = playerOnPad.getServer();
-
-                                    ResourceKey<Level> dim_key = null;
-                                    if (server != null)
-                                        for (ServerLevel dim : server.getAllLevels()) {
-                                            if (dim.dimension().location().equals(dimension))
-                                                dim_key = dim.dimension();
-                                        }
-                                    if (dim_key == null)
-                                        return;
-
-                                    ServerLevel worldDestination = server.getLevel(level.dimension());
-                                    BlockPos pos = coords.getPosition(worldDestination);
-                                    Teleport.teleportEntityToDimension(playerOnPad, pos, dim_key);
-                                } else {
-                                    BlockPos pos = coords.getPosition(getLevel());
-                                    Teleport.teleportEntityInsideSameDimension(playerOnPad, pos);
+                                        ServerLevel worldDestination = server.getLevel(level.dimension());
+                                        BlockPos pos = coords.getPosition(worldDestination);
+                                        Teleport.teleportEntityToDimension(playerOnPad, pos, dim_key);
+                                    } else {
+                                        BlockPos pos = coords.getPosition(getLevel());
+                                        Teleport.teleportEntityInsideSameDimension(playerOnPad, pos);
+                                    }
                                 }
                             } else {
                                 // if no dragon is found, or dimension != the end, you end up here

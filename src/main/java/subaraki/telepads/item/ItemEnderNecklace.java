@@ -35,13 +35,11 @@ public class ItemEnderNecklace extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
 
-        if (ConfigData.disableNecklaceUsage) {
-            if (!world.isClientSide)
-                player.sendMessage(new TranslatableComponent("pearl.inactive"), player.getUUID());
-            return super.use(world, player, hand);
-        }
-
         if (!world.isClientSide) {
+            if (!ConfigData.allowNecklaceUsage) {
+                player.sendMessage(new TranslatableComponent("pearl.inactive"), player.getUUID());
+                return super.use(world, player, hand);
+            }
 
             WorldDataHandler wdh = WorldDataHandler.get(world);
 

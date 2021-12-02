@@ -235,15 +235,19 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
 
                     int index = tileEntityTelepad.getCoordinateHandlerIndex();
                     if (index > -1) {
-                        String[] tpl = ConfigData.tp_locations;
-                        CoordinateHandler ch = new CoordinateHandler((ServerLevel) world, tpl[index]);
-                        String name = ch.getName();
+                        if(ConfigData.tp_locations instanceof String[] tpl)
+                        {
+                            CoordinateHandler ch = new CoordinateHandler((ServerLevel) world, tpl[index]);
+                            String name = ch.getName();
 
-                        Component msg = text__cycle_rod.copy().append(name);
-                        player.sendMessage(msg, player.getUUID());
+                            Component msg = text__cycle_rod.copy().append(name);
+                            player.sendMessage(msg, player.getUUID());
 
-                        world.sendBlockUpdated(pos, world.getBlockState(pos), defaultBlockState(), 3);
-                        this.neighborChanged(asBlock().defaultBlockState(), world, pos, this, pos, false);
+                            world.sendBlockUpdated(pos, world.getBlockState(pos), defaultBlockState(), 3);
+                            this.neighborChanged(asBlock().defaultBlockState(), world, pos, this, pos, false);
+                        }
+
+
                     } else
                         player.sendMessage(text__cycle_rod_normal, player.getUUID());
 

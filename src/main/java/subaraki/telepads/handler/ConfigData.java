@@ -14,11 +14,11 @@ public class ConfigData {
     public static final ClientConfig CLIENT;
     public static final ForgeConfigSpec CLIENT_SPEC;
     // SERVER
-    public static boolean allowDragonBlocking = true;
+    public static boolean dragonIsBlocking = true;
     public static boolean allowAnvilPearls = true;
-    public static boolean disableBeadsUsage = false;
-    public static boolean disableNecklaceUsage = false;
-    public static String[] tp_locations = new String[]{};
+    public static boolean allowBeadsUsage = true;
+    public static boolean allowNecklaceUsage = true;
+    public static Object[] tp_locations = new Object[]{};
     public static int teleport_seconds = 3;
     public static int expConsume;
     public static int lvlConsume;
@@ -39,14 +39,14 @@ public class ConfigData {
 
     public static void refreshServer() {
 
-        allowDragonBlocking = SERVER.allowDragonBlocking.get();
+        dragonIsBlocking = SERVER.allowDragonBlocking.get();
         allowAnvilPearls = SERVER.allowAnvilPearls.get();
-        disableBeadsUsage = SERVER.disableBeadsUsage.get();
-        disableNecklaceUsage = SERVER.disableNecklaceUsage.get();
+        allowBeadsUsage = SERVER.allowBeadsUsage.get();
+        allowNecklaceUsage = SERVER.allowNecklaceUsage.get();
         expConsume = SERVER.exp.get();
         lvlConsume = SERVER.lvl.get();
         teleport_seconds = SERVER.teleport_delay.get();
-        tp_locations = (String[]) SERVER.val.get().toArray();
+        tp_locations = SERVER.val.get().toArray();
     }
 
     public static void refreshClient() {
@@ -57,8 +57,8 @@ public class ConfigData {
 
         public final ForgeConfigSpec.BooleanValue allowDragonBlocking;
         public final ForgeConfigSpec.BooleanValue allowAnvilPearls;
-        public final ForgeConfigSpec.BooleanValue disableBeadsUsage;
-        public final ForgeConfigSpec.BooleanValue disableNecklaceUsage;
+        public final ForgeConfigSpec.BooleanValue allowBeadsUsage;
+        public final ForgeConfigSpec.BooleanValue allowNecklaceUsage;
 
         public final ForgeConfigSpec.IntValue exp;
         public final ForgeConfigSpec.IntValue lvl;
@@ -76,9 +76,9 @@ public class ConfigData {
             builder.push("Teleport Items");
             allowAnvilPearls = builder.comment("Disable creation of Ender Beads here").translation("config.anvil.allow").define("Allow anvil pearl crafting",
                     true);
-            disableBeadsUsage = builder.comment("Disable usage of the Ender Beads here").translation("config.beads.allow").define("Allow Ender Bead usage",
+            allowBeadsUsage = builder.comment("Disable usage of the Ender Beads here").translation("config.beads.allow").define("Allow Ender Bead usage",
                     true);
-            disableNecklaceUsage = builder.comment("Dsiabe usage of the Ender Necklace here").translation("config.necklace.allow")
+            allowNecklaceUsage = builder.comment("Disabe usage of the Ender Necklace here").translation("config.necklace.allow")
                     .define("Allow Ender Necklace usage", true);
             builder.pop();
 
