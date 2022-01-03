@@ -48,6 +48,7 @@ import subaraki.telepads.tileentity.TileEntityTelepad;
 import subaraki.telepads.utility.TelepadEntry;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Random;
 
 public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBlock {
@@ -185,129 +186,61 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
         if (!heldStack.isEmpty()) {
             Item heldItem = heldStack.getItem();
 
-            if (level.getBlockEntity(pos) instanceof TileEntityTelepad tileEntityTelepad) {
+            if (level.getBlockEntity(pos) instanceof TileEntityTelepad telepad) {
 
-                TelepadEntry entry = WorldDataHandler.get(level).getEntryForLocation(pos, level.dimension());
-                if (entry != null) {
-                    if (heldItem.equals(TelepadItems.TRANSMITTER.get())) {
-                        // check for server only. syncs automatically with client. if doing both sides,
-                        // client setter will make it look jumpy
-                        if (!entry.hasTransmitter) {
-                            tileEntityTelepad.addDimensionUpgrade(true);
-                            tileEntityTelepad.setChanged();
-                            level.sendBlockUpdated(pos, state, state, 3);
-                            entry.hasTransmitter = true;
-                            heldStack.shrink(player.isCreative() ? 0 : 1);
-                            WorldDataHandler.get(level).updateEntry(entry);
-                        }
-                    }
+                if (heldItem.equals(TelepadItems.TRANSMITTER.get())) {
+                    if (TelepadBlockInteraction.interact(TelepadBlockInteraction.Action.TRANSMITTER, level, pos, telepad, state, this))
+                        heldStack.shrink(player.isCreative() ? 0 : 1);
+                }
 
-                    if (heldItem.equals(TelepadItems.CREATIVE_ROD_PUBLIC.get())) {
-                        tileEntityTelepad.toggleAcces();
-                        tileEntityTelepad.setChanged();
-                        level.sendBlockUpdated(pos, state, state, 3);
-                        entry.setPublic(tileEntityTelepad.isPublic());
-
+                if (heldItem.equals(TelepadItems.CREATIVE_ROD_PUBLIC.get())) {
+                    if (TelepadBlockInteraction.interact(TelepadBlockInteraction.Action.TOGGLE_ACCESS, level, pos, telepad, state, this)) {
                         Component private_rod = text_public_rod.copy().append(" ").append(text_public_rod_private);
                         Component public_rod = text_public_rod.copy().append(" ").append(text_public_rod_public);
-
-                        Component text = tileEntityTelepad.isPublic() ? public_rod : private_rod;
-
+                        Component text = telepad.isPublic() ? public_rod : private_rod;
                         player.sendMessage(text, player.getUUID());
-                        WorldDataHandler.get(level).updateEntry(entry);
-
                     }
                 }
 
-                // check for server only. syncs automatically with client. if doing both sides,
-                // client setter will make it look jumpy
                 if (heldItem.equals(TelepadItems.TOGGLER.get())) {
-                    if (!tileEntityTelepad.hasRedstoneUpgrade()) {
-                        tileEntityTelepad.addRedstoneUpgrade();
-                        tileEntityTelepad.setChanged();
-                        level.sendBlockUpdated(pos, state, state, 3);
-
-                        this.neighborChanged(asBlock().defaultBlockState(), level, pos, this, pos, false);
+                    if (TelepadBlockInteraction.interact(TelepadBlockInteraction.Action.TOGGLER_UPGRADE, level, pos, telepad, state, this)) {
                         heldStack.shrink(player.isCreative() ? 0 : 1);
                     }
                 }
 
                 // check server side only, so server side config is read
                 if (heldItem.equals(TelepadItems.CREATIVE_ROD.get())) {
-                    tileEntityTelepad.rotateCoordinateHandlerIndex();
-                    tileEntityTelepad.setChanged();
-                    level.sendBlockUpdated(pos, state, state, 3);
-
-                    int index = tileEntityTelepad.getCoordinateHandlerIndex();
-                    if (index > -1) {
-                        String[] tpl = ConfigData.tp_locations;
-                        CoordinateHandler ch = new CoordinateHandler((ServerLevel) level, tpl[index]);
-                        String name = ch.getName();
-
-                        Component msg = text__cycle_rod.copy().append(name);
-                        player.sendMessage(msg, player.getUUID());
-
-                        this.neighborChanged(asBlock().defaultBlockState(), level, pos, this, pos, false);
-                    } else
-                        player.sendMessage(text__cycle_rod_normal, player.getUUID());
-
+                    if (TelepadBlockInteraction.interact(TelepadBlockInteraction.Action.CYCLE, level, pos, telepad, state, this)) {
+                        int index = telepad.getCoordinateHandlerIndex();
+                        if (index > -1) {
+                            CoordinateHandler handler = new CoordinateHandler((ServerLevel) level, ConfigData.tp_locations[index]);
+                            player.sendMessage(text__cycle_rod.copy().append(handler.getTelepadName()), player.getUUID());
+                            this.neighborChanged(state, level, pos, this, pos, false);
+                        } else {
+                            player.sendMessage(text__cycle_rod_normal, player.getUUID());
+                        }
+                    }
                 }
 
                 if (heldItem instanceof DyeItem) {
-                    DyeColor edc = DyeColor.getColor(heldStack);
-
-                    if (edc != null) {
-                        float red = edc.getTextureDiffuseColors()[0];
-                        float green = edc.getTextureDiffuseColors()[1];
-                        float blue = edc.getTextureDiffuseColors()[2];
-
-                        int color = (int) (red * 255f);
-                        color = (color << 8) + (int) (green * 255f);
-                        color = (color << 8) + (int) (blue * 255f);
-
-                        boolean colored = false;
-
-                        if (tileEntityTelepad.getColorFeet() == TileEntityTelepad.COLOR_FEET_BASE) {
-                            tileEntityTelepad.setFeetColor(color);
-                            colored = true;
-                        } else if (tileEntityTelepad.getColorArrow() == TileEntityTelepad.COLOR_ARROW_BASE) {
-                            tileEntityTelepad.setArrowColor(color);
-                            colored = true;
-                        }
-
-                        tileEntityTelepad.setChanged();
-                        level.sendBlockUpdated(pos, state, state, 3);
-
-                        if (!player.isCreative() && colored) {
+                    if (TelepadBlockInteraction.interact(TelepadBlockInteraction.Action.DYE, level, pos, telepad, state, this, DyeColor.getColor(heldStack))) {
+                        if (!player.isCreative()) {
                             heldStack.shrink(1);
-                            return InteractionResult.CONSUME;
-                        } else if (!colored) {
-                            return InteractionResult.PASS;
+                            return InteractionResult.CONSUME; //was able to color and is survival
                         }
+                    } else {
+                        return InteractionResult.PASS; //wasnt able to color
                     }
                 }
 
                 if (heldItem.equals(Items.WATER_BUCKET)) {
-                    boolean hasWashed = false;
-                    if (tileEntityTelepad.getColorFeet() != TileEntityTelepad.COLOR_FEET_BASE) {
-                        wash(tileEntityTelepad.getColorFeet(), level, pos);
-                        tileEntityTelepad.setFeetColor(TileEntityTelepad.COLOR_FEET_BASE);
-                        hasWashed = true;
-                    }
-                    if (tileEntityTelepad.getColorArrow() != TileEntityTelepad.COLOR_ARROW_BASE) {
-                        wash(tileEntityTelepad.getColorArrow(), level, pos);
-                        tileEntityTelepad.setArrowColor(TileEntityTelepad.COLOR_ARROW_BASE);
-                        hasWashed = true;
-                    }
-                    if (!player.isCreative() && hasWashed) {
-                        tileEntityTelepad.setChanged();
+                    if (TelepadBlockInteraction.interact(TelepadBlockInteraction.Action.WASH, level, pos, telepad, state, this)) {
                         level.playLocalSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1, 1, true);
-                        player.setItemInHand(hand, heldStack.getContainerItem());
-                        level.sendBlockUpdated(pos, state, state, 3);
-                        return InteractionResult.SUCCESS;
-
+                        if (!player.isCreative()) {
+                            player.setItemInHand(hand, heldStack.getContainerItem());
+                            return InteractionResult.SUCCESS;
+                        }
                     } else return InteractionResult.FAIL;
-
                 }
             }
         } else {
@@ -337,8 +270,7 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
                             entry.removeUser(player.getUUID());
                             return InteractionResult.SUCCESS;
                         } else {
-                            MutableComponent msg = cycle_add_fail.copy()
-                                    .setStyle(Style.EMPTY.withColor(TextColor.fromLegacyFormat(ChatFormatting.RED)));
+                            MutableComponent msg = cycle_add_fail.copy().setStyle(Style.EMPTY.withColor(TextColor.fromLegacyFormat(ChatFormatting.RED)));
                             player.sendMessage(msg, player.getUUID());
                             return InteractionResult.SUCCESS;
 
@@ -352,55 +284,27 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
 
     }
 
-    private void wash(int color, Level world, BlockPos pos) {
-
-        DyeColor edc = DyeColor.WHITE;
-        for (DyeColor dye : DyeColor.values())
-            if (dye.getTextureDiffuseColors()[0] == (float) ((color & 16711680) >> 16) / 255f
-                    && dye.getTextureDiffuseColors()[1] == (float) ((color & 65280) >> 8) / 255f
-                    && dye.getTextureDiffuseColors()[2] == (float) ((color & 255)) / 255f)
-                edc = dye;
-
-        ItemStack stack = new ItemStack(DyeItem.byColor(edc), 1);
-
-        if (!world.isClientSide)
-            world.addFreshEntity(new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), stack));
-    }
-
     ///////////////////////////// REDSTONE////////////////////////////////////////
     @Override
     @Deprecated
-    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
 
-        BlockEntity te = world.getBlockEntity(pos);
-        if (!(te instanceof TileEntityTelepad tileEntityTelepad))
-            return;
-
-        if (!tileEntityTelepad.hasRedstoneUpgrade())
-            return;
-
-        Direction[] facesThatCanPower = new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST, Direction.DOWN};
-
-        boolean isPowered = false;
-        for (Direction face : facesThatCanPower) {
-            if (!world.getBlockState(pos.relative(face)).isSignalSource())
-                continue;
-            int power = world.getBlockState(pos.relative(face)).getDirectSignal(world, pos, face);
-            int weakPower = world.getBlockState(pos.relative(face)).getSignal(world, pos, face);
-            if (power > 0 || weakPower > 0) {
-                isPowered = true;
-                break;
+        if (level.getBlockEntity(pos) instanceof TileEntityTelepad telepad) {
+            if (telepad.hasRedstoneUpgrade()) {
+                boolean isPowered = Arrays.stream(Direction.values()).filter(direction -> !direction.equals(Direction.UP)).anyMatch(face -> {
+                    BlockState other = level.getBlockState(pos.relative(face));
+                    return other.isSignalSource() && (other.getDirectSignal(level, pos, face) > 0 || other.getSignal(level, pos, face) > 0);
+                });
+                WorldDataHandler wdh = WorldDataHandler.get(level);
+                TelepadEntry entry = wdh.getEntryForLocation(pos, level.dimension());
+                entry.setPowered(isPowered);
+                telepad.setPowered(isPowered);
+                level.sendBlockUpdated(pos, state, state, 3);
+                wdh.updateEntry(entry);
+                wdh.setDirty();
             }
         }
 
-        tileEntityTelepad.setPowered(isPowered);
-        tileEntityTelepad.setChanged();
-
-        WorldDataHandler wdh = WorldDataHandler.get(world);
-        TelepadEntry entry = wdh.getEntryForLocation(pos, world.dimension());
-        entry.setPowered(isPowered);
-        wdh.updateEntry(entry);
-        wdh.setDirty();
     }
 
     //////////////// Block Placed///////////////////////////////////
@@ -431,23 +335,17 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
     }
 
     @Override
-    public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
-
-        if (world.getBlockEntity(pos) instanceof TileEntityTelepad tileEntityTelepad && !world.isClientSide) {
-            TelepadEntry entry = WorldDataHandler.get(world).getEntryForLocation(pos, world.dimension());
-            if (entry != null) {
-                entry.isMissingFromLocation = true;
-                dropPad(world, tileEntityTelepad, pos);
-                if (tileEntityTelepad.hasDimensionUpgrade())
-                    world.addFreshEntity(new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(TelepadItems.TRANSMITTER.get(), 1)));
-                if (tileEntityTelepad.hasRedstoneUpgrade())
-                    world.addFreshEntity(new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(TelepadItems.TOGGLER.get(), 1)));
-
-                return world.removeBlock(pos, false);
-            }
+    public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+        if (!level.isClientSide && level.getBlockEntity(pos) instanceof TileEntityTelepad telepad) {
+            setMissing(level, pos);
+            dropPad(level, telepad, pos);
+            if (telepad.hasDimensionUpgrade())
+                level.addFreshEntity(new ItemEntity(level, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(TelepadItems.TRANSMITTER.get(), 1)));
+            if (telepad.hasRedstoneUpgrade())
+                level.addFreshEntity(new ItemEntity(level, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(TelepadItems.TOGGLER.get(), 1)));
+            return level.removeBlock(pos, false);
         }
-
-        return super.onDestroyedByPlayer(state, world, pos, player, willHarvest, fluid);
+        return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
     }
 
     /////////////// inherited methods////////////////////
@@ -526,29 +424,19 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
     }
 
     @Override
-    public void playerWillDestroy(Level worldIn, BlockPos pos, BlockState state, Player player) {
+    public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
 
-        super.playerWillDestroy(worldIn, pos, state, player);
+        super.playerWillDestroy(level, pos, state, player);
+        setMissing(level, pos);
 
-        if (!worldIn.isClientSide()) {
-            WorldDataHandler wdh = WorldDataHandler.get(worldIn);
-            TelepadEntry entry = wdh.getEntryForLocation(pos, worldIn.dimension());
-            if (entry != null)
-                entry.isMissingFromLocation = true;
-        }
     }
 
     @Override
-    public void onBlockExploded(BlockState state, Level world, BlockPos pos, Explosion explosion) {
+    public void onBlockExploded(BlockState state, Level level, BlockPos pos, Explosion explosion) {
 
-        super.onBlockExploded(state, world, pos, explosion);
+        super.onBlockExploded(state, level, pos, explosion);
+        setMissing(level, pos);
 
-        if (!world.isClientSide()) {
-            WorldDataHandler wdh = WorldDataHandler.get(world);
-            TelepadEntry entry = wdh.getEntryForLocation(pos, world.dimension());
-            if (entry != null)
-                entry.isMissingFromLocation = true;
-        }
     }
 
     @Nullable
@@ -559,5 +447,14 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
                     (BlockEntityTicker<T>) TileEntityTelepad.TICKER
                     : super.getTicker(level, state, be);
         return super.getTicker(level, state, be);
+    }
+
+    private void setMissing(Level level, BlockPos pos) {
+        if (!level.isClientSide()) {
+            WorldDataHandler wdh = WorldDataHandler.get(level);
+            TelepadEntry entry = wdh.getEntryForLocation(pos, level.dimension());
+            if (entry != null)
+                entry.isMissingFromLocation = true;
+        }
     }
 }
