@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class TelepadData {
-
     private static final int MAX_TIME = ConfigData.teleport_seconds * 20;
+
     /**
      * A list of uuid's a player can whitelist, to share coordinates of a placed
      * pad.
@@ -41,7 +41,7 @@ public class TelepadData {
 
     public static LazyOptional<TelepadData> get(Player player) {
 
-        return player.getCapability(TelePadDataCapability.CAPABILITY, null);
+        return player.getCapability(TelepadCapProvider.CAPABILITY, null);
     }
 
     public static int getMaxTime() {
