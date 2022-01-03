@@ -35,7 +35,7 @@ public class CoordinateHandler {
         this.name = s[4];
     }
 
-    public String getName() {
+    public String getTelepadName() {
 
         return name;
     }
