@@ -34,7 +34,7 @@ public class ItemEnderBead extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
 
-        if (ConfigData.disableBeadsUsage) {
+        if (!ConfigData.allowBeadsUsage) {
             if (!world.isClientSide)
                 player.sendMessage(new TranslatableComponent("pearl.inactive"), player.getUUID());
             return super.use(world, player, hand);
