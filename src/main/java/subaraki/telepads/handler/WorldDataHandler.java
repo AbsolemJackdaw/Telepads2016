@@ -38,7 +38,7 @@ public class WorldDataHandler extends SavedData {
             return overworld.getDataStorage().computeIfAbsent(WorldDataHandler::new, WorldDataHandler::new, TELEPADS_WORLD_SAVE_DATA);
         } else {
             Telepads.log.warn("**************");
-            Telepads.log.warn("WordSave Wasn't found ! This may be an error.");
+            Telepads.log.warn("WorldSave Wasn't found ! This may be an error.");
             Telepads.log.warn("**************");
 
             return new WorldDataHandler();
