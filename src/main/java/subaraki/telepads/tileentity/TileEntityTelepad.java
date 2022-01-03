@@ -22,11 +22,11 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.network.PacketDistributor;
-import org.jetbrains.annotations.Nullable;
 import subaraki.telepads.capability.player.TelepadData;
 import subaraki.telepads.handler.ConfigData;
 import subaraki.telepads.handler.CoordinateHandler;
 import subaraki.telepads.handler.WorldDataHandler;
+import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.network.NetworkHandler;
 import subaraki.telepads.network.client.CPacketRequestTeleportScreen;
 import subaraki.telepads.registry.TelepadBlockEntities;
@@ -34,6 +34,8 @@ import subaraki.telepads.registry.TelepadBlocks;
 import subaraki.telepads.utility.TelepadEntry;
 import subaraki.telepads.utility.masa.Teleport;
 
+import javax.annotation.Nullable;
+import java.awt.*;
 import java.util.List;
 import java.util.Random;
 
@@ -41,8 +43,8 @@ public class TileEntityTelepad extends BlockEntity {
 
     public static final BlockEntityTicker<TileEntityTelepad> TICKER = (level, pos, state, be) -> be.tick();
 
-    public static final int COLOR_FEET_BASE = new java.awt.Color(26, 246, 172).getRGB();
-    public static final int COLOR_ARROW_BASE = new java.awt.Color(243, 89, 233).getRGB();
+    public static final int COLOR_FEET_BASE = new Color(26, 246, 172).getRGB();
+    public static final int COLOR_ARROW_BASE = new Color(243, 89, 233).getRGB();
     private ResourceKey<Level> dimension;
     private int colorFrame = COLOR_FEET_BASE;
     private int colorBase = COLOR_ARROW_BASE;
@@ -68,9 +70,8 @@ public class TileEntityTelepad extends BlockEntity {
         super(TelepadBlockEntities.TILE_ENTITY_TELEPAD.get(), pos, state);
     }
 
-    ///////////////// 3 METHODS ABSOLUTELY NEEDED FOR CLIENT/SERVER
+    ///////////////// 4 METHODS ABSOLUTELY NEEDED FOR CLIENT/SERVER
     ///////////////// SYNCING/////////////////////
-
 
     @Nullable
     @Override
@@ -80,28 +81,40 @@ public class TileEntityTelepad extends BlockEntity {
 
     @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-
-        this.load(pkt.getTag());
+        super.onDataPacket(net, pkt);
     }
 
     @Override
     public CompoundTag getUpdateTag() {
-
-        return save(new CompoundTag());
+        return writeToSave(new CompoundTag());
     }
 
     // calls readFromNbt by default. no need to add anything in here
     @Override
     public void handleUpdateTag(CompoundTag tag) {
-
         super.handleUpdateTag(tag);
     }
     ////////////////////////////////////////////////////////////////////
 
     @Override
     public void load(CompoundTag compound) {
-
         super.load(compound);
+        readFromSave(compound);
+    }
+
+    @Override
+    public CompoundTag save(CompoundTag compound) {
+        super.save(compound);
+        return writeToSave(compound);
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag compoundTag) {
+        super.saveAdditional(compoundTag);
+        writeToSave(compoundTag);
+    }
+
+    private void readFromSave(CompoundTag compound) {
         String dim = compound.getString("dimension");
         hasDimensionUpgrade = compound.getBoolean("upgrade_dimension");
         hasRedstoneUpgrade = compound.getBoolean("upgrade_redstone");
@@ -113,15 +126,15 @@ public class TileEntityTelepad extends BlockEntity {
         this.coordinate_handler_index = compound.getInt("mod_tp");
         this.isPublic = compound.getBoolean("public");
 
-        if (!dim.isEmpty())
+        if (dim != null && !dim.isEmpty())
             dimension = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(dim));
     }
 
-    @Override
-    public CompoundTag save(CompoundTag compound) {
-
-        super.save(compound);
-        compound.putString("dimension", dimension.location().toString());
+    private CompoundTag writeToSave(CompoundTag compound) {
+        if (dimension != null && dimension.location() != null)
+            compound.putString("dimension", dimension.location().toString());
+        else
+            Telepads.log.error(String.format("saving dimension id on telepad at %s went wrong. saving the rest. skipped saving dimension id", this.getBlockPos()));
         compound.putBoolean("upgrade_dimension", hasDimensionUpgrade);
         compound.putBoolean("upgrade_redstone", hasRedstoneUpgrade);
         compound.putBoolean("is_powered", isPowered);
@@ -184,29 +197,30 @@ public class TileEntityTelepad extends BlockEntity {
 
                             if (getCoordinateHandlerIndex() > -1) {
                                 int index = getCoordinateHandlerIndex();
-                                String[] tpl = ConfigData.tp_locations;
-                                CoordinateHandler coords = new CoordinateHandler((ServerLevel) level, tpl[index]);
+                                String[] tp_locations = ConfigData.tp_locations;
+                                //check lenght of config locations, and see if the set index can get a value out of it
+                                if (tp_locations.length > 0 && tp_locations.length <= index) {
+                                    CoordinateHandler coords = new CoordinateHandler((ServerLevel) level, tp_locations[index]);
+                                    ResourceLocation dimension = coords.getDimension();
+                                    if (!playerOnPad.level.dimension().location().equals(dimension)) {
+                                        MinecraftServer server = playerOnPad.getServer();
 
-                                ResourceLocation dimension = coords.getDimension();
+                                        ResourceKey<Level> dim_key = null;
+                                        if (server != null)
+                                            for (ServerLevel dim : server.getAllLevels()) {
+                                                if (dim.dimension().location().equals(dimension))
+                                                    dim_key = dim.dimension();
+                                            }
+                                        if (dim_key == null)
+                                            return;
 
-                                if (!playerOnPad.level.dimension().location().equals(dimension)) {
-                                    MinecraftServer server = playerOnPad.getServer();
-
-                                    ResourceKey<Level> dim_key = null;
-                                    if (server != null)
-                                        for (ServerLevel dim : server.getAllLevels()) {
-                                            if (dim.dimension().location().equals(dimension))
-                                                dim_key = dim.dimension();
-                                        }
-                                    if (dim_key == null)
-                                        return;
-
-                                    ServerLevel worldDestination = server.getLevel(level.dimension());
-                                    BlockPos pos = coords.getPosition(worldDestination);
-                                    Teleport.teleportEntityToDimension(playerOnPad, pos, dim_key);
-                                } else {
-                                    BlockPos pos = coords.getPosition(getLevel());
-                                    Teleport.teleportEntityInsideSameDimension(playerOnPad, pos);
+                                        ServerLevel worldDestination = server.getLevel(level.dimension());
+                                        BlockPos pos = coords.getPosition(worldDestination);
+                                        Teleport.teleportEntityToDimension(playerOnPad, pos, dim_key);
+                                    } else {
+                                        BlockPos pos = coords.getPosition(getLevel());
+                                        Teleport.teleportEntityInsideSameDimension(playerOnPad, pos);
+                                    }
                                 }
                             } else {
                                 // if no dragon is found, or dimension != the end, you end up here
@@ -229,9 +243,9 @@ public class TileEntityTelepad extends BlockEntity {
      */
     public void setPlatform(boolean onPlatform) {
 
-        if (level != null) {
+        if (level != null && isStandingOnPlatform != onPlatform) { //only run if the value needs to change
             isStandingOnPlatform = onPlatform;
-            level.sendBlockUpdated(worldPosition, level.getBlockState(getBlockPos()), TelepadBlocks.TELEPAD_BLOCK.get().defaultBlockState(), 3);
+            level.blockUpdated(getBlockPos(), TelepadBlocks.TELEPAD_BLOCK.get());
         }
     }
 
