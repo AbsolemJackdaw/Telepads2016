@@ -57,33 +57,33 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
     protected static final AABB AABB = new AABB(0.0D, 0.0D, 0.0D, 1.0D, 0.20D, 1.0D);
     protected static final VoxelShape VOX = Shapes.create(AABB);
     private static final VoxelShape shape = Shapes.create(new AABB(0.0D, 0D, 0.0D, 1.0D, 0.20D, 1.0D));
-    private static final VoxelShape shape_n = Shapes.create(new AABB(0.32D, 0.0D, -.22D, .68D, 0.15D, 0D));
-    private static final VoxelShape shape_s = Shapes.create(new AABB(0.32D, 0.0D, 1.00D, .68D, 0.15D, 1.22D));
-    private static final VoxelShape shape_e = Shapes.create(new AABB(0D, 0.0D, 0.32D, 1.22D, 0.15D, .68D));
-    private static final VoxelShape shape_w = Shapes.create(new AABB(0D, 0.0D, 0.32D, -.22D, 0.15D, .68D));
-    private static final VoxelShape SHAPE_VOX = Shapes.or(shape_w, shape_e, shape_s, shape_n, shape);
-    private static final Properties block_properties = Properties.of(Material.GLASS).strength(5F, Float.MAX_VALUE).sound(SoundType.GLASS).requiresCorrectToolForDrops().noOcclusion();
-    private final TranslatableComponent text_public_rod;
-    private final TranslatableComponent text_public_rod_private;
-    private final TranslatableComponent text_public_rod_public;
-    private final TranslatableComponent text__cycle_rod_normal;
-    private final TranslatableComponent text__cycle_rod;
-    private final TranslatableComponent cycle_add_success;
-    private final TranslatableComponent cycle_add_remove;
-    private final TranslatableComponent cycle_add_fail;
+    private static final VoxelShape shapeNorth = Shapes.create(new AABB(0.32D, 0.0D, -.22D, .68D, 0.15D, 0D));
+    private static final VoxelShape shapeSouth = Shapes.create(new AABB(0.32D, 0.0D, 1.00D, .68D, 0.15D, 1.22D));
+    private static final VoxelShape shapeEast = Shapes.create(new AABB(0D, 0.0D, 0.32D, 1.22D, 0.15D, .68D));
+    private static final VoxelShape shapeWest = Shapes.create(new AABB(0D, 0.0D, 0.32D, -.22D, 0.15D, .68D));
+    private static final VoxelShape FULLSHAPE = Shapes.or(shapeWest, shapeEast, shapeSouth, shapeNorth, shape);
+    private static final Properties PROPERTIES = Properties.of(Material.GLASS).strength(5F, Float.MAX_VALUE).sound(SoundType.GLASS).requiresCorrectToolForDrops().noOcclusion();
+    private final TranslatableComponent textPublicRod;
+    private final TranslatableComponent textPublicRodPrivate;
+    private final TranslatableComponent textPublicRodPublic;
+    private final TranslatableComponent textCycleRodNormal;
+    private final TranslatableComponent textCycleRod;
+    private final TranslatableComponent cycleAddSuccess;
+    private final TranslatableComponent cycleAddRemove;
+    private final TranslatableComponent cycleAddFail;
 
     public BlockTelepad() {
 
-        super(block_properties);
+        super(PROPERTIES);
 
-        text_public_rod = new TranslatableComponent("block.info.rod");
-        text_public_rod_private = new TranslatableComponent("block.info.rod.private");
-        text_public_rod_public = new TranslatableComponent("block.info.rod.public");
-        text__cycle_rod_normal = new TranslatableComponent("block.info.cycle.normal");
-        text__cycle_rod = new TranslatableComponent("block.info.cycle");
-        cycle_add_success = new TranslatableComponent("block.info.add.succes");
-        cycle_add_remove = new TranslatableComponent("block.info.add.fail");
-        cycle_add_fail = new TranslatableComponent("block.info.add.remove");
+        textPublicRod = new TranslatableComponent("block.info.rod");
+        textPublicRodPrivate = new TranslatableComponent("block.info.rod.private");
+        textPublicRodPublic = new TranslatableComponent("block.info.rod.public");
+        textCycleRodNormal = new TranslatableComponent("block.info.cycle.normal");
+        textCycleRod = new TranslatableComponent("block.info.cycle");
+        cycleAddSuccess = new TranslatableComponent("block.info.add.succes");
+        cycleAddRemove = new TranslatableComponent("block.info.add.fail");
+        cycleAddFail = new TranslatableComponent("block.info.add.remove");
 
         this.registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false));
     }
@@ -96,7 +96,7 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
     ///////////////// waterlogged//////////////
 
     @Override
-    public boolean propagatesSkylightDown(BlockState p_200123_1_, BlockGetter p_200123_2_, BlockPos p_200123_3_) {
+    public boolean propagatesSkylightDown(BlockState state, BlockGetter getter, BlockPos pos) {
 
         return false;
     }
@@ -137,7 +137,7 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
     @Deprecated
     public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
 
-        return SHAPE_VOX;
+        return FULLSHAPE;
     }
 
     @Override
@@ -151,7 +151,7 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
     @Deprecated
     public VoxelShape getOcclusionShape(BlockState state, BlockGetter worldIn, BlockPos pos) {
 
-        return SHAPE_VOX;
+        return FULLSHAPE;
     }
 
     @Override
@@ -162,7 +162,7 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
 
     @Override
     @Deprecated
-    public int getLightBlock(BlockState p_60585_, BlockGetter p_60586_, BlockPos p_60587_) {
+    public int getLightBlock(BlockState state, BlockGetter getter, BlockPos blockPos) {
         return 1;
     }
 
@@ -193,10 +193,10 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
                         heldStack.shrink(player.isCreative() ? 0 : 1);
                 }
 
-                if (heldItem.equals(TelepadItems.CREATIVE_ROD_PUBLIC.get())) {
+                if (heldItem.equals(TelepadItems.PUBLIC_TOGGLE_ROD.get())) {
                     if (TelepadBlockInteraction.interact(TelepadBlockInteraction.Action.TOGGLE_ACCESS, level, pos, telepad, state, this)) {
-                        Component private_rod = text_public_rod.copy().append(" ").append(text_public_rod_private);
-                        Component public_rod = text_public_rod.copy().append(" ").append(text_public_rod_public);
+                        Component private_rod = textPublicRod.copy().append(" ").append(textPublicRodPrivate);
+                        Component public_rod = textPublicRod.copy().append(" ").append(textPublicRodPublic);
                         Component text = telepad.isPublic() ? public_rod : private_rod;
                         player.sendMessage(text, player.getUUID());
                     }
@@ -209,15 +209,15 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
                 }
 
                 // check server side only, so server side config is read
-                if (heldItem.equals(TelepadItems.CREATIVE_ROD.get())) {
+                if (heldItem.equals(TelepadItems.CYCLE_ROD.get())) {
                     if (TelepadBlockInteraction.interact(TelepadBlockInteraction.Action.CYCLE, level, pos, telepad, state, this)) {
                         int index = telepad.getCoordinateHandlerIndex();
                         if (index > -1) {
-                            CoordinateHandler handler = new CoordinateHandler((ServerLevel) level, ConfigData.tp_locations[index]);
-                            player.sendMessage(text__cycle_rod.copy().append(handler.getTelepadName()), player.getUUID());
+                            CoordinateHandler handler = new CoordinateHandler((ServerLevel) level, ConfigData.teleportLocations[index]);
+                            player.sendMessage(textCycleRod.copy().append(handler.getTelepadName()), player.getUUID());
                             this.neighborChanged(state, level, pos, this, pos, false);
                         } else {
-                            player.sendMessage(text__cycle_rod_normal, player.getUUID());
+                            player.sendMessage(textCycleRodNormal, player.getUUID());
                         }
                     }
                 }
@@ -254,7 +254,7 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
                         if (!entry.canUse(player.getUUID())) {
                             Style style = Style.EMPTY.withColor(TextColor.fromLegacyFormat(ChatFormatting.GREEN));
 
-                            MutableComponent msg = cycle_add_success.copy().append(entry.entryName);
+                            MutableComponent msg = cycleAddSuccess.copy().append(entry.entryName);
                             player.sendMessage(msg.setStyle(style), player.getUUID());
 
                             entry.addUser(player.getUUID());
@@ -265,12 +265,12 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
                         else if (!entry.isPublic) {
                             Style style = Style.EMPTY.withColor(TextColor.fromLegacyFormat(ChatFormatting.GOLD));
 
-                            MutableComponent msg = cycle_add_remove.copy().append(entry.entryName).setStyle(style);
+                            MutableComponent msg = cycleAddRemove.copy().append(entry.entryName).setStyle(style);
                             player.sendMessage(msg, player.getUUID());
                             entry.removeUser(player.getUUID());
                             return InteractionResult.SUCCESS;
                         } else {
-                            MutableComponent msg = cycle_add_fail.copy().setStyle(Style.EMPTY.withColor(TextColor.fromLegacyFormat(ChatFormatting.RED)));
+                            MutableComponent msg = cycleAddFail.copy().setStyle(Style.EMPTY.withColor(TextColor.fromLegacyFormat(ChatFormatting.RED)));
                             player.sendMessage(msg, player.getUUID());
                             return InteractionResult.SUCCESS;
 
@@ -355,7 +355,7 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
         ItemEntity itemEntity = new ItemEntity(EntityType.ITEM, world);
         itemEntity.setPos(pos.getX(), pos.getY(), pos.getZ());
 
-        ItemStack stack = new ItemStack(TelepadBlocks.TELEPAD_BLOCK.get());
+        ItemStack stack = new ItemStack(TelepadBlocks.TELEPAD.get());
         CompoundTag nbt = new CompoundTag();
         nbt.putInt("colorBase", telepad.getColorArrow());
         nbt.putInt("colorFrame", telepad.getColorFeet());
@@ -394,6 +394,7 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
                 if (tileEntityTelepad.getCoordinateHandlerIndex() > -1) {
                     for (int i = -2; i <= 2; ++i) {
                         for (int j = -2; j <= 2; ++j) {
+
                             if (i > -2 && i < 2 && j == -1) {
                                 j = 2;
                             }
@@ -425,27 +426,21 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
 
     @Override
     public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-
         super.playerWillDestroy(level, pos, state, player);
         setMissing(level, pos);
-
     }
 
     @Override
     public void onBlockExploded(BlockState state, Level level, BlockPos pos, Explosion explosion) {
-
         super.onBlockExploded(state, level, pos, explosion);
         setMissing(level, pos);
-
     }
 
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> be) {
         if (!level.isClientSide)
-            return be == TelepadBlockEntities.TILE_ENTITY_TELEPAD.get() ?
-                    (BlockEntityTicker<T>) TileEntityTelepad.TICKER
-                    : super.getTicker(level, state, be);
+            return be == TelepadBlockEntities.TELEPAD.get() ? (BlockEntityTicker<T>) TileEntityTelepad.TICKER : super.getTicker(level, state, be);
         return super.getTicker(level, state, be);
     }
 

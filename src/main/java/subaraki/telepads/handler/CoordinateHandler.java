@@ -13,7 +13,7 @@ import java.util.Random;
 public class CoordinateHandler {
 
     public static final Random rand = new Random();
-    public int worldsize = 25000000;
+    public int worldsize = 25_000_000;
 
     int xi = 0;
     int zi = 0;

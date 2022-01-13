@@ -30,7 +30,7 @@ public class CPacketRequestTeleportScreen implements IPacketBase {
     /**
      * wether the pad we came from has a transmitter or not
      */
-    public boolean has_transmitter;
+    public boolean hasTransmitter;
 
     /**
      * A packet to sync entries to a player, on the client side. This packet must
@@ -43,7 +43,7 @@ public class CPacketRequestTeleportScreen implements IPacketBase {
 
         this.entries = entries;
         this.whiteList = whiteList;
-        this.has_transmitter = has_transmitter;
+        this.hasTransmitter = has_transmitter;
     }
 
     public CPacketRequestTeleportScreen(FriendlyByteBuf buf) {
@@ -67,7 +67,7 @@ public class CPacketRequestTeleportScreen implements IPacketBase {
         for (UUID s : whiteList)
             buf.writeUUID(s);
 
-        buf.writeBoolean(has_transmitter);
+        buf.writeBoolean(hasTransmitter);
 
     }
 
@@ -88,7 +88,7 @@ public class CPacketRequestTeleportScreen implements IPacketBase {
             whiteList.add(buf.readUUID());
         this.whiteList = whiteList;
 
-        has_transmitter = buf.readBoolean();
+        hasTransmitter = buf.readBoolean();
 
     }
 

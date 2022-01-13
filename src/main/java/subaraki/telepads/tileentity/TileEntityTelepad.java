@@ -62,12 +62,12 @@ public class TileEntityTelepad extends BlockEntity {
 
     private boolean isStandingOnPlatform;
 
-    private int coordinate_handler_index = -1;
+    private int coordinateHandlerIndex = -1;
 
     // private AxisAlignedBB aabb;
 
     public TileEntityTelepad(BlockPos pos, BlockState state) {
-        super(TelepadBlockEntities.TILE_ENTITY_TELEPAD.get(), pos, state);
+        super(TelepadBlockEntities.TELEPAD.get(), pos, state);
     }
 
     ///////////////// 4 METHODS ABSOLUTELY NEEDED FOR CLIENT/SERVER
@@ -123,7 +123,7 @@ public class TileEntityTelepad extends BlockEntity {
         this.colorFrame = compound.getInt("colorFrame");
         this.upgradeRotation = compound.getInt("upgradeRotation");
         isStandingOnPlatform = compound.getBoolean("standingon");
-        this.coordinate_handler_index = compound.getInt("mod_tp");
+        this.coordinateHandlerIndex = compound.getInt("mod_tp");
         this.isPublic = compound.getBoolean("public");
 
         if (dim != null && !dim.isEmpty())
@@ -142,7 +142,7 @@ public class TileEntityTelepad extends BlockEntity {
         compound.putInt("colorFrame", this.colorFrame);
         compound.putInt("upgradeRotation", upgradeRotation);
         compound.putBoolean("standingon", isStandingOnPlatform);
-        compound.putInt("mod_tp", coordinate_handler_index);
+        compound.putInt("mod_tp", coordinateHandlerIndex);
         compound.putBoolean("public", isPublic);
         return compound;
     }
@@ -197,7 +197,7 @@ public class TileEntityTelepad extends BlockEntity {
 
                             if (getCoordinateHandlerIndex() > -1) {
                                 int index = getCoordinateHandlerIndex();
-                                String[] tp_locations = ConfigData.tp_locations;
+                                String[] tp_locations = ConfigData.teleportLocations;
                                 //check lenght of config locations, and see if the set index can get a value out of it
                                 if (tp_locations.length > 0 && tp_locations.length <= index) {
                                     CoordinateHandler coords = new CoordinateHandler((ServerLevel) level, tp_locations[index]);
@@ -245,7 +245,7 @@ public class TileEntityTelepad extends BlockEntity {
 
         if (level != null && isStandingOnPlatform != onPlatform) { //only run if the value needs to change
             isStandingOnPlatform = onPlatform;
-            level.blockUpdated(getBlockPos(), TelepadBlocks.TELEPAD_BLOCK.get());
+            level.blockUpdated(getBlockPos(), TelepadBlocks.TELEPAD.get());
         }
     }
 
@@ -342,15 +342,15 @@ public class TileEntityTelepad extends BlockEntity {
 
     public void rotateCoordinateHandlerIndex() {
 
-        this.coordinate_handler_index++;
-        if (this.coordinate_handler_index >= ConfigData.tp_locations.length) {
-            coordinate_handler_index = -1;
+        this.coordinateHandlerIndex++;
+        if (this.coordinateHandlerIndex >= ConfigData.teleportLocations.length) {
+            coordinateHandlerIndex = -1;
         }
     }
 
     public int getCoordinateHandlerIndex() {
 
-        return coordinate_handler_index;
+        return coordinateHandlerIndex;
     }
 
 //    @Override

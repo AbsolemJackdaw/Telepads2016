@@ -33,7 +33,7 @@ public class Telepads {
 
         TelepadBlocks.BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
         TelepadItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
-        TelepadBlockEntities.TILEENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
+        TelepadBlockEntities.BLOCK_ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::modConfig);
     }

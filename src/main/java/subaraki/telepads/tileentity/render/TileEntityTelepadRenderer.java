@@ -28,21 +28,21 @@ public class TileEntityTelepadRenderer implements BlockEntityRenderer<TileEntity
     private static final ResourceLocation base = new ResourceLocation(resourcePath + "telepad_base.png");
     private static final ResourceLocation pads = new ResourceLocation(resourcePath + "telepad_pads.png");
     private static final ResourceLocation frame = new ResourceLocation(resourcePath + "telepad_frame.png");
-    private static final ResourceLocation frame_upgrade = new ResourceLocation(resourcePath + "telepad_dimension_upgrade.png");
-    private static final ResourceLocation frame_upgrade_2 = new ResourceLocation(resourcePath + "telepad_dimension_upgrade_2.png");
-    private static final ResourceLocation frame_upgrade_3 = new ResourceLocation(resourcePath + "telepad_dimension_upgrade_3.png");
-    private static final ResourceLocation frame_upgrade_4 = new ResourceLocation(resourcePath + "telepad_dimension_upgrade_4.png");
+    private static final ResourceLocation transmitterFrameA = new ResourceLocation(resourcePath + "telepad_dimension_upgrade.png");
+    private static final ResourceLocation transmitterFrameB = new ResourceLocation(resourcePath + "telepad_dimension_upgrade_2.png");
+    private static final ResourceLocation transmitterFrameC = new ResourceLocation(resourcePath + "telepad_dimension_upgrade_3.png");
+    private static final ResourceLocation transmitterFrameD = new ResourceLocation(resourcePath + "telepad_dimension_upgrade_4.png");
     private static ModelTelepad modeltelepad;
-    private static int animation_counter;
+    private static int transmitterFrameCounter;
 
     public TileEntityTelepadRenderer(BlockEntityRendererProvider.Context c) {
-        modeltelepad = new ModelTelepad(Minecraft.getInstance().getEntityModels().bakeLayer(RegisterClientSetup.TELEPAD_BLOCK_MODEL_LAYER));
+        modeltelepad = new ModelTelepad(Minecraft.getInstance().getEntityModels().bakeLayer(RegisterClientSetup.TELEPAD));
     }
 
     @Override
     public void render(TileEntityTelepad te, float partialTicks, PoseStack stack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
 
-        animation_counter++;
+        transmitterFrameCounter++;
 
         if (!te.hasRedstoneUpgrade() || te.hasRedstoneUpgrade() && !te.isPowered()) {
             stack.pushPose();
@@ -64,17 +64,17 @@ public class TileEntityTelepadRenderer implements BlockEntityRenderer<TileEntity
             stack.pushPose();
 
             ResourceLocation resLocAnimation;
-            if (animation_counter < 25)
-                resLocAnimation = frame_upgrade;
-            else if (animation_counter < 50)
-                resLocAnimation = frame_upgrade_2;
-            else if (animation_counter < 75)
-                resLocAnimation = frame_upgrade_3;
-            else if (animation_counter < 99) {// next tick is >=99, so resets and stays tex.4
-                resLocAnimation = frame_upgrade_4;
+            if (transmitterFrameCounter < 25)
+                resLocAnimation = transmitterFrameA;
+            else if (transmitterFrameCounter < 50)
+                resLocAnimation = transmitterFrameB;
+            else if (transmitterFrameCounter < 75)
+                resLocAnimation = transmitterFrameC;
+            else if (transmitterFrameCounter < 99) {// next tick is >=99, so resets and stays tex.4
+                resLocAnimation = transmitterFrameD;
             } else {
-                animation_counter = 0;
-                resLocAnimation = frame_upgrade_4;
+                transmitterFrameCounter = 0;
+                resLocAnimation = transmitterFrameD;
             }
             stack.scale(0.75f, 0.75f, 0.75f);
             stack.translate(-0.1f, 0.45f, 0.1f);

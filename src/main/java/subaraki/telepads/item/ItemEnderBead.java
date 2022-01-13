@@ -14,7 +14,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import subaraki.telepads.handler.ConfigData;
 import subaraki.telepads.handler.WorldDataHandler;
-import subaraki.telepads.utility.PropertiesWrapper;
 import subaraki.telepads.utility.TelepadEntry;
 import subaraki.telepads.utility.masa.Teleport;
 
@@ -28,7 +27,7 @@ public class ItemEnderBead extends Item {
 
     public ItemEnderBead() {
 
-        super(PropertiesWrapper.getItemProperties().stacksTo(16).tab(CreativeModeTab.TAB_MATERIALS));
+        super(new Item.Properties().stacksTo(16).tab(CreativeModeTab.TAB_MATERIALS));
     }
 
     @Override

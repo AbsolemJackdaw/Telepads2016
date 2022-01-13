@@ -11,22 +11,22 @@ import subaraki.telepads.utility.TelepadEntry;
 
 public class MissingEntryScreen extends Screen {
 
-    private final TelepadEntry missing_entry;
-    private final String information;
-    private final String teleport_anyway;
-    private final String forget;
-    private int center_x = 0;
-    private int center_y = 0;
+    private final TelepadEntry missingEntry;
+    private final String textInformation;
+    private final String textTeleportAnyway;
+    private final String textForget;
+    private int centerX = 0;
+    private int centerY = 0;
 
     public MissingEntryScreen(TelepadEntry missing_entry) {
 
         super(new TranslatableComponent("gui.missing.entry"));
 
-        information = new TranslatableComponent("cannot.find.remove").getString();
-        teleport_anyway = new TranslatableComponent("button.teleport").getString();
-        forget = new TranslatableComponent("button.forget").getString();
+        textInformation = new TranslatableComponent("cannot.find.remove").getString();
+        textTeleportAnyway = new TranslatableComponent("button.teleport").getString();
+        textForget = new TranslatableComponent("button.forget").getString();
 
-        this.missing_entry = missing_entry;
+        this.missingEntry = missing_entry;
     }
 
     @Override
@@ -40,19 +40,19 @@ public class MissingEntryScreen extends Screen {
 
         super.init();
 
-        this.center_x = minecraft.getWindow().getGuiScaledWidth() / 2;
-        this.center_y = minecraft.getWindow().getGuiScaledHeight() / 2;
+        this.centerX = minecraft.getWindow().getGuiScaledWidth() / 2;
+        this.centerY = minecraft.getWindow().getGuiScaledHeight() / 2;
 
         int x = 120;
         int y = 20;
-        this.addRenderableWidget(new Button(center_x - x - 10, center_y + y, x, y, new TranslatableComponent(teleport_anyway), button -> {
-            NetworkHandler.NETWORK.sendToServer(new SPacketTeleport(minecraft.player.blockPosition(), missing_entry, false));
+        this.addRenderableWidget(new Button(centerX - x - 10, centerY + y, x, y, new TranslatableComponent(textTeleportAnyway), button -> {
+            NetworkHandler.NETWORK.sendToServer(new SPacketTeleport(minecraft.player.blockPosition(), missingEntry, false));
             this.removed();
             this.onClose();
         }));
 
-        this.addRenderableWidget(new Button(center_x + 10, center_y + y, x, y, new TranslatableComponent(forget), button -> {
-            NetworkHandler.NETWORK.sendToServer(new SPacketRemoveEntry(missing_entry));
+        this.addRenderableWidget(new Button(centerX + 10, centerY + y, x, y, new TranslatableComponent(textForget), button -> {
+            NetworkHandler.NETWORK.sendToServer(new SPacketRemoveEntry(missingEntry));
             this.removed();
             this.onClose();
         }));
@@ -66,8 +66,8 @@ public class MissingEntryScreen extends Screen {
 
         super.render(stack, mouse_x, mouse_y, partialTicks);
 
-        int half = font.width(information) / 2;
-        font.drawShadow(stack, information, center_x - half, center_y - 30, 0xff99bb);
+        int half = font.width(textInformation) / 2;
+        font.drawShadow(stack, textInformation, centerX - half, centerY - 30, 0xff99bb);
     }
 
 }

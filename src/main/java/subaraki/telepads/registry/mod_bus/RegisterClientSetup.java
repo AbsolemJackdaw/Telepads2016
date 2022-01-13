@@ -16,7 +16,7 @@ import subaraki.telepads.tileentity.render.TileEntityTelepadRenderer;
 @EventBusSubscriber(modid = Telepads.MODID, bus = Bus.MOD, value = Dist.CLIENT)
 public class RegisterClientSetup {
 
-    public static ModelLayerLocation TELEPAD_BLOCK_MODEL_LAYER = new ModelLayerLocation(new ResourceLocation("minecraft:player"), "telepad_layer");
+    public static ModelLayerLocation TELEPAD = new ModelLayerLocation(new ResourceLocation("minecraft:player"), "telepad_layer");
 
     @SubscribeEvent
     public static void register(final FMLClientSetupEvent event) {
@@ -25,11 +25,11 @@ public class RegisterClientSetup {
 
     @SubscribeEvent
     public static void registerRenderer(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerBlockEntityRenderer(TelepadBlockEntities.TILE_ENTITY_TELEPAD.get(), TileEntityTelepadRenderer::new);
+        event.registerBlockEntityRenderer(TelepadBlockEntities.TELEPAD.get(), TileEntityTelepadRenderer::new);
     }
 
     @SubscribeEvent
     public static void registerBlockLayer(EntityRenderersEvent.RegisterLayerDefinitions event) {
-        event.registerLayerDefinition(TELEPAD_BLOCK_MODEL_LAYER, ModelTelepad::createTelepadMesh);
+        event.registerLayerDefinition(TELEPAD, ModelTelepad::createTelepadMesh);
     }
 }

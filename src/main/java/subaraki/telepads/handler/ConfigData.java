@@ -18,8 +18,8 @@ public class ConfigData {
     public static boolean allowAnvilPearls = true;
     public static boolean allowBeadsUsage = true;
     public static boolean allowNecklaceUsage = true;
-    public static String[] tp_locations = new String[]{};
-    public static int teleport_seconds = 3;
+    public static String[] teleportLocations = new String[]{};
+    public static int teleprtDelay = 3; //seconds
     public static int expConsume;
     public static int lvlConsume;
     // CLIENT
@@ -45,12 +45,12 @@ public class ConfigData {
         allowNecklaceUsage = SERVER.allowNecklaceUsage.get();
         expConsume = SERVER.exp.get();
         lvlConsume = SERVER.lvl.get();
-        teleport_seconds = SERVER.teleport_delay.get();
+        teleprtDelay = SERVER.teleportDelay.get();
 
 
-        tp_locations = new String[SERVER.val.get().size()];
+        teleportLocations = new String[SERVER.val.get().size()];
         for (int i = 0; i < SERVER.val.get().size(); i++) {
-            tp_locations[i] = SERVER.val.get().get(i);
+            teleportLocations[i] = SERVER.val.get().get(i);
         }
     }
 
@@ -67,7 +67,7 @@ public class ConfigData {
 
         public final ForgeConfigSpec.IntValue exp;
         public final ForgeConfigSpec.IntValue lvl;
-        public final ForgeConfigSpec.IntValue teleport_delay;
+        public final ForgeConfigSpec.IntValue teleportDelay;
 
         public final ConfigValue<List<? extends String>> val;
 
@@ -93,7 +93,7 @@ public class ConfigData {
                     .translation("config.consume.exp").defineInRange("Experience Consumation", 0, 0, 10000);
             lvl = builder.comment("Penalty cost for teleportation, if set to 0, there will be no exp loss. set experience to 0 if you want to consume levels.")
                     .translation("config.consume.level").defineInRange("Level Consumation", 0, 0, 32);
-            teleport_delay = builder.comment("Delay, in seconds, on how long a player must wait on the telepad block before the gui opens")
+            teleportDelay = builder.comment("Delay, in seconds, on how long a player must wait on the telepad block before the gui opens")
                     .translation("config.tele.gui.open").defineInRange("Teleport GUI Delay", 3, 1, 60);
             builder.pop();
 

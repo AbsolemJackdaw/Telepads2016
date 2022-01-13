@@ -9,7 +9,7 @@ import net.minecraft.world.level.Level;
 
 public class Teleport {
 
-    public static Entity teleportEntityInsideSameDimension(Entity entity, BlockPos pos) {
+    public static void teleportEntityInsideSameDimension(Entity entity, BlockPos pos) {
 
         double x = pos.getX();
         double y = pos.getY();
@@ -20,19 +20,17 @@ public class Teleport {
 
         entity.moveTo(x, y, z, entity.getYRot(), entity.getXRot());
         entity.teleportTo(x, y, z);
-        return entity;
     }
 
-    public static Entity teleportEntityToDimension(ServerPlayer player, BlockPos pos, ResourceKey<Level> dimension) {
+    public static void teleportEntityToDimension(ServerPlayer player, BlockPos pos, ResourceKey<Level> dimension) {
 
         if (!net.minecraftforge.common.ForgeHooks.onTravelToDimension(player, dimension))
-            return null;
+            return;
 
         ServerLevel nextWorld = player.getServer().getLevel(dimension);
         if (nextWorld != null) {
             nextWorld.getChunk(pos); // make sure the chunk is loaded
             player.teleportTo(nextWorld, pos.getX(), pos.getY(), pos.getZ(), player.getYRot(), player.getXRot());
         }
-        return player;
     }
 }

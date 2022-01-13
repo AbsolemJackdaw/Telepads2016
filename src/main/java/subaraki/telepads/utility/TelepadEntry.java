@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.UUID;
 
 public class TelepadEntry {
@@ -159,6 +160,11 @@ public class TelepadEntry {
         if (compared instanceof TelepadEntry entry)
             return this.entryName.equals(entry.entryName) && this.dimensionID == entry.dimensionID && this.position.equals(entry.position);
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(entryName, dimensionID, position);
     }
 
     public void setPowered(boolean flag) {

@@ -57,7 +57,7 @@ public class ClientReferences {
             // use a layer of indirection when subscribing client events to avoid
             // classloading client classes on server
             if (!data.getEntries().isEmpty())
-                displayTeleportScreen(packet.has_transmitter);
+                displayTeleportScreen(packet.hasTransmitter);
 
         });
     }

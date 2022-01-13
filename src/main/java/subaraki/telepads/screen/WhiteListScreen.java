@@ -19,13 +19,13 @@ public class WhiteListScreen extends Screen {
 
     private static final ResourceLocation BACKGROUND = new ResourceLocation(Telepads.MODID, "textures/gui/whitelist.png");
 
-    private final int tex_x = 142;
-    private final int tex_y = 166;
+    private final int textureWidth = 142;
+    private final int textureHeight = 166;
     private final String suggestion;
     EditBox textfield;
-    private int center_x;
-    private int center_y;
-    private boolean is_open = false;
+    private int centerX;
+    private int centerY;
+    private boolean canType = false;
 
     public WhiteListScreen() {
 
@@ -48,7 +48,7 @@ public class WhiteListScreen extends Screen {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, BACKGROUND);
 
-        blit(stack, center_x - tex_x / 2, center_y - tex_y / 2, 0, 0, tex_x, tex_y);
+        blit(stack, centerX - textureWidth / 2, centerY - textureHeight / 2, 0, 0, textureWidth, textureHeight);
 
         // tiny hack to better control the suggestion text.
         if (!textfield.getValue().isEmpty())
@@ -59,7 +59,7 @@ public class WhiteListScreen extends Screen {
         super.render(stack, x, y, partialTicks);
 
         for (int i = 0; i < 9; i++) {
-            font.drawShadow(stack, "-", center_x - 62, center_y - 47 + (i * 13), 0x888888);
+            font.drawShadow(stack, "-", centerX - 62, centerY - 47 + (i * 13), 0x888888);
 
         }
         TelepadData.get(ClientReferences.getClientPlayer()).ifPresent(data -> {
@@ -67,22 +67,22 @@ public class WhiteListScreen extends Screen {
             if (!data.getWhitelist().isEmpty()) {
                 int index = 0;
                 for (String name : data.getWhitelist().keySet()) {
-                    font.drawShadow(stack, name, center_x - 54, center_y - 48 + (index++ * 10), 0xeeeeee);
+                    font.drawShadow(stack, name, centerX - 54, centerY - 48 + (index++ * 10), 0xeeeeee);
                 }
 
             }
 
-            font.drawShadow(stack, data.getWhitelist().size() + "/9", center_x + 45, center_y - 50, 0x002222);
+            font.drawShadow(stack, data.getWhitelist().size() + "/9", centerX + 45, centerY - 50, 0x002222);
 
-            font.drawShadow(stack, "<add,remove>[playername]", center_x - 65, center_y + 69, 0x555555);
+            font.drawShadow(stack, "<add,remove>[playername]", centerX - 65, centerY + 69, 0x555555);
 
         });
     }
 
     @Override
     public boolean charTyped(char keyCode, int scanCode) {
-        if (!is_open)
-            is_open = true;
+        if (!canType)
+            canType = true;
         else {
             textfield.charTyped(keyCode, scanCode);
             return true;
@@ -102,7 +102,7 @@ public class WhiteListScreen extends Screen {
             return super.keyPressed(keyCode, scanCode, p_keyPressed_3_);
         }
 
-        if (is_open && !super.keyPressed(keyCode, scanCode, p_keyPressed_3_)) {
+        if (canType && !super.keyPressed(keyCode, scanCode, p_keyPressed_3_)) {
             textfield.keyPressed(keyCode, scanCode, p_keyPressed_3_);
             return true;
         }
@@ -113,9 +113,9 @@ public class WhiteListScreen extends Screen {
     protected void init() {
 
         super.init();
-        center_x = minecraft.getWindow().getGuiScaledWidth() / 2;
-        center_y = minecraft.getWindow().getGuiScaledHeight() / 2;
-        textfield = new EditBox(font, center_x - tex_x / 2 + 5, center_y - tex_y / 2 + 13, 132, 11, new TextComponent("field_name"));
+        centerX = minecraft.getWindow().getGuiScaledWidth() / 2;
+        centerY = minecraft.getWindow().getGuiScaledHeight() / 2;
+        textfield = new EditBox(font, centerX - textureWidth / 2 + 5, centerY - textureHeight / 2 + 13, 132, 11, new TextComponent("field_name"));
         textfield.setSuggestion(suggestion);
         // player names must be between 3 and 16 characters, our command 'remove' is the
         // longest word, space included gives 23 characters max

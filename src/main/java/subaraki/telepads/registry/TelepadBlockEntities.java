@@ -9,7 +9,7 @@ import subaraki.telepads.tileentity.TileEntityTelepad;
 
 public class TelepadBlockEntities {
 
-    public static final DeferredRegister<BlockEntityType<?>> TILEENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, Telepads.MODID);
-    public static final RegistryObject<BlockEntityType<TileEntityTelepad>> TILE_ENTITY_TELEPAD = TILEENTITIES.register("telepadtileentity", () ->
-            BlockEntityType.Builder.of(TileEntityTelepad::new, TelepadBlocks.TELEPAD_BLOCK.get()).build(null));
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, Telepads.MODID);
+    public static final RegistryObject<BlockEntityType<TileEntityTelepad>> TELEPAD = BLOCK_ENTITIES.register("telepadtileentity", () ->
+            BlockEntityType.Builder.of(TileEntityTelepad::new, TelepadBlocks.TELEPAD.get()).build(null));
 }

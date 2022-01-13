@@ -34,23 +34,23 @@ import java.util.List;
 public class TeleportScreen extends Screen {
 
     protected final List<AbstractWidget> unscrollables = Lists.newArrayList();
-    final int START_X = 10;
-    final int START_Y = 30;
-    final int GAP = 5;
+    final int startX = 10;
+    final int startY = 30;
+    final int gap = 5;
     // show entries from current worl, or if selected, from another dimension
     // array only contains entries from selected dimension
     private final LinkedList<TelepadEntry> entries = new LinkedList<>();
-    private final boolean is_transmitter_pad;
-    protected List<ResourceKey<Level>> dimensions_visited = Lists.newArrayList();
-    EditBox dimension_indicator;
-    private ResourceKey<Level> lookup_dim_id = Level.OVERWORLD;
+    private final boolean isTransmitter;
+    protected List<ResourceKey<Level>> visitedList = Lists.newArrayList();
+    EditBox dimensionIndicator;
+    private ResourceKey<Level> dimensionId = Level.OVERWORLD;
     private int scrollbarscroll = 0;
-    private int tuner_counter = 0;
+    private int tunerPosition = 0;
 
     public TeleportScreen(boolean is_transmitter_pad) {
 
         super(new TranslatableComponent("telepad.gui"));
-        this.is_transmitter_pad = is_transmitter_pad;
+        this.isTransmitter = is_transmitter_pad;
 
     }
 
@@ -65,12 +65,12 @@ public class TeleportScreen extends Screen {
 
         super.init();
 
-        lookup_dim_id = minecraft.level.dimension();
+        dimensionId = minecraft.level.dimension();
 
         scrollbarscroll = 0;
-        dimension_indicator = new EditBox(font, minecraft.getWindow().getGuiScaledWidth() / 2 - 75, 5, 150, 20,
+        dimensionIndicator = new EditBox(font, minecraft.getWindow().getGuiScaledWidth() / 2 - 75, 5, 150, 20,
                 new TranslatableComponent("indicator"));
-        dimension_indicator.setValue(lookup_dim_id.location().getPath());
+        dimensionIndicator.setValue(dimensionId.location().getPath());
 
         initialize_pages();
 
@@ -90,11 +90,11 @@ public class TeleportScreen extends Screen {
         RenderSystem.disableTexture();
         stack.popPose();
 
-        fill(stack, START_X, START_Y, width - START_X, height - START_Y, 0x0055444444);
+        fill(stack, startX, startY, width - startX, height - startY, 0x0055444444);
 
         Window window = minecraft.getWindow();
         int scale = (int) window.getGuiScale();
-        RenderSystem.enableScissor(START_X * scale, START_Y * scale, width * scale, (height - (START_Y * 2)) * scale);
+        RenderSystem.enableScissor(startX * scale, startY * scale, width * scale, (height - (startY * 2)) * scale);
         super.render(stack, mouseX, mouseY, partialTicks);
         RenderSystem.disableScissor();
 
@@ -102,7 +102,7 @@ public class TeleportScreen extends Screen {
             drawFakeScrollBar(stack);
         }
 
-        dimension_indicator.render(stack, mouseX, mouseY, partialTicks);
+        dimensionIndicator.render(stack, mouseX, mouseY, partialTicks);
 
         unscrollables.forEach(b -> b.render(stack, mouseX, mouseY, partialTicks));
 
@@ -116,10 +116,10 @@ public class TeleportScreen extends Screen {
         if (renderables.get(index) instanceof AbstractWidget last && renderables.get(0) instanceof AbstractWidget first) {
 
             int forsee_bottom_limit = (int) (last.y + last.getHeight() + (mouseScroll * 16));
-            int bottom_limit = height - START_Y - last.getHeight();
+            int bottom_limit = height - startY - last.getHeight();
 
             int forsee_top_limit = (int) (first.y - 15 + mouseScroll * 16);
-            int top_limit = GAP + START_Y;
+            int top_limit = gap + startY;
             // scrolling up
             if (mouseScroll < 0.0 && forsee_bottom_limit < bottom_limit)
                 return super.mouseScrolled(mouseX, mouseY, mouseScroll);
@@ -151,8 +151,8 @@ public class TeleportScreen extends Screen {
             int bot = last.y + last.getHeight();
 
             // get total size for buttons drawn
-            float totalSize = (bot - top) + (GAP);
-            float containerSize = height - START_Y * 2;
+            float totalSize = (bot - top) + (gap);
+            float containerSize = height - startY * 2;
 
             // relative % of the scale between the buttons drawn and the screen size
             float percent = ((containerSize / totalSize) * 100f);
@@ -172,9 +172,9 @@ public class TeleportScreen extends Screen {
                 // 0xff00ffff);
 
                 // draw a black background background
-                this.fillGradient(stack, width - START_X, START_Y, width, START_Y + (int) containerSize, 0x80000000, 0x80222222);
+                this.fillGradient(stack, width - startX, startY, width, startY + (int) containerSize, 0x80000000, 0x80222222);
                 // Draw scrollbar
-                this.fillGradient(stack, width - START_X, START_Y + (int) relativeScroll, width, START_Y + (int) relativeScroll + (int) sizeBar, 0x80ffffff,
+                this.fillGradient(stack, width - startX, startY + (int) relativeScroll, width, startY + (int) relativeScroll + (int) sizeBar, 0x80ffffff,
                         0x80222222);
             }
         }
@@ -197,7 +197,7 @@ public class TeleportScreen extends Screen {
         TelepadData.get(ClientReferences.getClientPlayer()).ifPresent((data) -> {
 
             for (TelepadEntry entry : data.getEntries()) {
-                if (entry.dimensionID.equals(lookup_dim_id))
+                if (entry.dimensionID.equals(dimensionId))
                     entries.add(entry);
             }
         });
@@ -240,36 +240,36 @@ public class TeleportScreen extends Screen {
     private void add_paging_buttons() {
 
         // set the tuner to the right index for the currently visiting dimension
-        while (dimensions_visited.get(tuner_counter) != lookup_dim_id)
-            tuner_counter++;
+        while (visitedList.get(tunerPosition) != dimensionId)
+            tunerPosition++;
 
         int centerx = Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2;
         AbstractWidget button_left = new Button(centerx - 75 - 25, 5, 20, 20, new TextComponent("<"), (button) -> {
-            if (dimensions_visited.size() > 1) {
-                tuner_counter--;
+            if (visitedList.size() > 1) {
+                tunerPosition--;
 
-                if (tuner_counter < 0)
-                    tuner_counter = dimensions_visited.size() - 1;
+                if (tunerPosition < 0)
+                    tunerPosition = visitedList.size() - 1;
 
             }
 
-            lookup_dim_id = dimensions_visited.get(tuner_counter);
-            dimension_indicator.setValue(lookup_dim_id.location().getPath());
+            dimensionId = visitedList.get(tunerPosition);
+            dimensionIndicator.setValue(dimensionId.location().getPath());
 
             initialize_pages();
         });
 
         AbstractWidget button_right = new Button(centerx + 75 + 5, 5, 20, 20, new TextComponent(">"), (button) -> {
-            if (dimensions_visited.size() > 1) {
-                tuner_counter++;
+            if (visitedList.size() > 1) {
+                tunerPosition++;
 
-                if (tuner_counter >= dimensions_visited.size())
-                    tuner_counter = 0;
+                if (tunerPosition >= visitedList.size())
+                    tunerPosition = 0;
 
             }
 
-            lookup_dim_id = dimensions_visited.get(tuner_counter);
-            dimension_indicator.setValue(lookup_dim_id.location().getPath());
+            dimensionId = visitedList.get(tunerPosition);
+            dimensionIndicator.setValue(dimensionId.location().getPath());
 
             initialize_pages();
 
@@ -289,13 +289,13 @@ public class TeleportScreen extends Screen {
         this.clearWidgets();
         entries.clear();
         unscrollables.clear();
-        dimensions_visited.clear();
+        visitedList.clear();
 
         setup_dimension_list();
 
         setup_dimension_page();
 
-        if (is_transmitter_pad) {
+        if (isTransmitter) {
             add_paging_buttons();
         }
     }
@@ -304,8 +304,8 @@ public class TeleportScreen extends Screen {
 
         TelepadData.get(ClientReferences.getClientPlayer()).ifPresent((data) -> {
             data.getEntries().forEach(entry -> {
-                if (!dimensions_visited.contains(entry.dimensionID))
-                    dimensions_visited.add(entry.dimensionID);
+                if (!visitedList.contains(entry.dimensionID))
+                    visitedList.add(entry.dimensionID);
             });
         });
     }

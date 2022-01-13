@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class TelepadData {
-    private static final int MAX_TIME = ConfigData.teleport_seconds * 20;
+    private static final int MAX_TIME = ConfigData.teleprtDelay * 20;
 
     /**
      * A list of uuid's a player can whitelist, to share coordinates of a placed
@@ -195,16 +195,13 @@ public class TelepadData {
 
         // player names are minimum 3 characters
         if (command.length() > 2) {
-            //TODO
-            //command = command.toLowerCase();
-            // didnt add clear command because I was to lazy to add another client packet to
-            // sync up the data
-//            if (command.equals("clear"))
-//            {
-//                this.whitelist.clear();
-//
-//                return;
-//            }
+            if (command.equalsIgnoreCase("clear")) {
+                for (String entry : whitelist.keySet())
+                    removeWhiteListEntryServer(entry);
+                this.whitelist.clear();
+
+                return;
+            }
 
             String[] command_split = command.split(" ");
 

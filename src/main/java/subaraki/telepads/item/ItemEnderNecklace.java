@@ -14,7 +14,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import subaraki.telepads.handler.ConfigData;
 import subaraki.telepads.handler.WorldDataHandler;
-import subaraki.telepads.utility.PropertiesWrapper;
 import subaraki.telepads.utility.TelepadEntry;
 import subaraki.telepads.utility.masa.Teleport;
 
@@ -28,7 +27,7 @@ public class ItemEnderNecklace extends Item {
 
     public ItemEnderNecklace() {
 
-        super(PropertiesWrapper.getItemProperties().stacksTo(8).tab(CreativeModeTab.TAB_MATERIALS));
+        super(new Item.Properties().stacksTo(8).tab(CreativeModeTab.TAB_MATERIALS));
 
     }
 

@@ -20,28 +20,28 @@ import subaraki.telepads.utility.TelepadEntry;
 
 public class NameTelepadScreen extends Screen {
 
-    private final int field_width = 150;
-    private final int field_height = 20;
-    private final String text_share;
-    private final String text_confirm_share;
-    private final String text_negate_share;
-    private final String enter;
+    private final int textFieldWidth = 150;
+    private final int textFieldHeight = 20;
+    private final String textShare;
+    private final String textConfirmShare;
+    private final String textNegateShare;
+    private final String textEnter;
     private final BlockPos position;
-    String sharing = "";
-    private EditBox textField;
-    private int center_x, center_y;
-    private String nameYourPad;
+    protected String sharing = "";
+    private EditBox textfieldBox;
+    private int centerX, centerY;
+    private String textNameYourPad;
     private boolean share = false;
-    private boolean should_show_sharing;
+    private boolean showSharing;
 
     public NameTelepadScreen(BlockPos position) {
 
         super(new TranslatableComponent("name.pick.screen"));
 
-        text_share = new TranslatableComponent("button.share").getString();
-        text_confirm_share = new TranslatableComponent("confirm.share").getString();
-        text_negate_share = new TranslatableComponent("negate.share").getString();
-        enter = new TranslatableComponent("enter.to.confirm").getString();
+        textShare = new TranslatableComponent("button.share").getString();
+        textConfirmShare = new TranslatableComponent("confirm.share").getString();
+        textNegateShare = new TranslatableComponent("negate.share").getString();
+        textEnter = new TranslatableComponent("enter.to.confirm").getString();
 
         this.position = position;
     }
@@ -57,12 +57,12 @@ public class NameTelepadScreen extends Screen {
 
         super.init();
 
-        center_x = this.width / 2;
-        center_y = this.height / 2;
+        centerX = this.width / 2;
+        centerY = this.height / 2;
 
         initTextField();
         Component translation = new TranslatableComponent("name.your.telepad").append(new TextComponent(" : "));
-        nameYourPad = translation.getString();
+        textNameYourPad = translation.getString();
 
         initButtons();
 
@@ -72,8 +72,8 @@ public class NameTelepadScreen extends Screen {
 
         TelepadData.get(minecraft.player).ifPresent(data -> {
             if (!data.getWhitelist().isEmpty()) {
-                should_show_sharing = true;
-                this.addRenderableWidget(new Button(center_x - 40, center_y + 20, 45, 20, new TranslatableComponent(text_share), b -> {
+                showSharing = true;
+                this.addRenderableWidget(new Button(centerX - 40, centerY + 20, 45, 20, new TranslatableComponent(textShare), b -> {
                     share = !share;
                 }));
 
@@ -83,11 +83,11 @@ public class NameTelepadScreen extends Screen {
 
     private void initTextField() {
 
-        textField = new EditBox(font, center_x - field_width / 2, center_y - 50, field_width, field_height, new TextComponent("field_name"));
-        textField.setBordered(true);
-        textField.setEditable(true);
-        textField.setCanLoseFocus(false);
-        textField.setFocus(true);
+        textfieldBox = new EditBox(font, centerX - textFieldWidth / 2, centerY - 50, textFieldWidth, textFieldHeight, new TextComponent("field_name"));
+        textfieldBox.setBordered(true);
+        textfieldBox.setEditable(true);
+        textfieldBox.setCanLoseFocus(false);
+        textfieldBox.setFocus(true);
 
         ResourceLocation resLoc = Minecraft.getInstance().level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getKey(Minecraft.getInstance().level.getBiome(Minecraft.getInstance().player.blockPosition()));
 
@@ -96,8 +96,8 @@ public class NameTelepadScreen extends Screen {
 
         String format_name = biome.getString().substring(0, Math.min(15, biome.getString().length()));
 
-        textField.setValue(format_name);
-        textField.setMaxLength(16);
+        textfieldBox.setValue(format_name);
+        textfieldBox.setMaxLength(16);
     }
 
     @Override
@@ -107,27 +107,27 @@ public class NameTelepadScreen extends Screen {
 
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
-        textField.render(matrixStack, mouseX, mouseY, partialTicks);
+        textfieldBox.render(matrixStack, mouseX, mouseY, partialTicks);
 
-        if (should_show_sharing)
-            this.sharing = share ? text_confirm_share : text_negate_share;
+        if (showSharing)
+            this.sharing = share ? textConfirmShare : textNegateShare;
 
-        font.drawShadow(matrixStack, sharing, center_x - font.width(sharing) / 2 + 30, center_y + 27, 0xafafaf);
-        font.drawShadow(matrixStack, enter, center_x - font.width(enter) / 2, center_y, 0xffffff);
-        font.drawShadow(matrixStack, nameYourPad + textField.getValue(), center_x - font.width(nameYourPad + textField.getValue()) / 2,
-                center_y - field_height, 0xff0000);
+        font.drawShadow(matrixStack, sharing, centerX - font.width(sharing) / 2 + 30, centerY + 27, 0xafafaf);
+        font.drawShadow(matrixStack, textEnter, centerX - font.width(textEnter) / 2, centerY, 0xffffff);
+        font.drawShadow(matrixStack, textNameYourPad + textfieldBox.getValue(), centerX - font.width(textNameYourPad + textfieldBox.getValue()) / 2,
+                centerY - textFieldHeight, 0xff0000);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int p_keyPressed_3_) {
 
-        textField.keyPressed(keyCode, scanCode, p_keyPressed_3_);
+        textfieldBox.keyPressed(keyCode, scanCode, p_keyPressed_3_);
 
         if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER || keyCode == GLFW.GLFW_KEY_ESCAPE) {
 
             TelepadData.get(ClientReferences.getClientPlayer()).ifPresent(data -> {
 
-                TelepadEntry telepad_entry = new TelepadEntry(textField.getValue(), Minecraft.getInstance().level.dimension(), position);
+                TelepadEntry telepad_entry = new TelepadEntry(textfieldBox.getValue(), Minecraft.getInstance().level.dimension(), position);
                 telepad_entry.addUser(ClientReferences.getClientPlayer().getUUID());
 
                 if (share)
@@ -148,7 +148,7 @@ public class NameTelepadScreen extends Screen {
     @Override
     public boolean charTyped(char car, int index) {
 
-        textField.charTyped(car, index);
+        textfieldBox.charTyped(car, index);
 
         return super.charTyped(car, index);
     }
