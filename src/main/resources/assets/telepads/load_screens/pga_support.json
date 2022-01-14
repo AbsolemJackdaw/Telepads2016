@@ -1,0 +1,27 @@
+{
+  "screens": [
+    {
+      "class": "subaraki.telepads.screen.MissingEntryScreen",
+      "texture": "telepads:textures/gui/pga_support/missing.png",
+      "square": 255
+    },
+    {
+      "class": "subaraki.telepads.screen.NameTelepadScreen",
+      "texture": "telepads:textures/gui/pga_support/name.png",
+      "square": 255
+    },
+    {
+      "class": "subaraki.telepads.screen.TeleportScreen",
+      "texture": "telepads:textures/gui/pga_support/teleport.png",
+      "square": 255
+    },
+    {
+      "class": "subaraki.telepads.screen.WhiteListScreen",
+      "texture": "telepads:textures/gui/whitelist.png",
+      "size": [
+        142,
+        166
+      ]
+    }
+  ]
+}
