@@ -61,13 +61,13 @@ public class TelepadItems {
     public static final RegistryObject<Item> NECKLACE = ITEMS.register("ender_bead_necklace", ItemEnderNecklace::new);
     public static final RegistryObject<Item> TOGGLER = ITEMS.register("toggler", () -> new Item(new Item.Properties().tab(CreativeModeTab.TAB_REDSTONE)));
     public static final RegistryObject<Item> TRANSMITTER = ITEMS.register("transmitter", () -> new Item(new Item.Properties().tab(CreativeModeTab.TAB_REDSTONE)));
-    public static final RegistryObject<Item> CYCLE_ROD = ITEMS.register("cycle_rod", () -> new Item(new Item.Properties().tab(CreativeModeTab.TAB_REDSTONE)) {
+    public static final RegistryObject<Item> CYCLE_ROD = ITEMS.register("creative_rod", () -> new Item(new Item.Properties().tab(CreativeModeTab.TAB_REDSTONE)) {
         @Override
         public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
             tooltip.add(new TextComponent("can be used by people with creative access to enable telepads to teleport to a location defined in config"));
         }
     });
-    public static final RegistryObject<Item> PUBLIC_TOGGLE_ROD = ITEMS.register("public_toggle_rod", () -> new Item(new Item.Properties().tab(CreativeModeTab.TAB_REDSTONE)) {
+    public static final RegistryObject<Item> PUBLIC_TOGGLE_ROD = ITEMS.register("creative_rod_public", () -> new Item(new Item.Properties().tab(CreativeModeTab.TAB_REDSTONE)) {
         @Override
         public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
             tooltip.add(new TextComponent("can be used by people with creative access to toggle public acces to a telepad"));

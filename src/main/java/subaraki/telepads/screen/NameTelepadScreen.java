@@ -89,7 +89,7 @@ public class NameTelepadScreen extends Screen {
         textfieldBox.setCanLoseFocus(false);
         textfieldBox.setFocus(true);
 
-        ResourceLocation resLoc = Minecraft.getInstance().level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getKey(Minecraft.getInstance().level.getBiome(Minecraft.getInstance().player.blockPosition()));
+        ResourceLocation resLoc = minecraft.level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getKey(minecraft.level.getBiome(minecraft.player.blockPosition()).value());
 
         String biome_name = "biome." + resLoc.getNamespace() + "." + resLoc.getPath(); //biome names are present in lang files under biome.modname.biomename
         TranslatableComponent biome = new TranslatableComponent(biome_name);

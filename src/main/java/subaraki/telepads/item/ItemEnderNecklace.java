@@ -63,7 +63,7 @@ public class ItemEnderNecklace extends Item {
 
             for (TelepadEntry entry : thisDim) {
 
-                double distanceSQ = entry.position.distSqr(player.getX(), player.getY(), player.getZ(), true);
+                double distanceSQ = entry.position.distToLowCornerSqr(player.getX(), player.getY(), player.getZ());
 
                 if (distance > distanceSQ) {
                     distance = distanceSQ;

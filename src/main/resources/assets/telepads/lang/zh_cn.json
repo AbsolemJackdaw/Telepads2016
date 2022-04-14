@@ -17,8 +17,8 @@
 	"tile.telepads.telepad" : "传送台",
 	"item.telepads.ender_bead" : "末影念珠",
 	"item.telepads.ender_bead_necklace" : "末影念珠项链",
-	"item.telepads.cycle_rod" : "单向传送带台手杖(创造)",
-	"item.telepads.public_toggle_rod" : "公共传送台手杖(创造)",
+	"item.telepads.creative_rod" : "单向传送带台手杖(创造)",
+	"item.telepads.creative_rod_public" : "公共传送台手杖(创造)",
 	"block.telepads.telepad" : "传送台",
 	"feet.name" : "脚座(颜色) : " ,
 	"arrow.name" : "箭头(颜色) : " ,
@@ -31,8 +31,8 @@
 	"block.info.add.succes" : "添加成功 %s",
 	"block.info.add.fail" : "成功删除",
 	"block.info.add.remove" : "无法添加或删除公共传送台",
-	"block.info.rodlock.info.rod.public" : "传送台设置为公共模式",
-	"block.info.rodblock.info.rod.private" : "传送台恢复为个人模式",
 
-	"suggest.name" : "其他玩家的名字"
+	"suggest.name" : "其他玩家的名字",
+	"pearl.bounce" : "The Pearl Bounces... no telepads are found nearby",
+	"pearl.inactive" : "This Functionality has been disabled by the server operator."
 }

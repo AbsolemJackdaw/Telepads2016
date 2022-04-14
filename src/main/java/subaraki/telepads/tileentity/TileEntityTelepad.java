@@ -102,11 +102,12 @@ public class TileEntityTelepad extends BlockEntity {
         readFromSave(compound);
     }
 
-    @Override
-    public CompoundTag save(CompoundTag compound) {
-        super.save(compound);
-        return writeToSave(compound);
-    }
+
+//    @Override
+//    public CompoundTag save(CompoundTag compound) {
+//        super.save(compound);
+//        return writeToSave(compound);
+//    }
 
     @Override
     protected void saveAdditional(CompoundTag compoundTag) {

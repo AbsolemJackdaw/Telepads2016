@@ -14,7 +14,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply from: 'https://raw.githubusercontent.com/SizableShrimp/Forge-Class-Remapper/main/classremapper.gradle'
 
-version = '1.18.1-5.0.1.0'
+version = '1.18.2-5.1.0.0'
 group = 'subaraki' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'telepads'
 
@@ -22,7 +22,7 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
   
-    mappings channel: 'official', version: '1.18'
+    mappings channel: 'official', version: '1.18.2'
       
 
     runs {
@@ -65,7 +65,7 @@ minecraft {
 
 dependencies {
 
-    minecraft 'net.minecraftforge:forge:1.18.1-39.0.8'
+    minecraft 'net.minecraftforge:forge:1.18.2-40.0.49'
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
