@@ -1,8 +1,6 @@
 package subaraki.telepads.registry;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.DeferredRegister;
@@ -46,9 +44,9 @@ public class TelepadItems {
                                     }
                                 }
 
-                                TranslatableComponent part_name = new TranslatableComponent(translate_part_names[iteration]);
-                                TranslatableComponent dye_name = new TranslatableComponent(color_name);
-                                TextComponent text = new TextComponent(part_name.getString() + dye_name.getString());
+                                Component part_name = Component.translatable(translate_part_names[iteration]);
+                                Component dye_name = Component.translatable(color_name);
+                                Component text = Component.literal(part_name.getString() + dye_name.getString());
                                 tooltip.add(text);
                             }
 
@@ -64,13 +62,13 @@ public class TelepadItems {
     public static final RegistryObject<Item> CYCLE_ROD = ITEMS.register("creative_rod", () -> new Item(new Item.Properties().tab(CreativeModeTab.TAB_REDSTONE)) {
         @Override
         public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-            tooltip.add(new TextComponent("can be used by people with creative access to enable telepads to teleport to a location defined in config"));
+            tooltip.add(Component.literal("can be used by people with creative access to enable telepads to teleport to a location defined in config"));
         }
     });
     public static final RegistryObject<Item> PUBLIC_TOGGLE_ROD = ITEMS.register("creative_rod_public", () -> new Item(new Item.Properties().tab(CreativeModeTab.TAB_REDSTONE)) {
         @Override
         public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-            tooltip.add(new TextComponent("can be used by people with creative access to toggle public acces to a telepad"));
+            tooltip.add(Component.literal("can be used by people with creative access to toggle public acces to a telepad"));
         }
     });
 

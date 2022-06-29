@@ -1,7 +1,7 @@
 package subaraki.telepads.item;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -35,7 +35,7 @@ public class ItemEnderBead extends Item {
 
         if (!ConfigData.allowBeadsUsage) {
             if (!world.isClientSide)
-                player.sendMessage(new TranslatableComponent("pearl.inactive"), player.getUUID());
+                player.displayClientMessage(Component.translatable("pearl.inactive"), false);
             return super.use(world, player, hand);
         }
         if (!world.isClientSide) {
@@ -46,7 +46,7 @@ public class ItemEnderBead extends Item {
             List<TelepadEntry> thisDim = new ArrayList<TelepadEntry>();
 
             if (locations.isEmpty()) {
-                player.sendMessage(new TranslatableComponent("pearl.bounce").setStyle(Style.EMPTY.withItalic(true)), player.getUUID());
+                player.displayClientMessage(Component.translatable("pearl.bounce").setStyle(Style.EMPTY.withItalic(true)), false);
                 return super.use(world, player, hand); // pass
             }
 
@@ -56,7 +56,7 @@ public class ItemEnderBead extends Item {
                     .forEach(thisDim::add);
 
             if (thisDim.isEmpty()) {
-                player.sendMessage(new TranslatableComponent("pearl.bounce").setStyle(Style.EMPTY.withItalic(true)), player.getUUID());
+                player.displayClientMessage(Component.translatable("pearl.bounce").setStyle(Style.EMPTY.withItalic(true)), false);
                 return super.use(world, player, hand);// pass
             }
 
@@ -75,7 +75,7 @@ public class ItemEnderBead extends Item {
             } else {
                 world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.SLIME_BLOCK_PLACE, SoundSource.NEUTRAL, 0.5F,
                         0.4F / (random.nextFloat() * 0.4F + 0.8F));
-                player.sendMessage(new TranslatableComponent("pearl.bounce").setStyle(Style.EMPTY.withItalic(true)), player.getUUID());
+                player.displayClientMessage(Component.translatable("pearl.bounce").setStyle(Style.EMPTY.withItalic(true)), false);
             }
 
         }

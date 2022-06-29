@@ -8,8 +8,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
 import subaraki.telepads.capability.player.TelepadData;
@@ -36,12 +34,12 @@ public class NameTelepadScreen extends Screen {
 
     public NameTelepadScreen(BlockPos position) {
 
-        super(new TranslatableComponent("name.pick.screen"));
+        super(Component.translatable("name.pick.screen"));
 
-        textShare = new TranslatableComponent("button.share").getString();
-        textConfirmShare = new TranslatableComponent("confirm.share").getString();
-        textNegateShare = new TranslatableComponent("negate.share").getString();
-        textEnter = new TranslatableComponent("enter.to.confirm").getString();
+        textShare = Component.translatable("button.share").getString();
+        textConfirmShare = Component.translatable("confirm.share").getString();
+        textNegateShare = Component.translatable("negate.share").getString();
+        textEnter = Component.translatable("enter.to.confirm").getString();
 
         this.position = position;
     }
@@ -61,7 +59,7 @@ public class NameTelepadScreen extends Screen {
         centerY = this.height / 2;
 
         initTextField();
-        Component translation = new TranslatableComponent("name.your.telepad").append(new TextComponent(" : "));
+        Component translation = Component.translatable("name.your.telepad").append(Component.literal(" : "));
         textNameYourPad = translation.getString();
 
         initButtons();
@@ -73,7 +71,7 @@ public class NameTelepadScreen extends Screen {
         TelepadData.get(minecraft.player).ifPresent(data -> {
             if (!data.getWhitelist().isEmpty()) {
                 showSharing = true;
-                this.addRenderableWidget(new Button(centerX - 40, centerY + 20, 45, 20, new TranslatableComponent(textShare), b -> {
+                this.addRenderableWidget(new Button(centerX - 40, centerY + 20, 45, 20, Component.translatable(textShare), b -> {
                     share = !share;
                 }));
 
@@ -83,7 +81,7 @@ public class NameTelepadScreen extends Screen {
 
     private void initTextField() {
 
-        textfieldBox = new EditBox(font, centerX - textFieldWidth / 2, centerY - 50, textFieldWidth, textFieldHeight, new TextComponent("field_name"));
+        textfieldBox = new EditBox(font, centerX - textFieldWidth / 2, centerY - 50, textFieldWidth, textFieldHeight, Component.literal("field_name"));
         textfieldBox.setBordered(true);
         textfieldBox.setEditable(true);
         textfieldBox.setCanLoseFocus(false);
@@ -92,7 +90,7 @@ public class NameTelepadScreen extends Screen {
         ResourceLocation resLoc = minecraft.level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getKey(minecraft.level.getBiome(minecraft.player.blockPosition()).value());
 
         String biome_name = "biome." + resLoc.getNamespace() + "." + resLoc.getPath(); //biome names are present in lang files under biome.modname.biomename
-        TranslatableComponent biome = new TranslatableComponent(biome_name);
+        Component biome = Component.translatable(biome_name);
 
         String format_name = biome.getString().substring(0, Math.min(15, biome.getString().length()));
 

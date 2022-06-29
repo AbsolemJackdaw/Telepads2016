@@ -1,6 +1,6 @@
 package subaraki.telepads.item;
 
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -36,7 +36,7 @@ public class ItemEnderNecklace extends Item {
 
         if (!ConfigData.allowNecklaceUsage) {
             if (!world.isClientSide)
-                player.sendMessage(new TranslatableComponent("pearl.inactive"), player.getUUID());
+                player.displayClientMessage(Component.translatable("pearl.inactive"), false);
             return super.use(world, player, hand);
         }
 

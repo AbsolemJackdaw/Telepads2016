@@ -3,7 +3,7 @@ package subaraki.telepads.screen;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import subaraki.telepads.network.NetworkHandler;
 import subaraki.telepads.network.server.SPacketRemoveEntry;
 import subaraki.telepads.network.server.SPacketTeleport;
@@ -20,11 +20,11 @@ public class MissingEntryScreen extends Screen {
 
     public MissingEntryScreen(TelepadEntry missing_entry) {
 
-        super(new TranslatableComponent("gui.missing.entry"));
+        super(Component.translatable("gui.missing.entry"));
 
-        textInformation = new TranslatableComponent("cannot.find.remove").getString();
-        textTeleportAnyway = new TranslatableComponent("button.teleport").getString();
-        textForget = new TranslatableComponent("button.forget").getString();
+        textInformation = Component.translatable("cannot.find.remove").getString();
+        textTeleportAnyway = Component.translatable("button.teleport").getString();
+        textForget = Component.translatable("button.forget").getString();
 
         this.missingEntry = missing_entry;
     }
@@ -45,13 +45,13 @@ public class MissingEntryScreen extends Screen {
 
         int x = 120;
         int y = 20;
-        this.addRenderableWidget(new Button(centerX - x - 10, centerY + y, x, y, new TranslatableComponent(textTeleportAnyway), button -> {
+        this.addRenderableWidget(new Button(centerX - x - 10, centerY + y, x, y, Component.translatable(textTeleportAnyway), button -> {
             NetworkHandler.NETWORK.sendToServer(new SPacketTeleport(minecraft.player.blockPosition(), missingEntry, false));
             this.removed();
             this.onClose();
         }));
 
-        this.addRenderableWidget(new Button(centerX + 10, centerY + y, x, y, new TranslatableComponent(textForget), button -> {
+        this.addRenderableWidget(new Button(centerX + 10, centerY + y, x, y, Component.translatable(textForget), button -> {
             NetworkHandler.NETWORK.sendToServer(new SPacketRemoveEntry(missingEntry));
             this.removed();
             this.onClose();

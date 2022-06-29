@@ -16,10 +16,9 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import subaraki.telepads.capability.player.TelepadData;
@@ -49,7 +48,7 @@ public class TeleportScreen extends Screen {
 
     public TeleportScreen(boolean is_transmitter_pad) {
 
-        super(new TranslatableComponent("telepad.gui"));
+        super(net.minecraft.network.chat.Component.translatable("telepad.gui"));
         this.isTransmitter = is_transmitter_pad;
 
     }
@@ -69,7 +68,7 @@ public class TeleportScreen extends Screen {
 
         scrollbarscroll = 0;
         dimensionIndicator = new EditBox(font, minecraft.getWindow().getGuiScaledWidth() / 2 - 75, 5, 150, 20,
-                new TranslatableComponent("indicator"));
+                Component.translatable("indicator"));
         dimensionIndicator.setValue(dimensionId.location().getPath());
 
         initialize_pages();
@@ -217,7 +216,7 @@ public class TeleportScreen extends Screen {
                             : entry.hasTransmitter ? ChatFormatting.GREEN
                             : ChatFormatting.WHITE;
             addRenderableWidget(new Button(central_offset + 5 + (extra_x * 120), 15 + (extra_y * 25), 110, 20,
-                    new TextComponent(entry.entryName).setStyle(Style.EMPTY.withColor(TextColor.fromLegacyFormat(color)).
+                    Component.literal(entry.entryName).setStyle(Style.EMPTY.withColor(TextColor.fromLegacyFormat(color)).
                             withBold(entry.position.equals(ClientReferences.getClientPlayer().blockPosition()))), (button) -> {
 
                 if (entry.isMissingFromLocation) {
@@ -244,7 +243,7 @@ public class TeleportScreen extends Screen {
             tunerPosition++;
 
         int centerx = Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2;
-        AbstractWidget button_left = new Button(centerx - 75 - 25, 5, 20, 20, new TextComponent("<"), (button) -> {
+        AbstractWidget button_left = new Button(centerx - 75 - 25, 5, 20, 20, Component.literal("<"), (button) -> {
             if (visitedList.size() > 1) {
                 tunerPosition--;
 
@@ -259,7 +258,7 @@ public class TeleportScreen extends Screen {
             initialize_pages();
         });
 
-        AbstractWidget button_right = new Button(centerx + 75 + 5, 5, 20, 20, new TextComponent(">"), (button) -> {
+        AbstractWidget button_right = new Button(centerx + 75 + 5, 5, 20, 20, Component.literal(">"), (button) -> {
             if (visitedList.size() > 1) {
                 tunerPosition++;
 

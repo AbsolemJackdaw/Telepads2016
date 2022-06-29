@@ -3,9 +3,9 @@ package subaraki.telepads.network.server;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -152,8 +152,7 @@ public class SPacketTeleport implements IPacketBase {
                 int penalty = ConfigData.expConsume;
 
                 if (penalty > 0 && (player.experienceLevel == 0 && player.experienceProgress * player.getXpNeededForNextLevel() <= penalty)) {
-                    player.displayClientMessage(new TranslatableComponent("no.exp")
-                            .setStyle(Style.EMPTY.withItalic(true).withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_RED))), true);
+                    player.displayClientMessage(Component.translatable("no.exp").setStyle(Style.EMPTY.withItalic(true).withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_RED))), true);
                     return;
                 }
 
@@ -174,7 +173,7 @@ public class SPacketTeleport implements IPacketBase {
                             }
                         } else {
                             player.displayClientMessage(
-                                    new TranslatableComponent("no.power").setStyle(Style.EMPTY.withItalic(true).withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_RED))), true);
+                                    Component.translatable("no.power").setStyle(Style.EMPTY.withItalic(true).withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_RED))), true);
                         }
                     } else {
                         data.setInTeleportGui(true); // set to true so when changing gui, it doesnt try to open the teleport gui.
@@ -193,7 +192,7 @@ public class SPacketTeleport implements IPacketBase {
                             }
                         } else {
                             player.displayClientMessage(
-                                    new TranslatableComponent("no.power").setStyle(Style.EMPTY.withItalic(true).withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_RED))), true);
+                                    Component.translatable("no.power").setStyle(Style.EMPTY.withItalic(true).withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_RED))), true);
                         }
                     }
                 }

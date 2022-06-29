@@ -5,9 +5,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -188,9 +188,11 @@ public class TileEntityTelepad extends BlockEntity {
                                     if (!((ServerLevel) level).getDragons().isEmpty()) {
                                         data.setCounter(TelepadData.getMaxTime());
 
-                                        playerOnPad.sendMessage(new TranslatableComponent("dragon.obstructs").setStyle(Style.EMPTY
-                                                        .withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_PURPLE)).withItalic(true)),
-                                                playerOnPad.getUUID());
+                                        playerOnPad.displayClientMessage(
+                                                Component.translatable("dragon.obstructs")
+                                                        .setStyle(Style.EMPTY.withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_PURPLE))
+                                                                .withItalic(true)),
+                                                false);
                                         return;
                                     }
                                 }

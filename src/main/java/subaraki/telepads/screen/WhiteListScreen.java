@@ -5,8 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
 import subaraki.telepads.capability.player.TelepadData;
@@ -29,8 +28,8 @@ public class WhiteListScreen extends Screen {
 
     public WhiteListScreen() {
 
-        super(new TranslatableComponent("screen.whitelist"));
-        suggestion = new TranslatableComponent("suggest.name").getContents();
+        super(net.minecraft.network.chat.Component.translatable("screen.whitelist"));
+        suggestion = Component.translatable("suggest.name").getString();
     }
 
     @Override
@@ -115,7 +114,7 @@ public class WhiteListScreen extends Screen {
         super.init();
         centerX = minecraft.getWindow().getGuiScaledWidth() / 2;
         centerY = minecraft.getWindow().getGuiScaledHeight() / 2;
-        textfield = new EditBox(font, centerX - textureWidth / 2 + 5, centerY - textureHeight / 2 + 13, 132, 11, new TextComponent("field_name"));
+        textfield = new EditBox(font, centerX - textureWidth / 2 + 5, centerY - textureHeight / 2 + 13, 132, 11, Component.literal("field_name"));
         textfield.setSuggestion(suggestion);
         // player names must be between 3 and 16 characters, our command 'remove' is the
         // longest word, space included gives 23 characters max
