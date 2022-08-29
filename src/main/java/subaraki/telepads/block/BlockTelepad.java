@@ -240,7 +240,7 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
                     if (TelepadBlockInteraction.interact(TelepadBlockInteraction.Action.WASH, level, pos, telepad, state, this)) {
                         level.playLocalSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1, 1, true);
                         if (!player.isCreative()) {
-                            player.setItemInHand(hand, heldStack.getContainerItem());
+                            player.setItemInHand(hand, heldStack.getCraftingRemainingItem());
                             return InteractionResult.SUCCESS;
                         }
                     } else return InteractionResult.FAIL;

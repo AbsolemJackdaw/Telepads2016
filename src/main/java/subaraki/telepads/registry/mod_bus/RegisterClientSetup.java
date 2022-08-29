@@ -7,7 +7,6 @@ import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import subaraki.telepads.mod.Telepads;
 import subaraki.telepads.registry.TelepadBlockEntities;
 import subaraki.telepads.tileentity.render.ModelTelepad;
@@ -17,11 +16,6 @@ import subaraki.telepads.tileentity.render.TileEntityTelepadRenderer;
 public class RegisterClientSetup {
 
     public static ModelLayerLocation TELEPAD = new ModelLayerLocation(new ResourceLocation("minecraft:player"), "telepad_layer");
-
-    @SubscribeEvent
-    public static void register(final FMLClientSetupEvent event) {
-        KeyRegistry.registerKey();
-    }
 
     @SubscribeEvent
     public static void registerRenderer(EntityRenderersEvent.RegisterRenderers event) {

@@ -8,7 +8,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
@@ -160,9 +160,9 @@ public class WorldDataHandler extends SavedData {
     public static class WorldDataHandlerSaveEvent {
 
         @SubscribeEvent
-        public static void onWorldSave(WorldEvent.Save event) {
+        public static void onWorldSave(LevelEvent.Save event) {
 
-            if (event.getWorld() instanceof ServerLevel server) {
+            if (event.getLevel() instanceof ServerLevel server) {
                 ServerLevel overworld = server.getServer().getLevel(Level.OVERWORLD);
                 WorldDataHandler.get(overworld).setDirty();
 
@@ -170,9 +170,9 @@ public class WorldDataHandler extends SavedData {
         }
 
         @SubscribeEvent
-        public static void onWorldLoad(WorldEvent.Load event) {
+        public static void onWorldLoad(LevelEvent.Load event) {
 
-            if (event.getWorld() instanceof ServerLevel server) {
+            if (event.getLevel() instanceof ServerLevel server) {
                 ServerLevel overworld = server.getServer().getLevel(Level.OVERWORLD);
                 // simply calling an instance will load it's data
                 WorldDataHandler.get(overworld);

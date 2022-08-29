@@ -2,7 +2,7 @@ package subaraki.telepads.registry.forge_bus;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -18,13 +18,13 @@ import subaraki.telepads.tileentity.TileEntityTelepad;
 public class PlayerTracker {
 
     @SubscribeEvent
-    public static void updateEntity(LivingUpdateEvent event) {
+    public static void updateEntity(LivingEvent.LivingTickEvent event) {
 
-        if (event.getEntityLiving() instanceof Player player)
+        if (event.getEntity() instanceof Player player)
 
             TelepadData.get(player).ifPresent(data -> {
 
-                if (!(event.getEntityLiving().level.getBlockEntity(event.getEntityLiving().blockPosition()) instanceof TileEntityTelepad te)) {
+                if (!(event.getEntity().level.getBlockEntity(event.getEntity().blockPosition()) instanceof TileEntityTelepad te)) {
                     if (data.getCounter() != TelepadData.getMaxTime())
                         data.setCounter(TelepadData.getMaxTime());
                     if (data.isInTeleportGui())
@@ -45,7 +45,7 @@ public class PlayerTracker {
     }
 
     private static void syncFriendList(PlayerEvent event) {
-        if (event.getPlayer() instanceof ServerPlayer player)
+        if (event.getEntity() instanceof ServerPlayer player)
             TelepadData.get(player).ifPresent(data -> {
                 data.getWhitelist().forEach((name, uuid) -> {
                     NetworkHandler.NETWORK.send(PacketDistributor.PLAYER.with(() -> player), new CPacketEditWhiteListEntry(name, uuid, true));
@@ -57,7 +57,7 @@ public class PlayerTracker {
     public static void onPlayerClone(PlayerEvent.Clone event) {
 
         TelepadData.get(event.getOriginal()).ifPresent(data -> {
-            TelepadData.get(event.getPlayer()).ifPresent(newdata -> {
+            TelepadData.get(event.getEntity()).ifPresent(newdata -> {
                 newdata.overrideEntries(data.getEntries());
             });
         });

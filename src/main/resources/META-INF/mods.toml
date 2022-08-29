@@ -1,6 +1,6 @@
 modLoader="javafml" #mandatory
 license="GNU V3"
-loaderVersion="[41,)" #mandatory (41 is current forge version)
+loaderVersion="[43,)" #mandatory (41 is current forge version)
 issueTrackerURL="https://github.com/ArtixAllMighty/Telepads2016/issues" #optional
 
 logoFile="logo.png" #optional
@@ -19,13 +19,13 @@ description='''
 [[dependencies.telepads]] #optional
     modId="forge" #mandatory
     mandatory=true #mandatory
-    versionRange="[41,)" #mandatory
+    versionRange="[43.1.1,)" #mandatory
     ordering="NONE"
     side="BOTH"
 	
 [[dependencies.telepads]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19,)"
+    versionRange="[1.19.2,)"
     ordering="NONE"
     side="BOTH"

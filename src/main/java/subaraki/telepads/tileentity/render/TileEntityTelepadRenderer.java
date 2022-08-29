@@ -16,7 +16,7 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraftforge.client.model.data.ModelData;
 import subaraki.telepads.registry.mod_bus.RegisterClientSetup;
 import subaraki.telepads.tileentity.TileEntityTelepad;
 
@@ -123,7 +123,7 @@ public class TileEntityTelepadRenderer implements BlockEntityRenderer<TileEntity
         BlockState state = Blocks.REDSTONE_TORCH.defaultBlockState().setValue(BlockStateProperties.LIT, te.isPowered());
         stack.translate(offsetX, offsetY, offsetZ);
         BakedModel model = blockrendererdispatcher.getBlockModel(state);
-        blockrendererdispatcher.getModelRenderer().renderModel(stack.last(), builder, te.getBlockState(), model, 0, 0, 0, combinedLight, combinedOverlay, EmptyModelData.INSTANCE);
+        blockrendererdispatcher.getModelRenderer().renderModel(stack.last(), builder, te.getBlockState(), model, 0, 0, 0, combinedLight, combinedOverlay, ModelData.EMPTY, RenderType.solid());
         stack.popPose();
     }
 
