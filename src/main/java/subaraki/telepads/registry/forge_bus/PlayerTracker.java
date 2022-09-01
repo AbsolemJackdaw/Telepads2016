@@ -61,6 +61,5 @@ public class PlayerTracker {
                 newdata.overrideEntries(data.getEntries());
             });
         });
-
     }
 }
