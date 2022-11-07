@@ -97,13 +97,15 @@ public class ConfigData {
                     .translation("config.tele.gui.open").defineInRange("Teleport GUI Delay", 3, 1, 60);
             builder.pop();
 
-            val = builder
-                    .comment(String.format("[x,y,z,dimension,locationName] locations can be defined in multiple ways :\n"
-                            + "exactly(100/64/100/0/Any Name really),\n" + "with margin (-500#1000/64#128/0#500/-1#1,Some Location Name)\n"
-                            + "or random (random/random/random/random/LocationNameHere)."
-                            + "values can be mixed (-100#5000/random/100/0/yourLocationNameHere) is totally possible"))
+            val = builder.comment("""
+                            [x,y,z,dimension,locationName]
+                            -locations can be defined in multiple ways:
+                            -exact coordinates : 100/64/100/overworld/Your Own TelepadIdentifier name
+                            -with margin : -500#1000/64#128/0#500/the_nether/Some Location
+                            -random : random/random/random/random/My Random Teleporter
+                            -values may be mixed : -100#5000/random/100/the_end/locationNameHere
+                            """)
                     .defineList("reflection_whitelisted_blocks", Lists.newArrayList(), obj -> obj instanceof String);
-
         }
     }
 

@@ -200,7 +200,8 @@ public class TileEntityTelepad extends BlockEntity {
                                 int index = getCoordinateHandlerIndex();
                                 String[] tp_locations = ConfigData.teleportLocations;
                                 //check lenght of config locations, and see if the set index can get a value out of it
-                                if (tp_locations.length > 0 && tp_locations.length <= index) {
+                                if (tp_locations.length > 0 && tp_locations.length >= index) {
+
                                     CoordinateHandler coords = new CoordinateHandler((ServerLevel) level, tp_locations[index]);
                                     ResourceLocation dimension = coords.getDimension();
                                     if (!playerOnPad.level.dimension().location().equals(dimension)) {
