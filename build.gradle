@@ -8,13 +8,18 @@ buildscript {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1+', changing: true
     }
 }
+
+plugins {
+    id 'net.darkhax.curseforgegradle' version '1.0.11'
+}
+
 apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply from: 'https://raw.githubusercontent.com/SizableShrimp/Forge-Class-Remapper/main/classremapper.gradle'
 
-version = '1.18.2-5.1.0.0'
+version = '1.18.2-5.1.0.1'
 group = 'subaraki' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'telepads'
 
@@ -103,4 +108,16 @@ publishing {
             url "file:///${project.projectDir}/mcmodsrepo"
         }
     }
+}
+task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+
+    apiToken = "${api_token_paintings}"
+
+    // The main file to upload
+    def mainFile = upload(236879, jar)
+    mainFile.releaseType = 'release'
+    mainFile.changelog = "${changelog}"
+    mainFile.changelogType = 'markdown'
+    mainFile.addJavaVersion('Java 17')
+    mainFile.addModLoader('Forge')
 }
