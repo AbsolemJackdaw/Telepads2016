@@ -14,7 +14,8 @@ import subaraki.telepads.screen.TeleportScreen;
 
 public class ClientReferences {
 
-    public static Player getClientPlayer() {
+    @SuppressWarnings("resource")
+	public static Player getClientPlayer() {
 
         return Minecraft.getInstance().player;
     }
@@ -29,7 +30,8 @@ public class ClientReferences {
         Minecraft.getInstance().setScreen(new MissingEntryScreen(entry));
     }
 
-    public static Level getClientWorld() {
+    @SuppressWarnings("resource")
+	public static Level getClientWorld() {
 
         return Minecraft.getInstance().level;
     }

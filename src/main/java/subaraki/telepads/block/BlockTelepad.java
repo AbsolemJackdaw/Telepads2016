@@ -439,7 +439,8 @@ public class BlockTelepad extends BaseEntityBlock implements SimpleWaterloggedBl
         setMissing(level, pos);
     }
 
-    @Nullable
+    @SuppressWarnings("unchecked")
+	@Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> be) {
         if (!level.isClientSide)

@@ -2,7 +2,7 @@ package subaraki.telepads.tileentity;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
@@ -128,7 +128,7 @@ public class TileEntityTelepad extends BlockEntity {
         this.isPublic = compound.getBoolean("public");
 
         if (dim != null && !dim.isEmpty())
-            dimension = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(dim));
+            dimension = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(dim));
     }
 
     private CompoundTag writeToSave(CompoundTag compound) {

@@ -2,7 +2,7 @@ package subaraki.telepads.utility;
 
 import com.google.common.collect.Lists;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
@@ -42,7 +42,7 @@ public class TelepadEntry {
      */
     public TelepadEntry(FriendlyByteBuf buf) {
 
-        this(buf.readUtf(256), ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(buf.readUtf())), new BlockPos(buf.readInt(), buf.readInt(), buf.readInt()));
+        this(buf.readUtf(256), ResourceKey.create(Registries.DIMENSION, new ResourceLocation(buf.readUtf())), new BlockPos(buf.readInt(), buf.readInt(), buf.readInt()));
         addDetails(buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean());
 
         int size = buf.readInt();
@@ -61,7 +61,7 @@ public class TelepadEntry {
     public TelepadEntry(CompoundTag tag) {
 
 
-        this(tag.getString("entryName"), ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(tag.getString("dimensionID"))), new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")));
+        this(tag.getString("entryName"), ResourceKey.create(Registries.DIMENSION, new ResourceLocation(tag.getString("dimensionID"))), new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")));
         addDetails(tag.getBoolean("power"), tag.getBoolean("transmitter"), tag.getBoolean("public"), tag.getBoolean("missing"));
 
         int size = tag.getInt("size");
