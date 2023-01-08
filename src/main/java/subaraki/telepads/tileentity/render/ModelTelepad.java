@@ -1,8 +1,9 @@
 package subaraki.telepads.tileentity.render;
 
+import org.joml.Quaternionf;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Quaternion;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -54,7 +55,7 @@ public class ModelTelepad extends Model {
 
         for (int index = 1; index < 5; index++) {
             matrixStackIn.pushPose();
-            matrixStackIn.mulPose(new Quaternion(0, 90 * index, 0, true));
+            matrixStackIn.mulPose(new Quaternionf(0, 90 * index, 0, 1f));
             legPartRight.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, r, g, b, 1.0F);
             legPartLeft.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, r, g, b, 1.0F);
             matrixStackIn.popPose();

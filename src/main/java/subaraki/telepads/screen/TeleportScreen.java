@@ -5,13 +5,12 @@ import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix4f;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -29,6 +28,8 @@ import subaraki.telepads.utility.TelepadEntry;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import org.joml.Matrix4f;
 
 public class TeleportScreen extends Screen {
 
@@ -114,10 +115,10 @@ public class TeleportScreen extends Screen {
 
         if (renderables.get(index) instanceof AbstractWidget last && renderables.get(0) instanceof AbstractWidget first) {
 
-            int forsee_bottom_limit = (int) (last.y + last.getHeight() + (mouseScroll * 16));
+            int forsee_bottom_limit = (int) (last.getY() + last.getHeight() + (mouseScroll * 16));
             int bottom_limit = height - startY - last.getHeight();
 
-            int forsee_top_limit = (int) (first.y - 15 + mouseScroll * 16);
+            int forsee_top_limit = (int) (first.getY() - 15 + mouseScroll * 16);
             int top_limit = gap + startY;
             // scrolling up
             if (mouseScroll < 0.0 && forsee_bottom_limit < bottom_limit)
@@ -146,8 +147,8 @@ public class TeleportScreen extends Screen {
     private void drawFakeScrollBar(PoseStack stack) {
 
         if (renderables.get(renderables.size() - 1) instanceof AbstractWidget last && renderables.get(0) instanceof AbstractWidget first) {
-            int top = first.y;
-            int bot = last.y + last.getHeight();
+            int top = first.getY();
+            int bot = last.getY() + last.getHeight();
 
             // get total size for buttons drawn
             float totalSize = (bot - top) + (gap);
@@ -183,9 +184,9 @@ public class TeleportScreen extends Screen {
 
         scrollbarscroll -= scroll * 16;
 
-        for (Widget widget : this.renderables) {
+        for (Renderable widget : this.renderables) {
             if (widget instanceof AbstractWidget button)
-                button.y += scroll * 16;
+                button.setY((int) (button.getY() + scroll * 16));
         }
     }
 
@@ -215,7 +216,7 @@ public class TeleportScreen extends Screen {
                             : entry.isPublic ? ChatFormatting.LIGHT_PURPLE
                             : entry.hasTransmitter ? ChatFormatting.GREEN
                             : ChatFormatting.WHITE;
-            addRenderableWidget(new Button(central_offset + 5 + (extra_x * 120), 15 + (extra_y * 25), 110, 20,
+            addRenderableWidget(Button.builder(
                     Component.literal(entry.entryName).setStyle(Style.EMPTY.withColor(TextColor.fromLegacyFormat(color)).
                             withBold(entry.position.equals(ClientReferences.getClientPlayer().blockPosition()))), (button) -> {
 
@@ -228,7 +229,7 @@ public class TeleportScreen extends Screen {
                     this.removed();
                     this.onClose();
                 }
-            }));
+            }).bounds(central_offset + 5 + (extra_x * 120), 15 + (extra_y * 25), 110, 20).build());
 
             increment++;
 
@@ -243,7 +244,7 @@ public class TeleportScreen extends Screen {
             tunerPosition++;
 
         int centerx = Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2;
-        AbstractWidget button_left = new Button(centerx - 75 - 25, 5, 20, 20, Component.literal("<"), (button) -> {
+        AbstractWidget button_left = Button.builder(Component.literal("<"), (button) -> {
             if (visitedList.size() > 1) {
                 tunerPosition--;
 
@@ -256,9 +257,9 @@ public class TeleportScreen extends Screen {
             dimensionIndicator.setValue(dimensionId.location().getPath());
 
             initialize_pages();
-        });
+        }).bounds(centerx - 75 - 25, 5, 20, 20).build();
 
-        AbstractWidget button_right = new Button(centerx + 75 + 5, 5, 20, 20, Component.literal(">"), (button) -> {
+        AbstractWidget button_right = Button.builder(Component.literal(">"), (button) -> {
             if (visitedList.size() > 1) {
                 tunerPosition++;
 
@@ -272,7 +273,7 @@ public class TeleportScreen extends Screen {
 
             initialize_pages();
 
-        });
+        }).bounds(centerx + 75 + 5, 5, 20, 20).build();
 
         unscrollables.add(button_left);
         unscrollables.add(button_right);

@@ -2,8 +2,6 @@ package subaraki.telepads.tileentity.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Quaternion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -21,6 +19,9 @@ import subaraki.telepads.registry.mod_bus.RegisterClientSetup;
 import subaraki.telepads.tileentity.TileEntityTelepad;
 
 import java.awt.*;
+
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 
 public class TileEntityTelepadRenderer implements BlockEntityRenderer<TileEntityTelepad> {
 
@@ -81,19 +82,19 @@ public class TileEntityTelepadRenderer implements BlockEntityRenderer<TileEntity
 
             switch (te.getUpgradeRotation()) {
                 case 0 -> {
-                    stack.mulPose(new Quaternion(0, 0, 0, true));
+                    stack.mulPose(new Quaternionf(0, 0, 0, 1f));
                     stack.translate(0f, 0, 0f);
                 }
                 case 1 -> {
-                    stack.mulPose(new Quaternion(0, -90, 0, true));
+                    stack.mulPose(new Quaternionf(0, -90, 0, 1f));
                     stack.translate(-0.1f, 0, 0f);
                 }
                 case 2 -> {
-                    stack.mulPose(new Quaternion(0, 180, 0, true));
+                    stack.mulPose(new Quaternionf(0, 180, 0, 1f));
                     stack.translate(-0.2f, 0, 0.2f);
                 }
                 default -> {// also case 3
-                    stack.mulPose(new Quaternion(0, 90, 0, true));
+                    stack.mulPose(new Quaternionf(0, 90, 0, 1f));
                     stack.translate(0f, 0, 0.2f);
                 }
             }

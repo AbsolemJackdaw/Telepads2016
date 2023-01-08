@@ -45,17 +45,17 @@ public class MissingEntryScreen extends Screen {
 
         int x = 120;
         int y = 20;
-        this.addRenderableWidget(new Button(centerX - x - 10, centerY + y, x, y, Component.translatable(textTeleportAnyway), button -> {
+        this.addRenderableWidget(Button.builder(Component.translatable(textTeleportAnyway), button -> {
             NetworkHandler.NETWORK.sendToServer(new SPacketTeleport(minecraft.player.blockPosition(), missingEntry, false));
             this.removed();
             this.onClose();
-        }));
+        }).bounds(centerX - x - 10, centerY + y, x, y).build());
 
-        this.addRenderableWidget(new Button(centerX + 10, centerY + y, x, y, Component.translatable(textForget), button -> {
+        this.addRenderableWidget(Button.builder(Component.translatable(textForget), button -> {
             NetworkHandler.NETWORK.sendToServer(new SPacketRemoveEntry(missingEntry));
             this.removed();
             this.onClose();
-        }));
+        }).bounds(centerX + 10, centerY + y, x, y).build());
 
     }
 

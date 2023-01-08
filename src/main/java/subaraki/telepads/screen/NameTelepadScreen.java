@@ -6,7 +6,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
@@ -71,9 +71,9 @@ public class NameTelepadScreen extends Screen {
         TelepadData.get(minecraft.player).ifPresent(data -> {
             if (!data.getWhitelist().isEmpty()) {
                 showSharing = true;
-                this.addRenderableWidget(new Button(centerX - 40, centerY + 20, 45, 20, Component.translatable(textShare), b -> {
+                this.addRenderableWidget(Button.builder(Component.translatable(textShare), b -> {
                     share = !share;
-                }));
+                }).bounds(centerX - 40, centerY + 20, 45, 20).build());
 
             }
         });
@@ -87,7 +87,7 @@ public class NameTelepadScreen extends Screen {
         textfieldBox.setCanLoseFocus(false);
         textfieldBox.setFocus(true);
 
-        ResourceLocation resLoc = minecraft.level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getKey(minecraft.level.getBiome(minecraft.player.blockPosition()).value());
+        ResourceLocation resLoc = minecraft.level.registryAccess().registryOrThrow(Registries.BIOME).getKey(minecraft.level.getBiome(minecraft.player.blockPosition()).value());
 
         String biome_name = "biome." + resLoc.getNamespace() + "." + resLoc.getPath(); //biome names are present in lang files under biome.modname.biomename
         Component biome = Component.translatable(biome_name);
@@ -125,7 +125,8 @@ public class NameTelepadScreen extends Screen {
 
             TelepadData.get(ClientReferences.getClientPlayer()).ifPresent(data -> {
 
-                TelepadEntry telepad_entry = new TelepadEntry(textfieldBox.getValue(), Minecraft.getInstance().level.dimension(), position);
+                @SuppressWarnings("resource")
+				TelepadEntry telepad_entry = new TelepadEntry(textfieldBox.getValue(), Minecraft.getInstance().level.dimension(), position);
                 telepad_entry.addUser(ClientReferences.getClientPlayer().getUUID());
 
                 if (share)
